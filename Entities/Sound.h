@@ -23,8 +23,8 @@
 struct FSOUND_SAMPLE;
 #elif __USE_SOUND_SDLMIXER
 struct Mix_Chunk;
-#elif __USE_SOUND_SDLMIXER
-struct ga_Handle;
+#elif __USE_SOUND_GORILLA
+struct gau_SampleSourceLoop;
 #endif
 
 namespace RTE
@@ -327,8 +327,8 @@ ENTITYALLOCATION(Sound)
 	Mix_Chunk * GetCurrentSample();
 #elif __USE_SOUND_GORILLA
 	ga_Sound * GetCurrentSample();
+	//gau_SampleSourceLoop * GetCurrentSourceLoop();
 #endif // __USE_SOUND_FMOD
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Method:          StartNextSample
@@ -466,6 +466,7 @@ protected:
 	std::vector<std::pair<ContentFile, Mix_Chunk *> > m_Samples;
 #elif __USE_SOUND_GORILLA
 	std::vector<std::pair<ContentFile, ga_Sound *> > m_Samples;
+	gau_SampleSourceLoop* loopSrc;
 #endif // __USE_SOUND_FMOD
     // Index of the current (or last, if nothing is being played) sample being played
     int m_CurrentSample;

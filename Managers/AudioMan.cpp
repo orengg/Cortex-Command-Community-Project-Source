@@ -765,6 +765,21 @@ Sound * AudioMan::PlaySound(const char *filepath, float distance, bool loop, boo
 	return snd;
 }
 
+Sound * AudioMan::PlaySound(const char *filepath, float distance, int loop, bool affectedByPitch, int player)
+{
+	if (!filepath)
+	{
+		g_ConsoleMan.PrintString("Error: Null filepath passed to AudioMan::PlaySound!");
+		return 0;
+	}
+
+	Sound * snd = new Sound();
+	snd->Create(filepath, affectedByPitch, loop);
+	PlaySound(player, snd, PRIORITY_LOW, distance, affectedByPitch ? m_GlobalPitch : 1.0);
+
+	return snd;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Method:          GetSoundEvents
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1045,22 +1060,21 @@ bool AudioMan::PlaySound(Sound *pSound, int priority, float distance, double pit
 
 	// Set sample's channel looping setting
 	ga_Handle * handle;
-	if (pSound->m_Loops == 0)
+	if (pSound->m_Loops >= 0)
 	{
 		handle = gau_create_handle_sound(m_pMixer, pSound->GetCurrentSample(), 0, 0, 0);
 	}
 	else
 	{
-		gau_SampleSourceLoop* loopSrc; 
-		handle = gau_create_handle_sound(m_pMixer, pSound->GetCurrentSample(), 0, 0, &loopSrc);
-		gau_sample_source_loop_set(loopSrc, -1, 0);
+		handle = gau_create_handle_sound(m_pMixer, pSound->GetCurrentSample(), 0, 0, &pSound->loopSrc);
+		gau_sample_source_loop_set(pSound->loopSrc, -1, 0);
 	}
 
 	// Due to Gorilla lacking the ability to set a master volume, we have to set it here.
 	ga_handle_setParamf(handle, GA_HANDLE_PARAM_GAIN, MAX_VOLUME * m_SoundsVolume);
 
 	m_SoundChannels[channel] = handle;
-	m_SoundInstances[channel] = pSound->GetCurrentSample();
+	m_SoundInstances[channel] = pSound;
 
 	ga_handle_play(handle);
 
@@ -1230,7 +1244,7 @@ bool AudioMan::IsPlaying(Sound *pSound)
 	int playing = Mix_Playing(pSound->m_LastChannel);
 	return playing;
 #elif __USE_SOUND_GORILLA
-	if (m_SoundInstances[pSound->m_LastChannel] != pSound->GetCurrentSample())
+	if (m_SoundInstances[pSound->m_LastChannel] != pSound)
 		return false;
 
 	int playing = ga_handle_playing(m_SoundChannels[pSound->m_LastChannel]);
@@ -1479,6 +1493,14 @@ void AudioMan::Update()
 	if (!m_pMusic && m_SilenceTimer.IsPastRealTimeLimit())
 		PlayNextStream();
 	gau_manager_update(m_pManager);
+
+	for (Sound *pSound : m_SoundInstances)
+	{
+		if (pSound != 0 && pSound->GetLoopSetting() < gau_sample_source_loop_count(pSound->loopSrc))
+		{
+			//pSound->Stop();
+		}
+	}
 #endif
 }
 

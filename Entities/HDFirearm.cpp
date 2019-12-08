@@ -568,8 +568,10 @@ void HDFirearm::Activate()
     HeldDevice::Activate();
 
     // Play the pre-fire sound
-    if (!IsReloading() && !m_ActiveSound.IsBeingPlayed())
-        m_ActiveSound.Play();
+	if (!IsReloading() && !m_ActiveSound.IsBeingPlayed() && !m_FiredOnce)
+	{
+		m_ActiveSound.Play();
+	}
 }
 
 

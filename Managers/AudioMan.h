@@ -377,6 +377,8 @@ struct MusicNetworkData
 
 	Sound * PlaySound(const char *filepath, float distance, bool loop, bool affectedByPitch, int player);
 
+	Sound * PlaySound(const char * filepath, float distance, int loop, bool affectedByPitch, int player);
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Method:          SetSoundAttenuation
@@ -656,7 +658,7 @@ protected:
 	ga_Handle * m_pMusic;
 
 	std::vector<ga_Handle *> m_SoundChannels;
-	std::vector<ga_Sound *> m_SoundInstances;
+	std::vector<Sound *> m_SoundInstances;
 
 	//int m_MaxChannels;
 #endif
