@@ -1768,6 +1768,7 @@ void MovableMan::Update()
                 (*aIt)->UpdateScript();
 				//g_FrameMan.StopPerformanceMeasurement(FrameMan::PERF_ACTORS_AI);
                 (*aIt)->ApplyImpulses();
+                (*aIt)->RestDetection();
             }
         }
 		g_FrameMan.StopPerformanceMeasurement(FrameMan::PERF_ACTORS_PASS2);
