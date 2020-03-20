@@ -579,7 +579,7 @@ friend class MetaSave;
 //                  it will be ignored. Presets returned in list are NOT OWNED there.
 // Return value:    The count of total number preset scenes eligible for gameplay.
 
-    int TotalScenePresets(std::list<Scene *> *pScenes = 0);
+    int TotalScenePresets(plf::list<Scene *> *pScenes = 0);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -593,7 +593,7 @@ friend class MetaSave;
 //                  it will be ignored. Presets returned in list are NOT OWNED there.
 // Return value:    The count of selected preset scenes.
 
-    int SelectScenePresets(float gameSize, int playerCount, std::list<Scene *> *pSelected = 0);
+    int SelectScenePresets(float gameSize, int playerCount, plf::list<Scene *> *pSelected = 0);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

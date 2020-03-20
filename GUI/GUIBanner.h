@@ -301,7 +301,7 @@ private:
     // The text string currently being displayed
     std::string m_BannerText;
     // The actual characters of this banner and their positions etc
-    std::list<FlyingChar> m_BannerChars;
+    plf::list<FlyingChar> m_BannerChars;
     // The dimensions of the screen area that this banner is displayed on
     Vector m_TargetSize;
     // The pixel Y position that the banner has on the target

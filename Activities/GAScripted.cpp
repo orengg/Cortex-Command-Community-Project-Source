@@ -349,10 +349,10 @@ int GAScripted::Start()
 	m_GlobalScriptsList.clear();
 
 	// Get all global scripts and add to execution list
-	std::list<Entity *> globalScripts;
+	plf::list<Entity *> globalScripts;
 	g_PresetMan.GetAllOfType(globalScripts, "GlobalScript");
 
-	for (std::list<Entity *>::iterator sItr = globalScripts.begin(); sItr != globalScripts.end(); ++sItr )
+	for (plf::list<Entity *>::iterator sItr = globalScripts.begin(); sItr != globalScripts.end(); ++sItr )
 	{
 		GlobalScript * script = dynamic_cast<GlobalScript *>(*sItr);
 		if (script && g_SettingsMan.IsScriptEnabled(script->GetModuleAndPresetName()))
@@ -568,7 +568,7 @@ void GAScripted::CollectRequiredAreas()
                         // Only add the name if it is unique in the list
                         string areaName = line.substr(pos, endPos - pos);
                         bool isNew = true;
-                        for (list<string>::iterator itr = m_RequiredAreas.begin(); itr != m_RequiredAreas.end(); ++itr)
+                        for (plf::list<string>::iterator itr = m_RequiredAreas.begin(); itr != m_RequiredAreas.end(); ++itr)
                             if (*itr == areaName);
                                 isNew = false;
                         if (isNew)

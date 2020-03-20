@@ -100,7 +100,7 @@ void BunkerAssembly::AddPlacedObject(SceneObject * pSO)
 
 		// Read and add all child objects
 		pTObject->SetTeam(GetTeam());
-		for (list<SceneObject::SOPlacer>::const_iterator itr = pTObject->GetChildObjects().begin(); itr != pTObject->GetChildObjects().end() ; ++itr)
+		for (plf::list<SceneObject::SOPlacer>::const_iterator itr = pTObject->GetChildObjects().begin(); itr != pTObject->GetChildObjects().end() ; ++itr)
 		{
 			SOPlacer newPlacer = (*itr);
 			newPlacer.SetTeam(pTObject->GetTeam());
@@ -159,7 +159,7 @@ int BunkerAssembly::Create(const BunkerAssembly &reference)
 {
     TerrainObject::Create(reference);
 
-    for (list<SceneObject *>::const_iterator oItr = reference.m_PlacedObjects.begin(); oItr != reference.m_PlacedObjects.end(); ++oItr)
+    for (plf::list<SceneObject *>::const_iterator oItr = reference.m_PlacedObjects.begin(); oItr != reference.m_PlacedObjects.end(); ++oItr)
         m_PlacedObjects.push_back(dynamic_cast<SceneObject *>((*oItr)->Clone()));
 
 	m_ParentAssemblyScheme = reference.m_ParentAssemblyScheme;
@@ -282,7 +282,7 @@ int BunkerAssembly::Save(Writer &writer) const
 	SceneObject::Save(writer);
 
     // Groups are essential for BunkerAssemblies so save them, because entity seem to ignore them
-	for (list<string>::const_iterator itr = m_Groups.begin(); itr != m_Groups.end(); ++itr)
+	for (plf::list<string>::const_iterator itr = m_Groups.begin(); itr != m_Groups.end(); ++itr)
     {
 		if ((*itr) != m_ParentAssemblyScheme && (*itr) != m_ParentSchemeGroup)
 		{
@@ -301,7 +301,7 @@ int BunkerAssembly::Save(Writer &writer) const
 		writer << m_ParentAssemblyScheme;
 	}
 
-    for (list<SceneObject *>::const_iterator oItr = m_PlacedObjects.begin(); oItr != m_PlacedObjects.end(); ++oItr)
+    for (plf::list<SceneObject *>::const_iterator oItr = m_PlacedObjects.begin(); oItr != m_PlacedObjects.end(); ++oItr)
     {
 		writer.NewProperty("PlaceObject");
         writer.ObjectStart((*oItr)->GetClassName());
@@ -359,7 +359,7 @@ int BunkerAssembly::Save(Writer &writer) const
 
 void BunkerAssembly::Destroy(bool notInherited)
 {
-    for (list<SceneObject *>::iterator oItr = m_PlacedObjects.begin(); oItr != m_PlacedObjects.end(); ++oItr)
+    for (plf::list<SceneObject *>::iterator oItr = m_PlacedObjects.begin(); oItr != m_PlacedObjects.end(); ++oItr)
     {
         delete (*oItr);
         *oItr = 0;
@@ -399,7 +399,7 @@ std::vector<Deployment *> BunkerAssembly::GetDeployments()
 	std::vector<Deployment *> candidatesList;
 
 	// Sort objects, brains are added by default, everything else are candidates
-	for (std::list<SceneObject *>::const_iterator itr = m_PlacedObjects.begin(); itr != m_PlacedObjects.end() ; ++itr)
+	for (plf::list<SceneObject *>::const_iterator itr = m_PlacedObjects.begin(); itr != m_PlacedObjects.end() ; ++itr)
 	{
 		Deployment * pDeployment = dynamic_cast<Deployment *>(*itr);
 
@@ -466,7 +466,7 @@ void BunkerAssembly::SetTeam(int team)
     TerrainObject::SetTeam(team);
 
     // Make sure all the objects to be placed will be of the same team
-    for (list<SceneObject *>::iterator itr = m_PlacedObjects.begin(); itr != m_PlacedObjects.end(); ++itr)
+    for (plf::list<SceneObject *>::iterator itr = m_PlacedObjects.begin(); itr != m_PlacedObjects.end(); ++itr)
         (*itr)->SetTeam(team);
 }
 

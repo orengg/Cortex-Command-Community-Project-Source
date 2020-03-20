@@ -1130,7 +1130,7 @@ protected:
     bool m_ReadyToStart[Activity::MAXPLAYERCOUNT];
     // An override purchase list that can be set by a script and will be used instead of what's in the buy menu. Object held in here are NOT OWNED
     // Once a delivery is made with anything in here, this list is automatically cleared out, and the next delivery will be what's set in the buy menu.
-    std::list<const SceneObject *> m_PurchaseOverride[Activity::MAXPLAYERCOUNT];
+    plf::list<const SceneObject *> m_PurchaseOverride[Activity::MAXPLAYERCOUNT];
 
     // The delivery queue which contains all the info about all the made orders currently in transit to delivery
     std::deque<Delivery> m_Deliveries[Activity::MAXTEAMCOUNT];
@@ -1139,7 +1139,7 @@ protected:
     // How wide around the brain the automatic LZ is following
     int m_BrainLZWidth[Activity::MAXPLAYERCOUNT];
     // The objective points for each team
-    std::list<ObjectivePoint> m_Objectives;
+    plf::list<ObjectivePoint> m_Objectives;
 
     // Tech of player
     std::string m_TeamTech[Activity::MAXTEAMCOUNT];

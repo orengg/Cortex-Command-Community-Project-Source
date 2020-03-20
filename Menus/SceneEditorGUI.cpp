@@ -724,12 +724,12 @@ void SceneEditorGUI::Update()
         if (!m_BrainSkyPath.empty())
         {
             // Smash all airborne waypoints down to just above the ground, except for when it makes the path intersect terrain or it is the final destination
-            list<Vector>::iterator finalItr = m_BrainSkyPath.end();
+            plf::list<Vector>::iterator finalItr = m_BrainSkyPath.end();
             finalItr--;
             Vector smashedPoint;
             Vector previousPoint = *(m_BrainSkyPath.begin());
-            list<Vector>::iterator nextItr = m_BrainSkyPath.begin();
-            for (list<Vector>::iterator lItr = m_BrainSkyPath.begin(); lItr != finalItr; ++lItr)
+            plf::list<Vector>::iterator nextItr = m_BrainSkyPath.begin();
+            for (plf::list<Vector>::iterator lItr = m_BrainSkyPath.begin(); lItr != finalItr; ++lItr)
             {
                 nextItr++;
                 smashedPoint = g_SceneMan.MovePointToGround((*lItr), 20, 10);
@@ -1388,15 +1388,15 @@ void SceneEditorGUI::Draw(BITMAP *pTargetBitmap, const Vector &targetPos) const
         return;
 
     // The get a list of the currently edited set of placed objects in the Scene
-    const std::list<SceneObject *> *pSceneObjectList = 0;
+    const plf::list<SceneObject *> *pSceneObjectList = 0;
     if (m_FeatureSet == ONLOADEDIT)
         pSceneObjectList = g_SceneMan.GetScene()->GetPlacedObjects(Scene::PLACEONLOAD);
     else if (m_FeatureSet == BLUEPRINTEDIT)
     {
         pSceneObjectList = g_SceneMan.GetScene()->GetPlacedObjects(Scene::BLUEPRINT);
         // Draw the 'original' set of placed scene objects as solid before the blueprints
-        const std::list<SceneObject *> *pOriginalsList = g_SceneMan.GetScene()->GetPlacedObjects(Scene::PLACEONLOAD);
-        for (list<SceneObject *>::const_iterator itr = pOriginalsList->begin(); itr != pOriginalsList->end(); ++itr)
+        const plf::list<SceneObject *> *pOriginalsList = g_SceneMan.GetScene()->GetPlacedObjects(Scene::PLACEONLOAD);
+        for (plf::list<SceneObject *>::const_iterator itr = pOriginalsList->begin(); itr != pOriginalsList->end(); ++itr)
         {
             (*itr)->Draw(pTargetBitmap, targetPos);
             // Draw basic HUD if an actor
@@ -1409,8 +1409,8 @@ void SceneEditorGUI::Draw(BITMAP *pTargetBitmap, const Vector &targetPos) const
     {
         pSceneObjectList = g_SceneMan.GetScene()->GetPlacedObjects(Scene::AIPLAN);
         // Draw the 'original' set of placed scene objects as solid before the planned base
-        const std::list<SceneObject *> *pOriginalsList = g_SceneMan.GetScene()->GetPlacedObjects(Scene::PLACEONLOAD);
-        for (list<SceneObject *>::const_iterator itr = pOriginalsList->begin(); itr != pOriginalsList->end(); ++itr)
+        const plf::list<SceneObject *> *pOriginalsList = g_SceneMan.GetScene()->GetPlacedObjects(Scene::PLACEONLOAD);
+        for (plf::list<SceneObject *>::const_iterator itr = pOriginalsList->begin(); itr != pOriginalsList->end(); ++itr)
         {
             (*itr)->Draw(pTargetBitmap, targetPos);
             // Draw basic HUD if an actor
@@ -1427,7 +1427,7 @@ void SceneEditorGUI::Draw(BITMAP *pTargetBitmap, const Vector &targetPos) const
         int i = 0;
         Actor *pActor = 0;
 //        HeldDevice *pDevice = 0;
-        for (list<SceneObject *>::const_iterator itr = pSceneObjectList->begin(); itr != pSceneObjectList->end(); ++itr, ++i)
+        for (plf::list<SceneObject *>::const_iterator itr = pSceneObjectList->begin(); itr != pSceneObjectList->end(); ++itr, ++i)
         {
             // Draw the currently held object into the order of the list if it is to be placed inside
             if (m_pCurrentObject && m_DrawCurrentObject && i == m_ObjectListOrder)
@@ -1500,8 +1500,8 @@ void SceneEditorGUI::Draw(BITMAP *pTargetBitmap, const Vector &targetPos) const
     if (m_RequireClearPathToOrbit && !m_BrainSkyPath.empty())
     {
         int skipPhase = 0;
-        list<Vector>::const_reverse_iterator lLast = m_BrainSkyPath.rbegin();
-        list<Vector>::const_reverse_iterator lItr = m_BrainSkyPath.rbegin();
+        plf::list<Vector>::const_reverse_iterator lLast = m_BrainSkyPath.rbegin();
+        plf::list<Vector>::const_reverse_iterator lItr = m_BrainSkyPath.rbegin();
         for (; lItr != m_BrainSkyPath.rend(); ++lItr)
         {
             // Draw these backwards so the skip phase works

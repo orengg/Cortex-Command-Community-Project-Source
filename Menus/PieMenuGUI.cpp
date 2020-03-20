@@ -455,16 +455,16 @@ PieMenuGUI::Slice PieMenuGUI::RemoveSliceLua(string description, string function
 	Slice retValue;
 
 	// Look for slices across all the collection to remove
-	std::vector< std::list<Slice> * > sliceCollections;
+	std::vector< plf::list<Slice> * > sliceCollections;
 	sliceCollections.push_back(&m_UpRightSlices);
 	sliceCollections.push_back(&m_UpLeftSlices);
 	sliceCollections.push_back(&m_DownLeftSlices);
 	sliceCollections.push_back(&m_DownRightSlices);
 
-	std::vector< std::list<Slice> * >::iterator sItr;
+	std::vector< plf::list<Slice> * >::iterator sItr;
 	for (sItr = sliceCollections.begin(); sItr != sliceCollections.end(); ++sItr)
 	{
-		list<Slice>::iterator sSliceItr;
+		plf::list<Slice>::iterator sSliceItr;
 		for (sSliceItr = (*sItr)->begin(); sSliceItr != (*sItr)->end(); ++sSliceItr)
 		{
 			if ((*sSliceItr).m_Description == description && (*sSliceItr).m_FunctionName == functionName)
@@ -643,9 +643,9 @@ int PieMenuGUI::AddSliceToGroup(Slice &newSlice, int groupID)
 void PieMenuGUI::RealignSlices()
 {
     m_AllSlices.clear();
-    list<Slice>::iterator sItr;
+    plf::list<Slice>::iterator sItr;
     // For the corner lists we need to traverse backwards to get the right order on the circle
-    list<Slice>::reverse_iterator srItr;
+    plf::list<Slice>::reverse_iterator srItr;
 
     // Start straight out right and go CCW, aligning all encountered slcies as we go
 
@@ -1148,15 +1148,15 @@ void PieMenuGUI::Draw(BITMAP *pTargetBitmap, const Vector &targetPos) const
     {
         // Get all possible wrapped boxes of the screen
         Box screenBox(targetPos, pTargetBitmap->w, pTargetBitmap->h);
-        list<Box> wrappedBoxes;
+        plf::list<Box> wrappedBoxes;
         g_SceneMan.WrapBox(screenBox, wrappedBoxes);
 
         // Iterate through the wrapped screen boxes - will only be one if there's no wrapping
         // Try to the find one that contains the objective point
         bool withinAny = false;
-        list<Box>::iterator nearestBoxItr = wrappedBoxes.begin();
+        plf::list<Box>::iterator nearestBoxItr = wrappedBoxes.begin();
         float distance, shortestDist = 1000000.0;
-        for (list<Box>::iterator wItr = wrappedBoxes.begin(); wItr != wrappedBoxes.end(); ++wItr)
+        for (plf::list<Box>::iterator wItr = wrappedBoxes.begin(); wItr != wrappedBoxes.end(); ++wItr)
         {
             // See if we found the point to be within the screen or not
             if (wItr->IsWithinBox(m_CenterPos))

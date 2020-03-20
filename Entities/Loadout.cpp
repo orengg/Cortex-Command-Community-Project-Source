@@ -68,7 +68,7 @@ int Loadout::Create(const Loadout &reference)
     m_Complete = reference.m_Complete;
     // These are preset instances, not owned by the reference or this.
     m_pDeliveryCraft = reference.m_pDeliveryCraft;
-    for (list<const SceneObject *>::const_iterator itr = reference.m_CargoItems.begin(); itr != reference.m_CargoItems.end(); ++itr)
+    for (plf::list<const SceneObject *>::const_iterator itr = reference.m_CargoItems.begin(); itr != reference.m_CargoItems.end(); ++itr)
         m_CargoItems.push_back(*itr);
 
     return 0;
@@ -152,7 +152,7 @@ int Loadout::Save(Writer &writer) const
         writer << m_pDeliveryCraft->GetModuleAndPresetName();
         writer.ObjectEnd();
     }
-    for (list<const SceneObject *>::const_iterator itr = m_CargoItems.begin(); itr != m_CargoItems.end(); ++itr)
+    for (plf::list<const SceneObject *>::const_iterator itr = m_CargoItems.begin(); itr != m_CargoItems.end(); ++itr)
     {
         writer.NewProperty("AddCargoItem");
         writer.ObjectStart((*itr)->GetClassName());
@@ -200,8 +200,8 @@ Actor * Loadout::CreateFirstActor(int nativeModule, float foreignMult, float nat
         // until the next actor. Also, the first actor gets all stuff in the list above him.
         MovableObject *pInventoryObject = 0;
         Actor *pActor = 0;
-        list<MovableObject *> tempCargo;
-        for (list<const SceneObject *>::const_iterator itr = m_CargoItems.begin(); itr != m_CargoItems.end(); ++itr)
+        plf::list<MovableObject *> tempCargo;
+        for (plf::list<const SceneObject *>::const_iterator itr = m_CargoItems.begin(); itr != m_CargoItems.end(); ++itr)
         {
             // Add to the total cost tally
             costTally += (*itr)->GetGoldValue(nativeModule, foreignMult, nativeMult);
@@ -215,14 +215,14 @@ Actor * Loadout::CreateFirstActor(int nativeModule, float foreignMult, float nat
                 // If this is the first passenger, then give him all the shit found in the list before him
                 if (!pReturnActor)
                 {
-                    for (list<MovableObject *>::iterator iItr = tempCargo.begin(); iItr != tempCargo.end(); ++iItr)
+                    for (plf::list<MovableObject *>::iterator iItr = tempCargo.begin(); iItr != tempCargo.end(); ++iItr)
                         pActor->AddInventoryItem(*iItr);
                 }
                 // This isn't the first passenger, so give the previous guy all the stuff that was found since processing him
                 else
                 {
                     // Go through the temporary list and give the previous, real first actor all the stuff
-                    for (list<MovableObject *>::iterator iItr = tempCargo.begin(); iItr != tempCargo.end(); ++iItr)
+                    for (plf::list<MovableObject *>::iterator iItr = tempCargo.begin(); iItr != tempCargo.end(); ++iItr)
                         pReturnActor->AddInventoryItem(*iItr);
                     // Clear out the temporary cargo list since we've assigned all the stuff in it to the return Actor
                     tempCargo.clear();
@@ -254,7 +254,7 @@ Actor * Loadout::CreateFirstActor(int nativeModule, float foreignMult, float nat
         if (pReturnActor)
         {
             // Passing ownership
-            for (list<MovableObject *>::iterator iItr = tempCargo.begin(); iItr != tempCargo.end(); ++iItr)
+            for (plf::list<MovableObject *>::iterator iItr = tempCargo.begin(); iItr != tempCargo.end(); ++iItr)
                 pReturnActor->AddInventoryItem(*iItr);
             tempCargo.clear();
         }
@@ -266,7 +266,7 @@ Actor * Loadout::CreateFirstActor(int nativeModule, float foreignMult, float nat
             // Add the cost of the ship
             costTally += pReturnActor->GetGoldValue(nativeModule, foreignMult, nativeMult);
             // Fill it with the stuff, passing ownership
-            for (list<MovableObject *>::iterator iItr = tempCargo.begin(); iItr != tempCargo.end(); ++iItr)
+            for (plf::list<MovableObject *>::iterator iItr = tempCargo.begin(); iItr != tempCargo.end(); ++iItr)
                 pReturnActor->AddInventoryItem(*iItr);
             tempCargo.clear();
         }
@@ -292,7 +292,7 @@ SceneObject * Loadout::CreateFirstDevice(int nativeModule, float foreignMult, fl
     // Devices into inventory of an instance of the first Actor found in the list
     if (!m_CargoItems.empty())
     {
-        for (list<const SceneObject *>::const_iterator itr = m_CargoItems.begin(); itr != m_CargoItems.end(); ++itr)
+        for (plf::list<const SceneObject *>::const_iterator itr = m_CargoItems.begin(); itr != m_CargoItems.end(); ++itr)
         {
             // If not an Actor, then we should create and return it.
             if (!dynamic_cast<const Actor *>(*itr))

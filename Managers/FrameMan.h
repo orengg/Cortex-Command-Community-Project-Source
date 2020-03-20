@@ -484,7 +484,7 @@ public:
 
 
 	// List of graphical primitives scheduled to draw this frame, cleared every frame during FrameMan::Draw()
-	std::list<GraphicalPrimitive *> m_Primitives;
+	plf::list<GraphicalPrimitive *> m_Primitives;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -697,7 +697,7 @@ public:
 
 	void ClearPrimitivesList()
 	{
-		for(std::list<GraphicalPrimitive *>::const_iterator it = m_Primitives.begin(); it != m_Primitives.end(); ++it)
+		for(plf::list<GraphicalPrimitive *>::const_iterator it = m_Primitives.begin(); it != m_Primitives.end(); ++it)
 		{
 			delete (*it);
 		}
@@ -1318,9 +1318,9 @@ public:
 			return m_BlueGlowHash;
 	}
 
-	void GetPostEffectsList(int whichScreen, std::list<PostEffect> & outputList);
+	void GetPostEffectsList(int whichScreen, plf::list<PostEffect> & outputList);
 
-	void SetPostEffectsList(int whichScreen, std::list<PostEffect> & inputList);
+	void SetPostEffectsList(int whichScreen, plf::list<PostEffect> & inputList);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1753,9 +1753,9 @@ protected:
 
     // List of effects to apply at the end of each frame, Vector is in total absolute screen coordinates, and the BITMAP is not owned.
     // This list gets cleared out and re-filled each frame.
-    std::list<PostEffect> m_PostScreenEffects;
+    plf::list<PostEffect> m_PostScreenEffects;
     // List of screen-relative areas that will be processed with glow
-    std::list<Box> m_PostScreenGlowBoxes;
+    plf::list<Box> m_PostScreenGlowBoxes;
 	// Temp bitmap to rotate post effects in it
 	BITMAP * m_pTempEffectBitmap_16;
 	BITMAP * m_pTempEffectBitmap_32;
@@ -1830,7 +1830,7 @@ protected:
 	// Which frame is rendered and ready for transmission, 0 or 1
 	int m_NetworkFrameReady;
 
-	std::list<PostEffect> m_ScreenRelativeEffects[MAXSCREENCOUNT];
+	plf::list<PostEffect> m_ScreenRelativeEffects[MAXSCREENCOUNT];
 
 
 	//Performance data

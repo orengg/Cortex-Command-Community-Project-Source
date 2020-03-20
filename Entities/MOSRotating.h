@@ -509,7 +509,7 @@ ENTITYALLOCATION(MOSRotating)
 // Arguments:       None.
 // Return value:    A pointer to the list of gibs. Ownership is NOT transferred!
 
-    std::list<Gib> * GetGibList() { return &m_Gibs; }
+    plf::list<Gib> * GetGibList() { return &m_Gibs; }
 
 /*
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1151,13 +1151,13 @@ protected:
     // The vector that the recoil offsets the sprite when m_Recoiled is true.
     Vector m_RecoilOffset;
     // The list of wound AEmitters currently attached to this MOSRotating, and owned here as well
-    std::list<AEmitter *> m_Wounds;
+    plf::list<AEmitter *> m_Wounds;
     // The list of general Attachables currently attached and Owned by this.
-    std::list<Attachable *> m_Attachables;
+    plf::list<Attachable *> m_Attachables;
     // The list of all Attachables, including both hardcoded attachables and those added through ini or lua
-    std::list<Attachable *> m_AllAttachables;
+    plf::list<Attachable *> m_AllAttachables;
     // The list of Gib:s this will create when gibbed
-    std::list<Gib> m_Gibs;
+    plf::list<Gib> m_Gibs;
     // The amount of impulse force required to gib this, in kg * (m/s). 0 means no limit
     float m_GibImpulseLimit;
     // The number of wound emitters allowed before this gets gibbed. 0 means this can't get gibbed

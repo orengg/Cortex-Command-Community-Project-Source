@@ -1131,9 +1131,9 @@ void ObjectPickerGUI::UpdateGroupsList()
     m_pGroupsList->AddItem("Brains");
 */
     // Get the registered groups of all official modules loaded before this + the specific module (official or not) one we're picking from
-    list<string> groupList;
+    plf::list<string> groupList;
     g_PresetMan.GetModuleSpaceGroups(groupList, m_ModuleSpaceID, m_ShowType);
-    list<Entity *> objectList;
+    plf::list<Entity *> objectList;
     SceneObject *pSObject = 0;
     bool hasObjectsToShow = false;
 	bool showSchemes = false;
@@ -1141,7 +1141,7 @@ void ObjectPickerGUI::UpdateGroupsList()
 	if (dynamic_cast<EditorActivity *>(g_ActivityMan.GetActivity()))
 		showSchemes = true;
 
-    for (list<string>::const_iterator gItr = groupList.begin(); gItr != groupList.end(); ++gItr)
+    for (plf::list<string>::const_iterator gItr = groupList.begin(); gItr != groupList.end(); ++gItr)
     {
 		bool onlyAssembliesInGroup = true;
 		bool onlySchemesInGroup = true;
@@ -1152,7 +1152,7 @@ void ObjectPickerGUI::UpdateGroupsList()
 
         // Go through the object list of this group and see if it contains any items we actually want to show
         hasObjectsToShow = false;
-        for (list<Entity *>::iterator oItr = objectList.begin(); oItr != objectList.end(); ++oItr)
+        for (plf::list<Entity *>::iterator oItr = objectList.begin(); oItr != objectList.end(); ++oItr)
         {
 			// Check if we have any other objects than assemblies to skip assembly groups.
 			if (!dynamic_cast<BunkerAssembly *>(*oItr))
@@ -1174,9 +1174,9 @@ void ObjectPickerGUI::UpdateGroupsList()
 		// If we have this assembly group in the list of visible assembly groups, then show it no matter what
 		if (onlyAssembliesInGroup)
 		{
-			std::list<string> visibleAssemblyGroups = g_SettingsMan.GetVisibleAssemblyGroupsList();
+			plf::list<string> visibleAssemblyGroups = g_SettingsMan.GetVisibleAssemblyGroupsList();
 
-			for (list<string>::const_iterator aItr = visibleAssemblyGroups.begin(); aItr != visibleAssemblyGroups.end(); ++aItr)
+			for (plf::list<string>::const_iterator aItr = visibleAssemblyGroups.begin(); aItr != visibleAssemblyGroups.end(); ++aItr)
 				if (*gItr == *aItr)
 				{
 					onlyAssembliesInGroup = false;
@@ -1210,12 +1210,12 @@ void ObjectPickerGUI::UpdateObjectsList(bool selectTop)
     m_pObjectsList->ClearList();
 
     // The vector of lists which will be filled with objects, grouped by which data module they were read from
-    vector<list<Entity *> > moduleList;
+    vector<plf::list<Entity *> > moduleList;
     int moduleID = 0;
 
     // Make as many datamodule entries as necessary in the vector
     while (moduleList.size() < g_PresetMan.GetTotalModuleCount())
-        moduleList.push_back(list<Entity *>());
+        moduleList.push_back(plf::list<Entity *>());
 
     // Get the name of the selected group
     GUIListPanel::Item *pItem = m_pGroupsList->GetSelected();
@@ -1251,7 +1251,7 @@ void ObjectPickerGUI::UpdateObjectsList(bool selectTop)
     SceneObject *pSObject = 0;
     const DataModule *pModule = 0;
     GUIBitmap *pItemBitmap = 0;
-    list<SceneObject *> tempList;
+    plf::list<SceneObject *> tempList;
     // Go through all modules we've gathered from
     for (moduleID = 0; moduleID < moduleList.size(); ++moduleID)
     {
@@ -1261,7 +1261,7 @@ void ObjectPickerGUI::UpdateObjectsList(bool selectTop)
             tempList.clear();
 
             // Move all valid/desired entities from the module list to the intermediate list
-            for (list<Entity *>::iterator oItr = moduleList[moduleID].begin(); oItr != moduleList[moduleID].end(); ++oItr)
+            for (plf::list<Entity *>::iterator oItr = moduleList[moduleID].begin(); oItr != moduleList[moduleID].end(); ++oItr)
             {
                 pSObject = dynamic_cast<SceneObject *>(*oItr);
                 // Buyable?
@@ -1287,7 +1287,7 @@ void ObjectPickerGUI::UpdateObjectsList(bool selectTop)
                 if (moduleID == 0 || m_aExpandedModules[moduleID])
                 {
                     // Transfer from the temp intermediate list to the real gui list
-                    for (list<SceneObject *>::iterator tItr = tempList.begin(); tItr != tempList.end(); ++tItr)
+                    for (plf::list<SceneObject *>::iterator tItr = tempList.begin(); tItr != tempList.end(); ++tItr)
                     {
                         pItemBitmap = new AllegroBitmap((*tItr)->GetGraphicalIcon());
                         m_pObjectsList->AddItem((*tItr)->GetPresetName(), (*tItr)->GetGoldValueString(m_NativeTechModule, m_ForeignCostMult), pItemBitmap, *tItr);

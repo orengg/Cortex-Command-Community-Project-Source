@@ -226,27 +226,27 @@ int SLTerrain::Create(const SLTerrain &reference)
     ////////////////////////////
     // Frostings
     m_TerrainFrostings.clear();
-    for (list<TerrainFrosting>::const_iterator tfItr = reference.m_TerrainFrostings.begin(); tfItr != reference.m_TerrainFrostings.end(); ++tfItr)
+    for (plf::list<TerrainFrosting>::const_iterator tfItr = reference.m_TerrainFrostings.begin(); tfItr != reference.m_TerrainFrostings.end(); ++tfItr)
         m_TerrainFrostings.push_back(TerrainFrosting((*tfItr)));
 
     //////////////////////
     // Debris
     // First have to clear out what we've got
-    for (list<TerrainDebris *>::iterator tdItr = m_TerrainDebris.begin(); tdItr != m_TerrainDebris.end(); ++tdItr)
+    for (plf::list<TerrainDebris *>::iterator tdItr = m_TerrainDebris.begin(); tdItr != m_TerrainDebris.end(); ++tdItr)
         delete (*tdItr);
     m_TerrainDebris.clear();
     // Then add the copies
-    for (list<TerrainDebris *>::const_iterator tdItr = reference.m_TerrainDebris.begin(); tdItr != reference.m_TerrainDebris.end(); ++tdItr)
+    for (plf::list<TerrainDebris *>::const_iterator tdItr = reference.m_TerrainDebris.begin(); tdItr != reference.m_TerrainDebris.end(); ++tdItr)
         m_TerrainDebris.push_back(dynamic_cast<TerrainDebris *>((*tdItr)->Clone()));
 
     /////////////////
     // Objects
     // First clear out what we've got
-    for (list<TerrainObject *>::iterator toItr = m_TerrainObjects.begin(); toItr != m_TerrainObjects.end(); ++toItr)
+    for (plf::list<TerrainObject *>::iterator toItr = m_TerrainObjects.begin(); toItr != m_TerrainObjects.end(); ++toItr)
         delete (*toItr);
     m_TerrainObjects.clear();
     // Then add the copies
-    for (list<TerrainObject *>::const_iterator toItr = reference.m_TerrainObjects.begin(); toItr != reference.m_TerrainObjects.end(); ++toItr)
+    for (plf::list<TerrainObject *>::const_iterator toItr = reference.m_TerrainObjects.begin(); toItr != reference.m_TerrainObjects.end(); ++toItr)
         m_TerrainObjects.push_back(dynamic_cast<TerrainObject *>((*toItr)->Clone()));
 
     m_DrawMaterial = reference.m_DrawMaterial;
@@ -411,7 +411,7 @@ int SLTerrain::LoadData()
     bool targetFound = false, applyingFrosting = false;
     int targetId, frostingId, thickness, thicknessGoal;
     BITMAP *pFrostingTex = 0;
-    for (list<TerrainFrosting>::iterator tfItr = m_TerrainFrostings.begin(); tfItr != m_TerrainFrostings.end(); ++tfItr)
+    for (plf::list<TerrainFrosting>::iterator tfItr = m_TerrainFrostings.begin(); tfItr != m_TerrainFrostings.end(); ++tfItr)
     {
         targetId = (*tfItr).GetTargetMaterial().id;
         frostingId = (*tfItr).GetFrostingMaterial().id;
@@ -486,7 +486,7 @@ int SLTerrain::LoadData()
     ///////////////////////////////////////////////
     // TerrainDebris application
 
-    for (list<TerrainDebris *>::iterator tdItr = m_TerrainDebris.begin(); tdItr != m_TerrainDebris.end(); ++tdItr)
+    for (plf::list<TerrainDebris *>::iterator tdItr = m_TerrainDebris.begin(); tdItr != m_TerrainDebris.end(); ++tdItr)
     {
         (*tdItr)->ApplyDebris(this);
     }
@@ -494,7 +494,7 @@ int SLTerrain::LoadData()
     ///////////////////////////////////////////////
     // Now take care of the TerrainObjects
 
-    for (list<TerrainObject *>::iterator toItr = m_TerrainObjects.begin(); toItr != m_TerrainObjects.end(); ++toItr)
+    for (plf::list<TerrainObject *>::iterator toItr = m_TerrainObjects.begin(); toItr != m_TerrainObjects.end(); ++toItr)
     {
         ApplyTerrainObject(*toItr);
     }
@@ -666,17 +666,17 @@ int SLTerrain::Save(Writer &writer) const
     // Layer data is not saved into a bitmap file yet, so just write out the procedural params to build the terrain
     else
     {
-        for (list<TerrainFrosting>::const_iterator tfItr = m_TerrainFrostings.begin(); tfItr != m_TerrainFrostings.end(); ++tfItr)
+        for (plf::list<TerrainFrosting>::const_iterator tfItr = m_TerrainFrostings.begin(); tfItr != m_TerrainFrostings.end(); ++tfItr)
         {
             writer.NewProperty("AddTerrainFrosting");
             writer << *tfItr;
         }
-        for (list<TerrainDebris *>::const_iterator tdItr = m_TerrainDebris.begin(); tdItr != m_TerrainDebris.end(); ++tdItr)
+        for (plf::list<TerrainDebris *>::const_iterator tdItr = m_TerrainDebris.begin(); tdItr != m_TerrainDebris.end(); ++tdItr)
         {
             writer.NewProperty("AddTerrainDebris");
             writer << *tdItr;
         }
-        for (list<TerrainObject *>::const_iterator toItr = m_TerrainObjects.begin(); toItr != m_TerrainObjects.end(); ++toItr)
+        for (plf::list<TerrainObject *>::const_iterator toItr = m_TerrainObjects.begin(); toItr != m_TerrainObjects.end(); ++toItr)
         {
             // Write out only what is needed to place a copy of this in the Terrain
             writer.NewProperty("AddTerrainObject");
@@ -704,12 +704,12 @@ void SLTerrain::Destroy(bool notInherited)
     delete m_pBGColor;
     destroy_bitmap(m_pStructural);
 
-    for (list<TerrainDebris *>::iterator tdItr = m_TerrainDebris.begin(); tdItr != m_TerrainDebris.end(); ++tdItr)
+    for (plf::list<TerrainDebris *>::iterator tdItr = m_TerrainDebris.begin(); tdItr != m_TerrainDebris.end(); ++tdItr)
     {
         delete (*tdItr);
         *tdItr = 0;
     }
-    for (list<TerrainObject *>::iterator toItr = m_TerrainObjects.begin(); toItr != m_TerrainObjects.end(); ++toItr)
+    for (plf::list<TerrainObject *>::iterator toItr = m_TerrainObjects.begin(); toItr != m_TerrainObjects.end(); ++toItr)
     {
         delete (*toItr);
         *toItr = 0;
@@ -1259,7 +1259,7 @@ void SLTerrain::ApplyTerrainObject(TerrainObject *pTObject)
 
     // Apply all the child objects of the TO, and first reapply the team so all its children are guaranteed to be on the same team!
     pTObject->SetTeam(pTObject->GetTeam());
-    for (list<SceneObject::SOPlacer>::const_iterator itr = pTObject->GetChildObjects().begin(); itr != pTObject->GetChildObjects().end() ; ++itr)
+    for (plf::list<SceneObject::SOPlacer>::const_iterator itr = pTObject->GetChildObjects().begin(); itr != pTObject->GetChildObjects().end() ; ++itr)
     {
 // TODO: check if we're placing a brain, and have it replace the resident brain of the scene!
         // Copy and apply, transferring ownership of the new copy into the application

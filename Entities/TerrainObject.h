@@ -316,7 +316,7 @@ ENTITYALLOCATION(TerrainObject)
 // Arguments:       None.
 // Return value:    A reference to the list of child objects.
 
-    const std::list<SOPlacer> & GetChildObjects() const { return m_ChildObjects; }
+    const plf::list<SOPlacer> & GetChildObjects() const { return m_ChildObjects; }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -393,7 +393,7 @@ protected:
     bool m_OffsetDefined;
 
     // The objects that are placed along with this in the scene
-    std::list<SOPlacer> m_ChildObjects;
+    plf::list<SOPlacer> m_ChildObjects;
 
 	// If true, then this bunker module will be drawn as part of terrain on preview
 	bool m_DisplayAsTerrain;

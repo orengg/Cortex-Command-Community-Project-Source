@@ -350,7 +350,7 @@ namespace RTE {
 		/// </summary>
 		/// <param name="player">Player to get events for.</param>
 		/// <param name="list">List with events for this player.</param>
-		void GetSoundEvents(int player, std::list<NetworkSoundData> & list);
+		void GetSoundEvents(int player, plf::list<NetworkSoundData> & list);
 
 		/// <summary>
 		/// Adds the sound event to internal list of sound events for the specified player.
@@ -370,7 +370,7 @@ namespace RTE {
 		/// </summary>
 		/// <param name="player">Player to get events for.</param>
 		/// <param name="list">List with events for this player.</param>
-		void GetMusicEvents(int player, std::list<NetworkMusicData> & list);
+		void GetMusicEvents(int player, plf::list<NetworkMusicData> & list);
 
 		/// <summary>
 		/// Adds the music event to internal list of music events for the specified player.
@@ -412,14 +412,14 @@ namespace RTE {
 		std::vector<double> m_PitchModifiers; //!< How each channel's pitch is modified individually.
 
 		std::string m_MusicPath; //!< The path to the last played music stream.
-		std::list<std::string> m_MusicPlayList; //!< Playlist of paths to music to play after the current non looping one is done.
+		plf::list<std::string> m_MusicPlayList; //!< Playlist of paths to music to play after the current non looping one is done.
 
 		Timer m_SilenceTimer; //!< Timer for measuring silences between songs.
 
 
 		bool m_IsInMultiplayerMode; //!< If true then the server is in multiplayer mode and will register sound and music events into internal lists.
-		std::list<NetworkSoundData> m_SoundEvents[c_MaxClients]; //!< Lists of per player sound events.
-		std::list<NetworkMusicData> m_MusicEvents[c_MaxClients]; //!< Lists of per player music events.
+		plf::list<NetworkSoundData> m_SoundEvents[c_MaxClients]; //!< Lists of per player sound events.
+		plf::list<NetworkMusicData> m_MusicEvents[c_MaxClients]; //!< Lists of per player music events.
 
 	private:
 		/// <summary>

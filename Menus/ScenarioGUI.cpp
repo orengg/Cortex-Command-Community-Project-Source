@@ -507,8 +507,8 @@ void ScenarioGUI::Update()
             // If unlocked, detect any Scene close to the mouse and highlight it
             bool foundAnyHover = false;
             bool foundNewHover = false;
-            list<Scene *>::iterator sItr;
-            list<Scene *>::iterator newCandidateItr = m_pScenes->end();
+            plf::list<Scene *>::iterator sItr;
+            plf::list<Scene *>::iterator newCandidateItr = m_pScenes->end();
             float distance = 0;
             float shortestDist = 1000000.0;
             for (sItr = m_pScenes->begin(); sItr != m_pScenes->end(); ++sItr)
@@ -636,7 +636,7 @@ void ScenarioGUI::Draw(BITMAP *drawBitmap) const
     {
         // Draw the scene location dots
         Vector screenLocation;
-        for (list<Scene *>::const_iterator sItr = m_pScenes->begin(); sItr != m_pScenes->end(); ++sItr)
+        for (plf::list<Scene *>::const_iterator sItr = m_pScenes->begin(); sItr != m_pScenes->end(); ++sItr)
         {
 			int color;
 
@@ -1050,7 +1050,7 @@ void ScenarioGUI::UpdateActivityBox()
     if (pSelected)
     {
         // Pull out the list of Scenes that are compatible with this Activity
-        map<Activity *, list<Scene *> >::iterator asItr;
+        map<Activity *, plf::list<Scene *> >::iterator asItr;
         if (m_Activities.end() != (asItr = m_Activities.find(const_cast<Activity *>(pSelected))))
             m_pScenes = &((*asItr).second);
         else
@@ -1709,13 +1709,13 @@ void ScenarioGUI::GetAllScenesAndActivities()
 	m_pScenes = 0;
 
     // Get the list of all read in Scene presets
-    list<Entity *> presetList;
+    plf::list<Entity *> presetList;
     g_PresetMan.GetAllOfType(presetList, "Scene");
-    list<Scene *> filteredScenes;
+    plf::list<Scene *> filteredScenes;
     Scene *pScene = 0;
 
     // Go through the list and cast all the pointers to scenes so we have a handy list
-    for (list<Entity *>::iterator pItr = presetList.begin(); pItr != presetList.end(); ++pItr)
+    for (plf::list<Entity *>::iterator pItr = presetList.begin(); pItr != presetList.end(); ++pItr)
     {
         pScene = dynamic_cast<Scene *>(*pItr);
         // Only add non-editor and non-special scenes, or ones that don't have locations defined, or have Test in their names, or are metascenes
@@ -1728,7 +1728,7 @@ void ScenarioGUI::GetAllScenesAndActivities()
     }
 
 	//Clear offsets
-    for (list<Scene *>::iterator pItr = filteredScenes.begin(); pItr != filteredScenes.end(); ++pItr)
+    for (plf::list<Scene *>::iterator pItr = filteredScenes.begin(); pItr != filteredScenes.end(); ++pItr)
 		(*pItr)->SetLocationOffset(Vector(0,0));
 
 	// We need to calculate planet center manually because m_PlanetCenter reflects coords of moving planet
@@ -1739,7 +1739,7 @@ void ScenarioGUI::GetAllScenesAndActivities()
 		planetCenter = m_PlanetCenter;
 
 	//Move out-of-screen scenes closer to the middle of the planet if we have planet info
-	for (list<Scene *>::iterator pItr = filteredScenes.begin(); pItr != filteredScenes.end(); ++pItr)
+	for (plf::list<Scene *>::iterator pItr = filteredScenes.begin(); pItr != filteredScenes.end(); ++pItr)
 	{
 		float y = planetCenter.GetY() + (*pItr)->GetLocation().GetY();
 
@@ -1755,7 +1755,7 @@ void ScenarioGUI::GetAllScenesAndActivities()
 	}
 
 	// Add offsets to reveal overlapping scenes if any
-    for (list<Scene *>::iterator pItr = filteredScenes.begin(); pItr != filteredScenes.end(); ++pItr)
+    for (plf::list<Scene *>::iterator pItr = filteredScenes.begin(); pItr != filteredScenes.end(); ++pItr)
     {
 		bool isOverlapped = false;
 
@@ -1764,7 +1764,7 @@ void ScenarioGUI::GetAllScenesAndActivities()
 			isOverlapped = false;
 
 			// Find overlapping scene dot
-			for (list<Scene *>::iterator pItr2 = filteredScenes.begin(); pItr2 != filteredScenes.end(); ++pItr2)
+			for (plf::list<Scene *>::iterator pItr2 = filteredScenes.begin(); pItr2 != filteredScenes.end(); ++pItr2)
 			{
 				if ((*pItr) != (*pItr2))
 				{
@@ -1811,7 +1811,7 @@ void ScenarioGUI::GetAllScenesAndActivities()
     m_pActivitySelect->ClearList();
     int index = 0;
     int tutorialIndex = -1;
-    for (list<Entity *>::iterator pItr = presetList.begin(); pItr != presetList.end(); ++pItr)
+    for (plf::list<Entity *>::iterator pItr = presetList.begin(); pItr != presetList.end(); ++pItr)
     {
 		bool isMetaActivity = false;
 
@@ -1820,8 +1820,8 @@ void ScenarioGUI::GetAllScenesAndActivities()
         if (pActivity/* && pActivity->GetClassName() != "GATutorial" */&& pActivity->GetClassName().find("Editor") == string::npos)
         {
             // Prepare a new entry in the list of Activity:ies that we have
-            pair<Activity *, list<Scene *> > newPair(pActivity, list<Scene *>());
-            for (list<Scene *>::iterator sItr = filteredScenes.begin(); sItr != filteredScenes.end(); ++sItr)
+            pair<Activity *, plf::list<Scene *> > newPair(pActivity, plf::list<Scene *>());
+            for (plf::list<Scene *>::iterator sItr = filteredScenes.begin(); sItr != filteredScenes.end(); ++sItr)
             {
                 // Check if the Scene has the required Area:s and such needed for this Activity
                 if (pActivity->SceneIsCompatible(*sItr))

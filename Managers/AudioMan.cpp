@@ -881,7 +881,7 @@ namespace RTE {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void AudioMan::GetSoundEvents(int player, std::list<NetworkSoundData> & list) {
+	void AudioMan::GetSoundEvents(int player, plf::list<NetworkSoundData> & list) {
 		if (player < 0 || player >= c_MaxClients) {
 			return;
 		}
@@ -889,7 +889,7 @@ namespace RTE {
 		list.clear();
 		g_SoundEventsListMutex[player].lock();
 
-		for (std::list<NetworkSoundData>::iterator eItr = m_SoundEvents[player].begin(); eItr != m_SoundEvents[player].end(); ++eItr) {
+		for (plf::list<NetworkSoundData>::iterator eItr = m_SoundEvents[player].begin(); eItr != m_SoundEvents[player].end(); ++eItr) {
 			list.push_back((*eItr));
 		}
 
@@ -899,7 +899,7 @@ namespace RTE {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void AudioMan::GetMusicEvents(int player, std::list<NetworkMusicData> & list) {
+	void AudioMan::GetMusicEvents(int player, plf::list<NetworkMusicData> & list) {
 		if (player < 0 || player >= c_MaxClients) {
 			return;
 		}
@@ -907,7 +907,7 @@ namespace RTE {
 		list.clear();
 		g_SoundEventsListMutex[player].lock();
 
-		for (std::list<NetworkMusicData>::iterator eItr = m_MusicEvents[player].begin(); eItr != m_MusicEvents[player].end(); ++eItr) {
+		for (plf::list<NetworkMusicData>::iterator eItr = m_MusicEvents[player].begin(); eItr != m_MusicEvents[player].end(); ++eItr) {
 			list.push_back((*eItr));
 		}
 

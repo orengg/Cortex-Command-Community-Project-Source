@@ -102,7 +102,7 @@ namespace RTE {
 		/// <param name="totalCostResult">The total minimum difficulty cost calculated between the two points on the scene.</param>
 		/// <param name="digStrength">What material strength the search is capable of digging through.</param>
 		/// <returns>Success or failure, expressed as SOLVED, NO_SOLUTION, or START_END_SAME.</returns>
-		int CalculatePath(Vector start, Vector end, std::list<Vector> &pathResult, float &totalCostResult, float digStrength = 1);
+		int CalculatePath(Vector start, Vector end, plf::list<Vector> &pathResult, float &totalCostResult, float digStrength = 1);
 
 		/// <summary>
 		/// Recalculates all the costs between all the nodes by tracing lines in the material layer and summing all the material strengths for each encountered pixel. Also resets the pather itself.
@@ -113,7 +113,7 @@ namespace RTE {
 		/// Recalculates the costs between all the nodes touching a list of specific rectangular areas (which will be wrapped). Also resets the pather itself.
 		/// </summary>
 		/// <param name="boxList">The list of Boxes representing the updated areas.</param>
-		void RecalculateAreaCosts(const std::list<Box> &boxList);
+		void RecalculateAreaCosts(const plf::list<Box> &boxList);
 
 		/// <summary>
 		/// Implementation of the abstract interface of Graph.

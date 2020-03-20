@@ -907,7 +907,7 @@ void SceneMan::RegisterMOIDDrawing(const Vector &center, float radius)
 
 void SceneMan::ClearAllMOIDDrawings()
 {
-    for (list<IntRect>::iterator itr = m_MOIDDrawings.begin(); itr != m_MOIDDrawings.end(); ++itr)
+    for (plf::list<IntRect>::iterator itr = m_MOIDDrawings.begin(); itr != m_MOIDDrawings.end(); ++itr)
         ClearMOIDRect(itr->m_Left, itr->m_Top, itr->m_Right, itr->m_Bottom);
 
     m_MOIDDrawings.clear();
@@ -3270,7 +3270,7 @@ bool SceneMan::ObscuredPoint(int x, int y, int team)
 //                  wrapped scene axis, it will be added twice to the output list. If it
 //                  doesn't straddle any seam, it will be only added once.
 
-int SceneMan::WrapRect(const IntRect &wrapRect, std::list<IntRect> &outputList)
+int SceneMan::WrapRect(const IntRect &wrapRect, plf::list<IntRect> &outputList)
 {
     // Always add at least one copy of the unwrapped rect
     int addedTimes = 1;
@@ -3330,7 +3330,7 @@ int SceneMan::WrapRect(const IntRect &wrapRect, std::list<IntRect> &outputList)
 //                  wrapped scene axis, it will be added twice to the output list. If it
 //                  doesn't straddle any seam, it will be only added once.
 
-int SceneMan::WrapBox(const Box &wrapBox, list<Box> &outputList)
+int SceneMan::WrapBox(const Box &wrapBox, plf::list<Box> &outputList)
 {
     // Unflip the input box, or checking will be tedious
     Box flipBox(wrapBox);
@@ -3419,7 +3419,7 @@ void SceneMan::RegisterGlowDotEffect(const Vector &effectPos, DotGlowColor color
 //                  Their coordinates will be returned relative to the upper left corner
 //                  of the box passed in here.
 
-bool SceneMan::GetPostScreenEffectsWrapped(const Vector &boxPos, int boxWidth, int boxHeight, list<PostEffect> &effectsList, int team)
+bool SceneMan::GetPostScreenEffectsWrapped(const Vector &boxPos, int boxWidth, int boxHeight, plf::list<PostEffect> &effectsList, int team)
 {
     bool found = false;
 
@@ -3462,25 +3462,25 @@ bool SceneMan::GetPostScreenEffectsWrapped(const Vector &boxPos, int boxWidth, i
 //                  Their coordinates will be returned relative to the upper left corner
 //                  of the box passed in here. Wrapping of the box will be taken care of.
 
-bool SceneMan::GetGlowAreasWrapped(const Vector &boxPos, int boxWidth, int boxHeight, list<Box> &areaList)
+bool SceneMan::GetGlowAreasWrapped(const Vector &boxPos, int boxWidth, int boxHeight, plf::list<Box> &areaList)
 {
     bool foundAny = false;
 
     // The Box passed in here is the test box we're going to look if any glow areas intersect with.
     IntRect testRect(boxPos.m_X, boxPos.m_Y, boxPos.m_X + boxWidth, boxPos.m_Y + boxHeight);
     // Need to check for test box wrappings, so we'll end up with a list of at least one test box to check all glow areas against
-    list<IntRect> testRects;
+    plf::list<IntRect> testRects;
     WrapRect(testRect, testRects);
 
     // Get all the wrapped instances of the existing registered glow areas.
-    list<IntRect> wrappedGlowRects;
-    for (list<IntRect>::iterator grItr = m_GlowAreas.begin(); grItr != m_GlowAreas.end(); ++grItr)
+    plf::list<IntRect> wrappedGlowRects;
+    for (plf::list<IntRect>::iterator grItr = m_GlowAreas.begin(); grItr != m_GlowAreas.end(); ++grItr)
         WrapRect((*grItr), wrappedGlowRects);
 
     // Now check each wrapped test rect against all the wrapped glow rects, and add the intersecting ones to the output list
-    for (list<IntRect>::iterator trItr = testRects.begin(); trItr != testRects.end(); ++trItr)
+    for (plf::list<IntRect>::iterator trItr = testRects.begin(); trItr != testRects.end(); ++trItr)
     {
-        for (list<IntRect>::iterator wgrItr = wrappedGlowRects.begin(); wgrItr != wrappedGlowRects.end(); ++wgrItr)
+        for (plf::list<IntRect>::iterator wgrItr = wrappedGlowRects.begin(); wgrItr != wrappedGlowRects.end(); ++wgrItr)
         {
             if ((*trItr).Intersects(*wgrItr))
             {
@@ -3505,11 +3505,11 @@ bool SceneMan::GetGlowAreasWrapped(const Vector &boxPos, int boxWidth, int boxHe
 //                  Their coordinates will be returned relative to the upper left corner
 //                  of the box passed in here.
 
-bool SceneMan::GetPostScreenEffects(Vector boxPos, int boxWidth, int boxHeight, list<PostEffect> &effectsList, int team)
+bool SceneMan::GetPostScreenEffects(Vector boxPos, int boxWidth, int boxHeight, plf::list<PostEffect> &effectsList, int team)
 {
     bool found = false;
     bool unseen = false;
-    for (list<PostEffect>::iterator itr = m_PostSceneEffects.begin(); itr != m_PostSceneEffects.end(); ++itr)
+    for (plf::list<PostEffect>::iterator itr = m_PostSceneEffects.begin(); itr != m_PostSceneEffects.end(); ++itr)
     {
         if (team != Activity::NOTEAM)
             unseen = IsUnseen((*itr).m_Pos.m_X, (*itr).m_Pos.m_Y, team);
@@ -3533,12 +3533,12 @@ bool SceneMan::GetPostScreenEffects(Vector boxPos, int boxWidth, int boxHeight, 
 //                  Their coordinates will be returned relative to the upper left corner
 //                  of the box passed in here.
 
-bool SceneMan::GetPostScreenEffects(int left, int top, int right, int bottom, list<PostEffect> &effectsList, int team)
+bool SceneMan::GetPostScreenEffects(int left, int top, int right, int bottom, plf::list<PostEffect> &effectsList, int team)
 {
     bool found = false;
     bool unseen = false;
     Vector posInBox;
-    for (list<PostEffect>::iterator itr = m_PostSceneEffects.begin(); itr != m_PostSceneEffects.end(); ++itr)
+    for (plf::list<PostEffect>::iterator itr = m_PostSceneEffects.begin(); itr != m_PostSceneEffects.end(); ++itr)
     {
         if (team != Activity::NOTEAM)
             unseen = IsUnseen((*itr).m_Pos.m_X, (*itr).m_Pos.m_Y, team);
@@ -3732,7 +3732,7 @@ void SceneMan::Update(int screen)
     offsetUnwrapped.m_X += pTerrain->GetBitmap()->w * m_SeamCrossCount[screen][X];
     offsetUnwrapped.m_Y += pTerrain->GetBitmap()->h * m_SeamCrossCount[screen][Y];
 
-    for (list<SceneLayer *>::iterator itr = m_pCurrentScene->GetBackLayers().begin(); itr != m_pCurrentScene->GetBackLayers().end(); ++itr)
+    for (plf::list<SceneLayer *>::iterator itr = m_pCurrentScene->GetBackLayers().begin(); itr != m_pCurrentScene->GetBackLayers().end(); ++itr)
         (*itr)->SetOffset(offsetUnwrapped);
 
     // Calculate delta offset.
@@ -3806,7 +3806,7 @@ void SceneMan::Draw(BITMAP *pTargetBitmap, BITMAP *pTargetGUIBitmap, const Vecto
 			else
 			{
 				// Background Layers
-				for (list<SceneLayer *>::reverse_iterator itr = m_pCurrentScene->GetBackLayers().rbegin(); itr != m_pCurrentScene->GetBackLayers().rend(); ++itr)
+				for (plf::list<SceneLayer *>::reverse_iterator itr = m_pCurrentScene->GetBackLayers().rbegin(); itr != m_pCurrentScene->GetBackLayers().rend(); ++itr)
 					(*itr)->Draw(pTargetBitmap, targetBox);
 			}
 

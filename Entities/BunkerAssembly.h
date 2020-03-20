@@ -251,7 +251,7 @@ ENTITYALLOCATION(BunkerAssembly)
 // Arguments:       None.
 // Return value:    The list of of placed objects. Ownership is NOT transferred!
 
-    const std::list<SceneObject *> * GetPlacedObjects() const { return &m_PlacedObjects; }
+    const plf::list<SceneObject *> * GetPlacedObjects() const { return &m_PlacedObjects; }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -326,7 +326,7 @@ protected:
     // Member variables
     static Entity::ClassInfo m_sClass;
     // SceneObject:s to be placed in the scene, OWNED HERE
-    std::list<SceneObject *> m_PlacedObjects;
+    plf::list<SceneObject *> m_PlacedObjects;
 	// Parent bunker assembly scheme
 	std::string m_ParentAssemblyScheme;
 	// Group proveded by parent scheme to which this assembly was added

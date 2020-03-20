@@ -112,7 +112,7 @@ namespace RTE {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	int PathFinder::CalculatePath(Vector start, Vector end, std::list<Vector> &pathResult, float &totalCostResult, float digStrength) {
+	int PathFinder::CalculatePath(Vector start, Vector end, plf::list<Vector> &pathResult, float &totalCostResult, float digStrength) {
 		RTEAssert(m_pPather, "No pather exists, can't calculate the path!");
 
 		// Make sure start and end are within scene bounds
@@ -180,10 +180,10 @@ namespace RTE {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void PathFinder::RecalculateAreaCosts(const std::list<Box> &boxList) {
+	void PathFinder::RecalculateAreaCosts(const plf::list<Box> &boxList) {
 		// Go through all the boxes and see if any of the node centers are inside each
 		Box box;
-		for (std::list<Box>::const_iterator bItr = boxList.begin(); bItr != boxList.end(); bItr++) {
+		for (plf::list<Box>::const_iterator bItr = boxList.begin(); bItr != boxList.end(); bItr++) {
 			// Get the current area box and make sure it's unflipped
 			box = (*bItr);
 			box.Unflip();

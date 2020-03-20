@@ -596,7 +596,7 @@ void SceneLayer::Draw(BITMAP *pTargetBitmap, Box& targetBox, const Vector &scrol
     int sourceH = 0;
     int destX = 0;
     int destY = 0;
-    list<SLDrawBox> drawList;
+    plf::list<SLDrawBox> drawList;
 
     int offsetX;
     int offsetY;
@@ -782,7 +782,7 @@ void SceneLayer::DrawScaled(BITMAP *pTargetBitmap, Box &targetBox, const Vector 
     int destY = 0;
     int destW = 0;
     int destH = 0;
-    list<SLDrawBox> drawList;
+    plf::list<SLDrawBox> drawList;
 
     int offsetX;
     int offsetY;

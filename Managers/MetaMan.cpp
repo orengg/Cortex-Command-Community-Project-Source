@@ -94,7 +94,7 @@ int MetaMan::Create()
 int MetaMan::NewGame(float gameSize)
 {
     // Grab a random selection of Scene presets from all available
-    list<Scene *> scenePresets;
+    plf::list<Scene *> scenePresets;
     SelectScenePresets(gameSize, m_Players.size(), &scenePresets);
 
     // Destroy and clear any pre-existing scenes from previous games
@@ -106,7 +106,7 @@ int MetaMan::NewGame(float gameSize)
     m_Scenes.clear();
 
     // Make deep copies of the selected Scene presets for use in the actual game about to start
-    for (list<Scene *>::iterator pItr = scenePresets.begin(); pItr != scenePresets.end(); ++pItr)
+    for (plf::list<Scene *>::iterator pItr = scenePresets.begin(); pItr != scenePresets.end(); ++pItr)
     {
 		// List for found metascenes to choose from
 		vector<Scene *> metascenesList;
@@ -114,11 +114,11 @@ int MetaMan::NewGame(float gameSize)
 		metascenesList.push_back(*pItr);
 
 		// Look for additional metascenes which can be used instead of this scene
-		list<Entity *> sceneList;
+		plf::list<Entity *> sceneList;
 		g_PresetMan.GetAllOfType(sceneList, "Scene");
 
 		// Go through the list and add all compatible metascenes to the list
-		for (list<Entity *>::iterator itr = sceneList.begin(); itr != sceneList.end(); ++itr)
+		for (plf::list<Entity *>::iterator itr = sceneList.begin(); itr != sceneList.end(); ++itr)
 		{
 			Scene * pScene = dynamic_cast<Scene *>(*itr);
 			if (pScene)
@@ -977,23 +977,23 @@ bool MetaMan::IsGameOver()
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Yields a set of ALL eligible Scene presets for a new game.
 
-int MetaMan::TotalScenePresets(std::list<Scene *> *pScenes)
+int MetaMan::TotalScenePresets(plf::list<Scene *> *pScenes)
 {
     int totalCount = 0;
     // Get the list of ALL read-in Scene presets
-    list<Entity *> allScenePresets;
+    plf::list<Entity *> allScenePresets;
     g_PresetMan.GetAllOfType(allScenePresets, "Scene");
     Scene *pScenePreset = 0;
 
     // Temporary list of planet locations already being used
-    list<Vector> usedLocations;
+    plf::list<Vector> usedLocations;
     bool locationOK = true;
 
     if (pScenes)
         pScenes->clear();
 
     // Go through the preset list and count/copy over all eligible ones
-    for (list<Entity *>::iterator sItr = allScenePresets.begin(); sItr != allScenePresets.end(); ++sItr)
+    for (plf::list<Entity *>::iterator sItr = allScenePresets.begin(); sItr != allScenePresets.end(); ++sItr)
     {
         pScenePreset = dynamic_cast<Scene *>(*sItr);
         // Filter out editor or special scenes, or ones that don't have locations defined.
@@ -1006,7 +1006,7 @@ int MetaMan::TotalScenePresets(std::list<Scene *> *pScenes)
         {
             // Make sure this exact site location on the planet isn't occupied already
             locationOK = true;
-            for (list<Vector>::iterator vItr = usedLocations.begin(); vItr != usedLocations.end(); ++vItr)
+            for (plf::list<Vector>::iterator vItr = usedLocations.begin(); vItr != usedLocations.end(); ++vItr)
             {
                 if (pScenePreset->GetLocation() == *vItr)
                 {
@@ -1037,10 +1037,10 @@ int MetaMan::TotalScenePresets(std::list<Scene *> *pScenes)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Yields a set of randomly selected Scene presets for a new game.
 
-int MetaMan::SelectScenePresets(float gameSize, int playerCount, list<Scene *> *pSelected)
+int MetaMan::SelectScenePresets(float gameSize, int playerCount, plf::list<Scene *> *pSelected)
 {
     // Get the list of ALL eligible read-in Scene presets
-    list<Scene *> scenePresets;
+    plf::list<Scene *> scenePresets;
     TotalScenePresets(&scenePresets);
 
     // How many scenes the game should end up with, according to the specified game size.
@@ -1064,7 +1064,7 @@ int MetaMan::SelectScenePresets(float gameSize, int playerCount, list<Scene *> *
             // Randomly select one of the scenes and remove it
             currentIndex = 0;
             randomIndex = floorf(scenePresets.size() * PosRand());
-            for (list<Scene *>::iterator pItr = scenePresets.begin(); pItr != scenePresets.end(); ++pItr)
+            for (plf::list<Scene *>::iterator pItr = scenePresets.begin(); pItr != scenePresets.end(); ++pItr)
             {
                 if (currentIndex == randomIndex)
                 {
@@ -1077,7 +1077,7 @@ int MetaMan::SelectScenePresets(float gameSize, int playerCount, list<Scene *> *
 
         // Cast and copy (not deep!) to fill the provided list
         pSelected->clear();
-        for (list<Scene *>::iterator pItr = scenePresets.begin(); pItr != scenePresets.end(); ++pItr)
+        for (plf::list<Scene *>::iterator pItr = scenePresets.begin(); pItr != scenePresets.end(); ++pItr)
             pSelected->push_back(dynamic_cast<Scene *>(*pItr));
     }
 

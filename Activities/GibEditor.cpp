@@ -528,11 +528,11 @@ void GibEditor::Update()
                     m_pEditedObject->Update();
 
                     // Make proxy copies of the loaded objects' gib reference instances and place them in the list to be edited
-                    list<MOSRotating::Gib> *pLoadedGibList = m_pEditedObject->GetGibList();
-                    list<MovableObject *> *pEditedGibList = m_pEditorGUI->GetPlacedGibs();
+                    plf::list<MOSRotating::Gib> *pLoadedGibList = m_pEditedObject->GetGibList();
+                    plf::list<MovableObject *> *pEditedGibList = m_pEditorGUI->GetPlacedGibs();
                     MovableObject *pGibCopy = 0;
 
-                    for (list<MOSRotating::Gib>::iterator gItr = pLoadedGibList->begin(); gItr != pLoadedGibList->end(); ++gItr)
+                    for (plf::list<MOSRotating::Gib>::iterator gItr = pLoadedGibList->begin(); gItr != pLoadedGibList->end(); ++gItr)
                     {
                         pGibCopy = dynamic_cast<MovableObject *>((*gItr).GetParticlePreset()->Clone());
                         if (pGibCopy)
@@ -824,12 +824,12 @@ void GibEditor::StuffEditedGibs(MOSRotating *pEditedObject)
         return;
 
     // Replace the gibs of the object with the proxies that have been edited in the gui
-    list<MOSRotating::Gib> *pObjectGibList = pEditedObject->GetGibList();
+    plf::list<MOSRotating::Gib> *pObjectGibList = pEditedObject->GetGibList();
     pObjectGibList->clear();
 
     // Take each proxy object and stuff it into a Gib instance which then gets stuffed into the object to be saved
-    list<MovableObject *> *pProxyGibList = m_pEditorGUI->GetPlacedGibs();
-    for (list<MovableObject *>::iterator gItr = pProxyGibList->begin(); gItr != pProxyGibList->end(); ++gItr)
+    plf::list<MovableObject *> *pProxyGibList = m_pEditorGUI->GetPlacedGibs();
+    for (plf::list<MovableObject *>::iterator gItr = pProxyGibList->begin(); gItr != pProxyGibList->end(); ++gItr)
     {
         MOSRotating::Gib newGib;
         // Only set the refernce instance directly from the isntanceman. OINT
@@ -875,10 +875,10 @@ void GibEditor::UpdateNewDialog()
     // Refill Terrains
     m_pNewTerrainCombo->ClearList();
     // Get the list of all read in terrains
-    list<Entity *> terrainList;
+    plf::list<Entity *> terrainList;
     g_PresetMan.GetAllOfTypeInModuleSpace(terrainList, "SLTerrain", selectedModuleID);
     // Go through the list and add their names to the combo box
-    for (list<Entity *>::iterator itr = terrainList.begin(); itr != terrainList.end(); ++itr)
+    for (plf::list<Entity *>::iterator itr = terrainList.begin(); itr != terrainList.end(); ++itr)
         m_pNewTerrainCombo->AddItem((*itr)->GetPresetName());
     // Select the first one
     m_pNewTerrainCombo->SetSelectedIndex(0);
@@ -891,10 +891,10 @@ void GibEditor::UpdateNewDialog()
     m_pNewBG2Combo->ClearList();
     m_pNewBG3Combo->ClearList();
     // Get the list of all read in terrains
-    list<Entity *> bgList;
+    plf::list<Entity *> bgList;
     g_PresetMan.GetAllOfTypeInModuleSpace(bgList, "SceneLayer", selectedModuleID);
     // Go through the list and add their names to the combo box
-    for (list<Entity *>::iterator itr = bgList.begin(); itr != bgList.end(); ++itr)
+    for (plf::list<Entity *>::iterator itr = bgList.begin(); itr != bgList.end(); ++itr)
     {
         m_pNewBG1Combo->AddItem((*itr)->GetPresetName());
         m_pNewBG2Combo->AddItem((*itr)->GetPresetName());

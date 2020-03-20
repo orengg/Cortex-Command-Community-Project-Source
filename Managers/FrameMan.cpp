@@ -1170,7 +1170,7 @@ int FrameMan::SaveWorldToBMP(const char *namebase)
 
 	BITMAP * pWorldBitmap = create_bitmap_ex(32, g_SceneMan.GetSceneWidth(), g_SceneMan.GetSceneHeight());
 	Vector targetPos(0,0);
-    std::list<PostEffect> postEffects;
+    plf::list<PostEffect> postEffects;
 
 	if (pWorldBitmap)
 	{
@@ -1198,7 +1198,7 @@ int FrameMan::SaveWorldToBMP(const char *namebase)
 		int strength = 0;
 		float angle = 0;
 
-		for (list<PostEffect>::iterator eItr = postEffects.begin(); eItr != postEffects.end(); ++eItr)
+		for (plf::list<PostEffect>::iterator eItr = postEffects.begin(); eItr != postEffects.end(); ++eItr)
 		{
 			pBitmap = (*eItr).m_pBitmap;
 			strength = (*eItr).m_Strength;
@@ -1506,7 +1506,7 @@ void FrameMan::PostProcess()
     {
         int x = 0, y = 0, startX = 0, startY = 0, endX = 0, endY = 0, testpixel = 0;
 
-        for (list<Box>::iterator bItr = m_PostScreenGlowBoxes.begin(); bItr != m_PostScreenGlowBoxes.end(); ++bItr)
+        for (plf::list<Box>::iterator bItr = m_PostScreenGlowBoxes.begin(); bItr != m_PostScreenGlowBoxes.end(); ++bItr)
         {
             startX = (*bItr).m_Corner.m_X;
             startY = (*bItr).m_Corner.m_Y;
@@ -1569,7 +1569,7 @@ void FrameMan::PostProcess()
     int strength = 0;
 	float angle = 0;
 
-    for (list<PostEffect>::iterator eItr = m_PostScreenEffects.begin(); eItr != m_PostScreenEffects.end(); ++eItr)
+    for (plf::list<PostEffect>::iterator eItr = m_PostScreenEffects.begin(); eItr != m_PostScreenEffects.end(); ++eItr)
     {
 		if ((*eItr).m_pBitmap)
 		{
@@ -2005,7 +2005,7 @@ void FrameMan::DrawPrimitives(int player, BITMAP *pTargetBitmap, const Vector &t
     //BITMAP *pDrawScreen = /*get_color_depth() == 8 && */screenCount == 1 ? m_pBackBuffer8 : m_pPlayerScreen;
 
 	//Draw primitives
-	for (std::list<GraphicalPrimitive *>::const_iterator it = m_Primitives.begin(); it != m_Primitives.end(); ++it)
+	for (plf::list<GraphicalPrimitive *>::const_iterator it = m_Primitives.begin(); it != m_Primitives.end(); ++it)
 	{
 		if (player == (*it)->m_Player || (*it)->m_Player == -1)
 			(*it)->Draw(pTargetBitmap, targetPos);
@@ -2031,8 +2031,8 @@ void FrameMan::Draw()
     m_PostScreenEffects.clear();
     m_PostScreenGlowBoxes.clear();
     // These accumulate the effects for each player's screen area, and are then transferred to the above lists with the player screen offset applied
-	list<PostEffect> screenRelativeEffects;
-    list<Box> screenRelativeGlowBoxes;
+	plf::list<PostEffect> screenRelativeEffects;
+    plf::list<Box> screenRelativeGlowBoxes;
     // Handy handle
     Activity *pActivity = g_ActivityMan.GetActivity();
 
@@ -2061,7 +2061,7 @@ void FrameMan::Draw()
 		{
 			int layerCount = 0;
 
-			for (std::list<SceneLayer *>::reverse_iterator itr = g_SceneMan.GetScene()->GetBackLayers().rbegin(); itr != g_SceneMan.GetScene()->GetBackLayers().rend(); ++itr)
+			for (plf::list<SceneLayer *>::reverse_iterator itr = g_SceneMan.GetScene()->GetBackLayers().rbegin(); itr != g_SceneMan.GetScene()->GetBackLayers().rend(); ++itr)
 			{
 				SLOffset[whichScreen][layerCount] = (*itr)->GetOffset();
 				layerCount++;
@@ -2369,7 +2369,7 @@ void FrameMan::Draw()
 			}
 
             // Adjust for the player screen's position on the final buffer
-            for (list<PostEffect>::iterator eItr = screenRelativeEffects.begin(); eItr != screenRelativeEffects.end(); ++eItr)
+            for (plf::list<PostEffect>::iterator eItr = screenRelativeEffects.begin(); eItr != screenRelativeEffects.end(); ++eItr)
             {
                 // Make sure we won't be adding any effects to a part of the screen that is occluded by menus and such
                 if ((*eItr).m_Pos.m_X > occX && (*eItr).m_Pos.m_Y > occY && (*eItr).m_Pos.m_X < pDrawScreen->w + occX && (*eItr).m_Pos.m_Y < pDrawScreen->h + occY)
@@ -2377,7 +2377,7 @@ void FrameMan::Draw()
             }
 
             // Adjust glow areas for the player screen's position on the final buffer
-            for (list<Box>::iterator bItr = screenRelativeGlowBoxes.begin(); bItr != screenRelativeGlowBoxes.end(); ++bItr)
+            for (plf::list<Box>::iterator bItr = screenRelativeGlowBoxes.begin(); bItr != screenRelativeGlowBoxes.end(); ++bItr)
             {
                 m_PostScreenGlowBoxes.push_back(*bItr);
                 // Adjust each added glow area for the player screen's position on the final buffer
@@ -2524,21 +2524,21 @@ void FrameMan::Draw()
     m_pFrameTimer->Reset();
 }
 
-void FrameMan::GetPostEffectsList(int whichScreen, list<PostEffect> & outputList)
+void FrameMan::GetPostEffectsList(int whichScreen, plf::list<PostEffect> & outputList)
 {
 	ScreenRelativeEffectsMutex[whichScreen].lock();
 	outputList.clear();
-	for (list<PostEffect>::iterator eItr = m_ScreenRelativeEffects[whichScreen].begin(); eItr != m_ScreenRelativeEffects[whichScreen].end(); ++eItr)
+	for (plf::list<PostEffect>::iterator eItr = m_ScreenRelativeEffects[whichScreen].begin(); eItr != m_ScreenRelativeEffects[whichScreen].end(); ++eItr)
 		outputList.push_back(PostEffect((*eItr).m_Pos, (*eItr).m_pBitmap, (*eItr).m_BitmapHash, (*eItr).m_Strength, (*eItr).m_Angle));
 
 	ScreenRelativeEffectsMutex[whichScreen].unlock();
 }
 
-void FrameMan::SetPostEffectsList(int whichScreen, list<PostEffect> & inputList)
+void FrameMan::SetPostEffectsList(int whichScreen, plf::list<PostEffect> & inputList)
 {
 	ScreenRelativeEffectsMutex[whichScreen].lock();
 	m_ScreenRelativeEffects[whichScreen].clear();
-	for (list<PostEffect>::iterator eItr = inputList.begin(); eItr != inputList.end(); ++eItr)
+	for (plf::list<PostEffect>::iterator eItr = inputList.begin(); eItr != inputList.end(); ++eItr)
 		m_ScreenRelativeEffects[whichScreen].push_back(PostEffect((*eItr).m_Pos, (*eItr).m_pBitmap, (*eItr).m_BitmapHash, (*eItr).m_Strength, (*eItr).m_Angle));
 
 	ScreenRelativeEffectsMutex[whichScreen].unlock();

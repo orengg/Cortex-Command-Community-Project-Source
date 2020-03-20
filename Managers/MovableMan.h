@@ -256,7 +256,7 @@ public:
 //                  ascending by their X posistions. Ownership of the list or contained
 //                  actors is NOT transferred!
 
-    std::list<Actor *> * GetTeamRoster(int team = 0) { return &(m_ActorRoster[team]); }
+    plf::list<Actor *> * GetTeamRoster(int team = 0) { return &(m_ActorRoster[team]); }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -750,7 +750,7 @@ public:
 //                  Whether to not grab any brains at all.
 // Return value:    How many Actors was transferred to the list.
 
-    int EjectAllActors(std::list<SceneObject *> &actorList, int onlyTeam = -1, bool noBrains = false);
+    int EjectAllActors(plf::list<SceneObject *> &actorList, int onlyTeam = -1, bool noBrains = false);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -762,7 +762,7 @@ public:
 //                  in.
 // Return value:    How many Items were transferred to the list.
 
-    int EjectAllItems(std::list<SceneObject *> &itemList);
+    int EjectAllItems(plf::list<SceneObject *> &itemList);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -807,7 +807,7 @@ public:
 // Arguments:       None.
 // Return value:    The const list of AlarmEvent:s.
 
-    const std::list<AlarmEvent> & GetAlarmEvents() const { return m_AlarmEvents; }
+    const plf::list<AlarmEvent> & GetAlarmEvents() const { return m_AlarmEvents; }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1032,7 +1032,7 @@ protected:
     std::deque<MovableObject *> m_AddedParticles;
 
     // Roster of each team's actors, sorted by their X positions in the scene. Actors not owned here
-    std::list<Actor *> m_ActorRoster[Activity::MAXTEAMCOUNT];
+    plf::list<Actor *> m_ActorRoster[Activity::MAXTEAMCOUNT];
     // Whether to draw HUD lines between the actors of a specific team
     bool m_SortTeamRoster[Activity::MAXTEAMCOUNT];
 	// Every team's MO footprint
@@ -1045,10 +1045,10 @@ protected:
 
     // The alarm events on the scene where something alarming happened, for use with AI firings awareness os they react to shots fired etc.
     // This is the last frame's events, is the one for Actors to poll for events, should be cleaned out and refilled each frame.
-    std::list<AlarmEvent> m_AlarmEvents;
+    plf::list<AlarmEvent> m_AlarmEvents;
     // The alarm events on the scene where something alarming happened, for use with AI firings awareness os they react to shots fired etc.
     // This is the current frame's events, will be filled up during MovableMan Updates, should be transferred to Last Frame at end of update.
-    std::list<AlarmEvent> m_AddedAlarmEvents;
+    plf::list<AlarmEvent> m_AddedAlarmEvents;
 
     // The list created each frame to register all the current MO's
     std::vector<MovableObject *> m_MOIDIndex;

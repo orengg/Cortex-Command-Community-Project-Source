@@ -733,9 +733,9 @@ protected:
     // but they shouldn't be ejected until the doors are closed and then opened again.
     std::deque<MovableObject *> m_NewInventory;
     // All the possible exits for when ejecting stuff out of this.
-    std::list<Exit> m_Exits;
+    plf::list<Exit> m_Exits;
     // Last used exit so we can alternate/cycle
-    std::list<Exit>::iterator m_CurrentExit;
+    plf::list<Exit>::iterator m_CurrentExit;
     // The delay between each exiting passenger Actor
     long m_ExitInterval;
     // Times the exit interval

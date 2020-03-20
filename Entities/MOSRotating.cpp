@@ -370,7 +370,7 @@ int MOSRotating::Create(const MOSRotating &reference)
 
 	// Wound emitter copies
     AEmitter *pWound = 0;
-    for (list<AEmitter *>::const_iterator itr = reference.m_Wounds.begin(); itr != reference.m_Wounds.end(); ++itr)
+    for (plf::list<AEmitter *>::const_iterator itr = reference.m_Wounds.begin(); itr != reference.m_Wounds.end(); ++itr)
     {
 		pWound = dynamic_cast<AEmitter *>((*itr)->Clone());
 		AddWound(pWound, pWound->GetParentOffset());
@@ -380,7 +380,7 @@ int MOSRotating::Create(const MOSRotating &reference)
 	// Attachable copies
     m_AllAttachables.clear();
     Attachable *pAttachable = 0;
-    for (list<Attachable *>::const_iterator aItr = reference.m_Attachables.begin(); aItr != reference.m_Attachables.end(); ++aItr)
+    for (plf::list<Attachable *>::const_iterator aItr = reference.m_Attachables.begin(); aItr != reference.m_Attachables.end(); ++aItr)
     {
         pAttachable = dynamic_cast<Attachable *>((*aItr)->Clone());
         AddAttachable(pAttachable, pAttachable->GetParentOffset());
@@ -388,7 +388,7 @@ int MOSRotating::Create(const MOSRotating &reference)
     }
 
 	// Gib copies
-    for (list<MOSRotating::Gib>::const_iterator gItr = reference.m_Gibs.begin(); gItr != reference.m_Gibs.end(); ++gItr)
+    for (plf::list<MOSRotating::Gib>::const_iterator gItr = reference.m_Gibs.begin(); gItr != reference.m_Gibs.end(); ++gItr)
     {
         m_Gibs.push_back(*gItr);
     }
@@ -509,18 +509,18 @@ int MOSRotating::Save(Writer &writer) const
     writer.NewProperty("OrientToVel");
     writer << m_OrientToVel;
 
-    for (list<AEmitter *>::const_iterator itr = m_Wounds.begin(); itr != m_Wounds.end(); ++itr)
+    for (plf::list<AEmitter *>::const_iterator itr = m_Wounds.begin(); itr != m_Wounds.end(); ++itr)
     {
         writer.NewProperty("AddEmitter");
         writer << (*itr);
     }
-    for (list<Attachable *>::const_iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ++aItr)
+    for (plf::list<Attachable *>::const_iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ++aItr)
     {
         writer.NewProperty("AddAttachable");
         writer << (*aItr);
     }
 */
-    for (list<Gib>::const_iterator gItr = m_Gibs.begin(); gItr != m_Gibs.end(); ++gItr)
+    for (plf::list<Gib>::const_iterator gItr = m_Gibs.begin(); gItr != m_Gibs.end(); ++gItr)
     {
         writer.NewProperty("AddGib");
         writer << (*gItr);
@@ -576,7 +576,7 @@ int MOSRotating::RemoveWounds(int amount)
 	int deleted = 0;
 	float damage = 0;
 
-    for (list<AEmitter *>::iterator itr = m_Wounds.begin(); itr != m_Wounds.end();)
+    for (plf::list<AEmitter *>::iterator itr = m_Wounds.begin(); itr != m_Wounds.end();)
 	{
 		damage += (*itr)->GetBurstDamage();
         delete (*itr);
@@ -601,9 +601,9 @@ void MOSRotating::Destroy(bool notInherited)
     delete m_pAtomGroup;
     delete m_pDeepGroup;
 
-    for (list<AEmitter *>::iterator itr = m_Wounds.begin(); itr != m_Wounds.end(); ++itr)
+    for (plf::list<AEmitter *>::iterator itr = m_Wounds.begin(); itr != m_Wounds.end(); ++itr)
         delete (*itr);
-    for (list<Attachable *>::iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ++aItr)
+    for (plf::list<Attachable *>::iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ++aItr)
         delete (*aItr);
 
     destroy_bitmap(m_pFlipBitmap);
@@ -628,7 +628,7 @@ float MOSRotating::GetMass() const
 {
     float totalMass = MOSprite::GetMass();
 
-    for (list<Attachable *>::const_iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ++aItr)
+    for (plf::list<Attachable *>::const_iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ++aItr)
         totalMass += (*aItr)->GetMass();
 
     return totalMass;
@@ -1032,7 +1032,7 @@ void MOSRotating::GibThis(Vector impactImpulse, float internalBlast, MovableObje
     MovableObject *pGib = 0;
     float velMin, velRange, spread, angularVel;
     Vector gibROffset, gibVel;
-    for (list<MOSRotating::Gib>::iterator gItr = m_Gibs.begin(); gItr != m_Gibs.end(); ++gItr)
+    for (plf::list<MOSRotating::Gib>::iterator gItr = m_Gibs.begin(); gItr != m_Gibs.end(); ++gItr)
     {
 		// Throwing out gibs
         for (int i = 0; i < (*gItr).GetCount(); ++i)
@@ -1114,7 +1114,7 @@ void MOSRotating::GibThis(Vector impactImpulse, float internalBlast, MovableObje
 
     // Throw out all the attachables
     Attachable *pAttachable = 0;
-    for (list<Attachable *>::iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ) //NOTE: No increment to handle RemoveAttachable removing the object
+    for (plf::list<Attachable *>::iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ) //NOTE: No increment to handle RemoveAttachable removing the object
     {
         RTEAssert((*aItr), "Broken Attachable!");
         if (!(*aItr))
@@ -1266,10 +1266,10 @@ void MOSRotating::ResetAllTimers()
 {
     MovableObject::ResetAllTimers();
 
-    for (list<AEmitter *>::iterator emitter = m_Wounds.begin(); emitter != m_Wounds.end(); ++emitter)
+    for (plf::list<AEmitter *>::iterator emitter = m_Wounds.begin(); emitter != m_Wounds.end(); ++emitter)
         (*emitter)->ResetAllTimers();
 
-    for (list<Attachable *>::iterator attachable = m_Attachables.begin(); attachable != m_Attachables.end(); ++attachable)
+    for (plf::list<Attachable *>::iterator attachable = m_Attachables.begin(); attachable != m_Attachables.end(); ++attachable)
         (*attachable)->ResetAllTimers();
 }
 
@@ -1386,7 +1386,7 @@ bool MOSRotating::IsOnScenePoint(Vector &scenePoint) const
     }
 
     // Check the attachables too, backward since the latter ones tend to be larger, and therefore more likeyl to be on the point
-    for (list<Attachable *>::const_reverse_iterator aItr = m_Attachables.rbegin(); aItr != m_Attachables.rend(); ++aItr)
+    for (plf::list<Attachable *>::const_reverse_iterator aItr = m_Attachables.rbegin(); aItr != m_Attachables.rend(); ++aItr)
     {
         if ((*aItr)->IsOnScenePoint(scenePoint))
             return true;
@@ -1635,7 +1635,7 @@ void MOSRotating::Update()
     }
 
     // Update all the attached wound emitters
-    for (list<AEmitter *>::iterator itr = m_Wounds.begin();
+    for (plf::list<AEmitter *>::iterator itr = m_Wounds.begin();
         itr != m_Wounds.end(); ++itr)
     {
         if ((*itr))
@@ -1652,7 +1652,7 @@ void MOSRotating::Update()
 
     // Update all the attachables
     Attachable *pAttachable = 0;
-    for (list<Attachable *>::iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ) // NOTE NO INCCREMENT!
+    for (plf::list<Attachable *>::iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ) // NOTE NO INCCREMENT!
     {
         RTEAssert((*aItr), "Broken Attachable!");
         if (!(*aItr))
@@ -1723,7 +1723,7 @@ void MOSRotating::UpdateChildMOIDs(vector<MovableObject *> &MOIDIndex,
                                   bool makeNewMOID)
 {
     // Register all the eligible attachables
-    for (list<Attachable *>::iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ++aItr)
+    for (plf::list<Attachable *>::iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ++aItr)
     {
 // TODO: Which should it be, don't register at all, or register as same as parent??
         if ((*aItr)->GetsHitByMOs())
@@ -1847,7 +1847,7 @@ bool MOSRotating::RemoveAttachable(Attachable *pAttachable)
 /// <param name="destroy">Whether to detach or delete the attachables. Setting this to true deletes them, setting it to false detaches them</param>
 void MOSRotating::DetachOrDestroyAll(bool destroy)
 {
-	for (list<Attachable *>::const_iterator aItr = m_AllAttachables.begin(); aItr != m_AllAttachables.end(); ++aItr)
+	for (plf::list<Attachable *>::const_iterator aItr = m_AllAttachables.begin(); aItr != m_AllAttachables.end(); ++aItr)
 	{
 		if (destroy)
 			delete (*aItr);
@@ -1869,7 +1869,7 @@ void MOSRotating::DetachOrDestroyAll(bool destroy)
 void MOSRotating::GetMOIDs(std::vector<MOID> &MOIDs) const
 {
 	// Get MOIDs all the eligible attachables
-	for (list<Attachable *>::const_iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ++aItr)
+	for (plf::list<Attachable *>::const_iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ++aItr)
 		(*aItr)->GetMOIDs(MOIDs);
 
 	// Get self MOID
@@ -1988,7 +1988,7 @@ void MOSRotating::Draw(BITMAP *pTargetBitmap,
 	// Only draw attachables and emitters which are not drawn after parent, so we draw them before
 	if (mode == g_DrawColor || (!onlyPhysical && mode == g_DrawMaterial))
 	{
-		for (list<AEmitter *>::const_iterator itr = m_Wounds.begin(); itr != m_Wounds.end(); ++itr)
+		for (plf::list<AEmitter *>::const_iterator itr = m_Wounds.begin(); itr != m_Wounds.end(); ++itr)
 		{
 			if (!(*itr)->IsDrawnAfterParent())
 				(*itr)->Draw(pTargetBitmap, targetPos, mode, onlyPhysical);
@@ -1996,7 +1996,7 @@ void MOSRotating::Draw(BITMAP *pTargetBitmap,
 	}
 
 	// Draw all the attached attachables
-	for (list<Attachable *>::const_iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ++aItr)
+	for (plf::list<Attachable *>::const_iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ++aItr)
 	{
 		if (!(*aItr)->IsDrawnAfterParent())
 			(*aItr)->Draw(pTargetBitmap, targetPos, mode, onlyPhysical);
@@ -2111,7 +2111,7 @@ void MOSRotating::Draw(BITMAP *pTargetBitmap,
     // Draw all the attached wound emitters, and only if the mode is g_DrawColor and not onlyphysical
     if (mode == g_DrawColor || (!onlyPhysical && mode == g_DrawMaterial))
     {
-		for (list<AEmitter *>::const_iterator itr = m_Wounds.begin(); itr != m_Wounds.end(); ++itr)
+		for (plf::list<AEmitter *>::const_iterator itr = m_Wounds.begin(); itr != m_Wounds.end(); ++itr)
 		{
 			if ((*itr)->IsDrawnAfterParent())
 				(*itr)->Draw(pTargetBitmap, targetPos, mode, onlyPhysical);
@@ -2119,7 +2119,7 @@ void MOSRotating::Draw(BITMAP *pTargetBitmap,
     }
 
     // Draw all the attached attachables
-	for (list<Attachable *>::const_iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ++aItr)
+	for (plf::list<Attachable *>::const_iterator aItr = m_Attachables.begin(); aItr != m_Attachables.end(); ++aItr)
 	{
 		if ((*aItr)->IsDrawnAfterParent())
 			(*aItr)->Draw(pTargetBitmap, targetPos, mode, onlyPhysical);

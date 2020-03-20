@@ -678,10 +678,10 @@ protected:
     Slice m_RightSlice;
 
     // The slices between the cardinal axes, owned here
-    std::list<Slice> m_UpRightSlices;
-    std::list<Slice> m_UpLeftSlices;
-    std::list<Slice> m_DownLeftSlices;
-    std::list<Slice> m_DownRightSlices;
+    plf::list<Slice> m_UpRightSlices;
+    plf::list<Slice> m_UpLeftSlices;
+    plf::list<Slice> m_DownLeftSlices;
+    plf::list<Slice> m_DownRightSlices;
 
 	// All slices ever added to this pie-menu, serves as directory of slices available to add
 	static std::map<string, Slice> m_AllAvailableSlices;

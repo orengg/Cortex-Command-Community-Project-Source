@@ -469,7 +469,7 @@ namespace RTE
 				int sourceH = 0;
 				int destX = 0;
 				int destY = 0;
-				std::list<SLDrawBox> drawList;
+				plf::list<SLDrawBox> drawList;
 
 				int offsetX;
 				int offsetY;

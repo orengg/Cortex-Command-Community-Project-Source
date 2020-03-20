@@ -36,7 +36,7 @@ namespace RTE {
 		m_DefinedInModule = reference.m_DefinedInModule;
 		m_PresetDescription = reference.m_PresetDescription;
 
-		for (std::list<std::string>::const_iterator itr = reference.m_Groups.begin(); itr != reference.m_Groups.end(); ++itr) {
+		for (plf::list<std::string>::const_iterator itr = reference.m_Groups.begin(); itr != reference.m_Groups.end(); ++itr) {
 			m_Groups.push_back(*itr);
 		}
 		m_RandomWeight = reference.m_RandomWeight;
@@ -113,7 +113,7 @@ namespace RTE {
 		}
 		// TODO: Make proper save system that knows not to save redundant data!
 		/*
-		for (list<string>::const_iterator itr = m_Groups.begin(); itr != m_Groups.end(); ++itr)
+		for (plf::list<string>::const_iterator itr = m_Groups.begin(); itr != m_Groups.end(); ++itr)
 		{
 			writer.NewProperty("AddToGroup");
 			writer << *itr;
@@ -178,7 +178,7 @@ namespace RTE {
 		if (whichGroup == "None") {
 			return false;
 		}
-		for (std::list<std::string>::const_iterator itr = m_Groups.begin(); itr != m_Groups.end(); ++itr) {
+		for (plf::list<std::string>::const_iterator itr = m_Groups.begin(); itr != m_Groups.end(); ++itr) {
 			if (whichGroup == *itr) {
 				// Save the search result for quicker response next time
 				m_LastGroupSearch = whichGroup;
@@ -234,8 +234,8 @@ namespace RTE {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	std::list<std::string> Entity::ClassInfo::GetClassNames() {
-		std::list<std::string> retList;
+	plf::list<std::string> Entity::ClassInfo::GetClassNames() {
+		plf::list<std::string> retList;
 		for (const ClassInfo *itr = m_sClassHead; itr != 0; itr = itr->m_NextClass) {
 			retList.push_back(itr->GetName());
 		}

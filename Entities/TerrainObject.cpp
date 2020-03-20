@@ -142,7 +142,7 @@ int TerrainObject::Create(const TerrainObject &reference)
     m_BitmapOffset = reference.m_BitmapOffset;
     m_OffsetDefined = reference.m_OffsetDefined;
 
-    for (list<SOPlacer>::const_iterator itr = reference.m_ChildObjects.begin(); itr != reference.m_ChildObjects.end(); ++itr)
+    for (plf::list<SOPlacer>::const_iterator itr = reference.m_ChildObjects.begin(); itr != reference.m_ChildObjects.end(); ++itr)
         m_ChildObjects.push_back(*itr);
 
 	m_DisplayAsTerrain = reference.m_DisplayAsTerrain;
@@ -226,7 +226,7 @@ int TerrainObject::Save(Writer &writer) const
         writer.NewProperty("BitmapOffset");
         writer << m_BitmapOffset;
     }
-    for (list<SOPlacer>::const_iterator itr = m_ChildObjects.begin(); itr != m_ChildObjects.end(); ++itr)
+    for (plf::list<SOPlacer>::const_iterator itr = m_ChildObjects.begin(); itr != m_ChildObjects.end(); ++itr)
     {
         writer.NewProperty("AddChildObject");
         writer << (*itr);
@@ -361,7 +361,7 @@ void TerrainObject::SetTeam(int team)
     SceneObject::SetTeam(team);
 
     // Make sure all the objects to be placed will be of the same team
-    for (list<SOPlacer>::iterator itr = m_ChildObjects.begin(); itr != m_ChildObjects.end(); ++itr)
+    for (plf::list<SOPlacer>::iterator itr = m_ChildObjects.begin(); itr != m_ChildObjects.end(); ++itr)
         (*itr).SetTeam(team);
 }
 

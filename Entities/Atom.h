@@ -981,7 +981,7 @@ public:
 // Arguments:       New MOIDs list to ignore.
 // Return value:    None.
 
-	void SetIgnoreMOIDsByGroup(std::list<MOID> const * ignoreMOIDsByGroup) { m_pIgnoreMOIDsByGroup = ignoreMOIDsByGroup; };
+	void SetIgnoreMOIDsByGroup(plf::list<MOID> const * ignoreMOIDsByGroup) { m_pIgnoreMOIDsByGroup = ignoreMOIDsByGroup; };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Protected member variable and method declarations
@@ -1035,9 +1035,9 @@ protected:
     // Special ignored MOID
     MOID m_IgnoreMOID;
     // ignore hits with MOs of these IDs
-    std::list<MOID> m_IgnoreMOIDs;
+    plf::list<MOID> m_IgnoreMOIDs;
 	// Also ignore hits with MOs of these IDs. This one may be set externally by atom group
-	std::list<MOID> const * m_pIgnoreMOIDsByGroup;
+	plf::list<MOID> const * m_pIgnoreMOIDsByGroup;
 
     // The MO, if any, this Atom hit on the last step.
     MOID m_MOIDHit;

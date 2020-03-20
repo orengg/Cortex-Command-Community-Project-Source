@@ -476,7 +476,7 @@ bool Atom::IsIgnoringMOID(MOID which)
 
     // Now check for explicit ignore
     bool ignored = false;
-    for (list<MOID>::iterator itr = m_IgnoreMOIDs.begin(); itr != m_IgnoreMOIDs.end(); ++itr) {
+    for (plf::list<MOID>::iterator itr = m_IgnoreMOIDs.begin(); itr != m_IgnoreMOIDs.end(); ++itr) {
         if ((*itr) == which)
         {
             ignored = true;
@@ -486,7 +486,7 @@ bool Atom::IsIgnoringMOID(MOID which)
 	// Check in AtomGroup-owned list if it's assigned to this atom
 	if (!ignored && m_pIgnoreMOIDsByGroup)
 	{
-		for (list<MOID>::const_iterator itr = m_pIgnoreMOIDsByGroup->begin(); itr != m_pIgnoreMOIDsByGroup->end(); ++itr) {
+		for (plf::list<MOID>::const_iterator itr = m_pIgnoreMOIDsByGroup->begin(); itr != m_pIgnoreMOIDsByGroup->end(); ++itr) {
 			if ((*itr) == which)
 			{
 				ignored = true;

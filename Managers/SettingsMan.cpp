@@ -474,7 +474,7 @@ int SettingsMan::Save(Writer &writer) const
     writer << g_AudioMan.GetMusicVolume() * 100;
 
     // Write visible assembly groups
-	for (list<string>::const_iterator itr = m_VisibleAssemblyGroupsList.begin(); itr != m_VisibleAssemblyGroupsList.end(); itr++)
+	for (plf::list<string>::const_iterator itr = m_VisibleAssemblyGroupsList.begin(); itr != m_VisibleAssemblyGroupsList.end(); itr++)
 	{
         writer.NewProperty("VisibleAssemblyGroup");
         writer << (*itr);

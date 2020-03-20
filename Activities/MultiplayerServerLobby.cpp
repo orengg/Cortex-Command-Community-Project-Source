@@ -396,13 +396,13 @@ namespace RTE {
 			m_pSceneSelect->ClearList();
 
 			// Pull out the list of Scenes that are compatible with this Activity
-			map<Activity *, list<Scene *> >::iterator asItr;
+			map<Activity *, plf::list<Scene *> >::iterator asItr;
 			if (m_Activities.end() != (asItr = m_Activities.find(const_cast<Activity *>(pSelected))))
 			{
 				m_pScenes = &((*asItr).second);
 
 				// Fill scenes combo with compatible scenes
-				for (list<Scene *>::iterator pItr = m_pScenes->begin(); pItr != m_pScenes->end(); ++pItr)
+				for (plf::list<Scene *>::iterator pItr = m_pScenes->begin(); pItr != m_pScenes->end(); ++pItr)
 				{
 					Scene *pScene = (*pItr);
 					m_pSceneSelect->AddItem(pScene->GetPresetName(), "", 0, pScene);
@@ -1040,13 +1040,13 @@ namespace RTE {
 		m_Activities.clear();
 
 		// Get the list of all read in Scene presets
-		list<Entity *> presetList;
+		plf::list<Entity *> presetList;
 		g_PresetMan.GetAllOfType(presetList, "Scene");
-		list<Scene *> filteredScenes;
+		plf::list<Scene *> filteredScenes;
 		Scene *pScene = 0;
 
 		// Go through the list and cast all the pointers to scenes so we have a handy list
-		for (list<Entity *>::iterator pItr = presetList.begin(); pItr != presetList.end(); ++pItr)
+		for (plf::list<Entity *>::iterator pItr = presetList.begin(); pItr != presetList.end(); ++pItr)
 		{
 			pScene = dynamic_cast<Scene *>(*pItr);
 			// Only add non-editor and non-special scenes, or ones that don't have locations defined, or have Test in their names, or are metascenes
@@ -1071,7 +1071,7 @@ namespace RTE {
 		m_pActivitySelect->ClearList();
 		int index = 0;
 		int skirmishIndex = -1;
-		for (list<Entity *>::iterator pItr = presetList.begin(); pItr != presetList.end(); ++pItr)
+		for (plf::list<Entity *>::iterator pItr = presetList.begin(); pItr != presetList.end(); ++pItr)
 		{
 			bool isMetaActivity = false;
 
@@ -1080,8 +1080,8 @@ namespace RTE {
 			if (pActivity/* && pActivity->GetClassName() != "GATutorial" */&& pActivity->GetClassName().find("Editor") == string::npos)
 			{
 				// Prepare a new entry in the list of Activity:ies that we have
-				pair<Activity *, list<Scene *> > newPair(pActivity, list<Scene *>());
-				for (list<Scene *>::iterator sItr = filteredScenes.begin(); sItr != filteredScenes.end(); ++sItr)
+				pair<Activity *, plf::list<Scene *> > newPair(pActivity, plf::list<Scene *>());
+				for (plf::list<Scene *>::iterator sItr = filteredScenes.begin(); sItr != filteredScenes.end(); ++sItr)
 				{
 					// Check if the Scene has the required Area:s and such needed for this Activity
 					if (pActivity->SceneIsCompatible(*sItr))

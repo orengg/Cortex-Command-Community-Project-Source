@@ -99,7 +99,7 @@ int AtomGroup::Create(const AtomGroup &reference, boolean onlyCopyOwnerAtoms)
     m_Depth = reference.m_Depth;
 
 	m_SubGroups.clear();
-	for (list<Atom *>::const_iterator itr = reference.m_Atoms.begin(); itr != reference.m_Atoms.end(); ++itr)
+	for (plf::list<Atom *>::const_iterator itr = reference.m_Atoms.begin(); itr != reference.m_Atoms.end(); ++itr)
 	{
 		if (!onlyCopyOwnerAtoms || (*itr)->GetSubID() == 0)
 		{
@@ -115,7 +115,7 @@ int AtomGroup::Create(const AtomGroup &reference, boolean onlyCopyOwnerAtoms)
 				// Make a new list for the subgroup ID if there isn't one already
 				if (m_SubGroups.find(subID) == m_SubGroups.end())
 				{
-					m_SubGroups.insert(pair<long int, list<Atom *>>(subID, list<Atom *>()));
+					m_SubGroups.insert(pair<long int, plf::list<Atom *>>(subID, plf::list<Atom *>()));
 				}
 				// Add Atom to the list of that group
 				m_SubGroups.find(subID)->second.push_back(pAtomCopy);
@@ -124,7 +124,7 @@ int AtomGroup::Create(const AtomGroup &reference, boolean onlyCopyOwnerAtoms)
 	}
 
 	// Copy ignored MOIDs list
-	for (list<MOID>::const_iterator itr = reference.m_IgnoreMOIDs.begin(); itr != reference.m_IgnoreMOIDs.end(); ++itr)
+	for (plf::list<MOID>::const_iterator itr = reference.m_IgnoreMOIDs.begin(); itr != reference.m_IgnoreMOIDs.end(); ++itr)
 	{
 		m_IgnoreMOIDs.push_back(*itr);
 	}
@@ -573,7 +573,7 @@ int AtomGroup::Save(Writer &writer) const
     // Only write out atoms if they were manually specified
 //    if (!m_AutoGenerate)
 //    {
-        for (list<Atom *>::const_iterator itr = m_Atoms.begin(); itr != m_Atoms.end(); ++itr)
+        for (plf::list<Atom *>::const_iterator itr = m_Atoms.begin(); itr != m_Atoms.end(); ++itr)
         {
             writer.NewProperty("AddAtom");
             writer << **itr;
@@ -637,7 +637,7 @@ int AtomGroup::Save(ostream &stream) const
     stream << m_sClass.GetName() << " ";
 
     stream << m_Atoms[0].size() << " ";
-    for (list<Atom *>::const_iterator itr = m_Atoms[0].begin(); itr != m_Atoms[0].end(); ++itr)
+    for (plf::list<Atom *>::const_iterator itr = m_Atoms[0].begin(); itr != m_Atoms[0].end(); ++itr)
         stream << **itr << " ";
 
     stream << m_PathCount << " ";
@@ -655,7 +655,7 @@ int AtomGroup::Save(ostream &stream) const
 
 void AtomGroup::Destroy(bool notInherited)
 {
-    for (list<Atom *>::const_iterator itr = m_Atoms.begin(); itr != m_Atoms.end(); ++itr)
+    for (plf::list<Atom *>::const_iterator itr = m_Atoms.begin(); itr != m_Atoms.end(); ++itr)
         delete *itr;
 
     if (!notInherited)
@@ -704,7 +704,7 @@ float AtomGroup::CalculateMaxRadius()
 {
     float magnitude, longest = 0;
 
-    for (list<Atom *>::iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end(); ++aItr)
+    for (plf::list<Atom *>::iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end(); ++aItr)
     {
         magnitude = (*aItr)->GetOffset().GetMagnitude();
         if (magnitude > longest)
@@ -731,7 +731,7 @@ float AtomGroup::GetMomentOfInertia()
         }
         float distMass = m_pOwnerMO->GetMass() / m_Atoms.size();
         float radius = 0;
-        for (list<Atom *>::const_iterator itr = m_Atoms.begin(); itr != m_Atoms.end(); ++itr)
+        for (plf::list<Atom *>::const_iterator itr = m_Atoms.begin(); itr != m_Atoms.end(); ++itr)
         {
             radius = (*itr)->GetOffset().GetMagnitude() * g_FrameMan.GetMPP();
             m_MomInertia += distMass * radius * radius;
@@ -754,7 +754,7 @@ float AtomGroup::GetMomentOfInertia()
 void AtomGroup::SetOwner(MOSRotating *newOwner)
 {
     m_pOwnerMO = newOwner;
-    for (list<Atom *>::const_iterator itr = m_Atoms.begin(); itr != m_Atoms.end(); ++itr)
+    for (plf::list<Atom *>::const_iterator itr = m_Atoms.begin(); itr != m_Atoms.end(); ++itr)
         (*itr)->SetOwner(m_pOwnerMO);
 }
 
@@ -765,16 +765,16 @@ void AtomGroup::SetOwner(MOSRotating *newOwner)
 // Description:     Adds a list of new Atom:s to the internal list that makes up this group.
 //                  Ownership of all Atom:s in the list IS NOT transferred!
 
-void AtomGroup::AddAtoms(const std::list<Atom *> &atomList, long int subID, const Vector &offset, const Matrix &offsetRotation)
+void AtomGroup::AddAtoms(const plf::list<Atom *> &atomList, long int subID, const Vector &offset, const Matrix &offsetRotation)
 {
     Atom *pAtom;
 
     // Make a new list for the subgroup ID if there isn't one already
 	if (m_SubGroups.find(subID) == m_SubGroups.end())
 	{
-		m_SubGroups.insert(pair<long int, list<Atom *> >(subID, list<Atom *>()));
+		m_SubGroups.insert(pair<long int, plf::list<Atom *> >(subID, plf::list<Atom *>()));
 	}
-    for (list<Atom *>::const_iterator itr = atomList.begin(); itr != atomList.end(); ++itr)
+    for (plf::list<Atom *>::const_iterator itr = atomList.begin(); itr != atomList.end(); ++itr)
     {
         pAtom = new Atom(**itr);
         pAtom->SetSubID(subID);
@@ -805,7 +805,7 @@ bool AtomGroup::UpdateSubAtoms(long int subID, const Vector &newOffset, const Ma
 	}
 	RTEAssert(!m_SubGroups.find(subID)->second.empty(), "Found empty atom subgroup list!?");
 
-	for (list<Atom *>::const_iterator aItr = m_SubGroups.find(subID)->second.begin(); aItr != m_SubGroups.find(subID)->second.end(); ++aItr)
+	for (plf::list<Atom *>::const_iterator aItr = m_SubGroups.find(subID)->second.begin(); aItr != m_SubGroups.find(subID)->second.end(); ++aItr)
 	{
 		(*aItr)->SetSubID(subID); // Re-set ID just to make sure - TODO I don't think we need this?!
 		(*aItr)->SetOffset(newOffset + ((*aItr)->GetOriginalOffset() * newOffsetRotation));
@@ -823,9 +823,9 @@ bool AtomGroup::UpdateSubAtoms(long int subID, const Vector &newOffset, const Ma
 bool AtomGroup::RemoveAtoms(long int removeID)
 {
     bool removedAny = false;
-    list<Atom *>::iterator eraseItr;
+    plf::list<Atom *>::iterator eraseItr;
 
-    for (list<Atom *>::iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end();)
+    for (plf::list<Atom *>::iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end();)
     {
         if ((*aItr)->GetSubID() == removeID)
         {
@@ -855,7 +855,7 @@ bool AtomGroup::RemoveAtoms(long int removeID)
 
 void AtomGroup::AddMOIDToIgnore(MOID ignore)
 {
-    /*for (list<Atom *>::iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end(); ++aItr)
+    /*for (plf::list<Atom *>::iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end(); ++aItr)
         (*aItr)->AddMOIDToIgnore(ignore);*/
 	// m_IgnoreMOIDs is passed to every atom which belongs to this group to avoid messing with every single atom
 	// when adding or removing ignored MOs
@@ -873,7 +873,7 @@ void AtomGroup::AddMOIDToIgnore(MOID ignore)
 
 void AtomGroup::ClearMOIDIgnoreList()
 {
-    /*for (list<Atom *>::iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end(); ++aItr)
+    /*for (plf::list<Atom *>::iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end(); ++aItr)
         (*aItr)->ClearMOIDIgnoreList();*/
 	// m_IgnoreMOIDs is passed to every atom which belongs to this group to avoid messing with every single atom
 	// when adding or removing ignored MOs
@@ -1038,12 +1038,12 @@ float AtomGroup::Travel(Vector &position,
     float segRatio, preHitRot, radMag, retardation;
     bool hitStep, newDir, halted = false, hitMOs = m_pOwnerMO->m_HitsMOs;
     Atom *pFastestAtom = 0;
-    map<MOID, list<Atom *> > hitMOAtoms;
-    map<MOID, list<Atom *> >::iterator mapMOItr;
-    list<Atom *> hitTerrAtoms;
-    list<Atom *> penetratingAtoms;
-    list<Atom *> hitResponseAtoms;
-    list<Atom *>::iterator aItr;
+    map<MOID, plf::list<Atom *> > hitMOAtoms;
+    map<MOID, plf::list<Atom *> >::iterator mapMOItr;
+    plf::list<Atom *> hitTerrAtoms;
+    plf::list<Atom *> penetratingAtoms;
+    plf::list<Atom *> hitResponseAtoms;
+    plf::list<Atom *>::iterator aItr;
     Vector linSegTraj, startOff, targetOff, atomTraj, tempVec, tempVel, preHitPos, hitNormal;
     MOID tempMOID = g_NoMOID;
     HitData hitData;
@@ -1226,9 +1226,9 @@ float AtomGroup::Travel(Vector &position,
                         // and insert into the map of MO-hitting Atom:s.
                         if (mapMOItr == hitMOAtoms.end())
                         {
-                            list<Atom *> newDeque;
+                            plf::list<Atom *> newDeque;
                             newDeque.push_back(*aItr);
-                            hitMOAtoms.insert(pair<MOID, list<Atom *> >(tempMOID, newDeque));
+                            hitMOAtoms.insert(pair<MOID, plf::list<Atom *> >(tempMOID, newDeque));
                         }
                         // If another Atom of this group has already hit this same MO
                         // during this step, go ahead and add the new atom to the
@@ -1642,7 +1642,7 @@ Vector AtomGroup::PushTravel(Vector &position,
     deque<pair<Atom *, Vector> > hitTerrAtoms;
     deque<pair<Atom *, Vector> > penetratingAtoms;
     deque<pair<Atom *, Vector> >::iterator aoItr;
-    list<Atom *>::iterator aItr;
+    plf::list<Atom *>::iterator aItr;
     // First Vector is the impulse force in kg * m/s, the second is force point,
     // or its offset from the origin of the AtomGroup.
     deque<pair<Vector, Vector> > impulseForces;
@@ -2341,7 +2341,7 @@ bool AtomGroup::InTerrain()
     bool penetrates = false;
     Vector aPos;
 // TODO: UNCOMMENT
-    for (list<Atom *>::iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end() && !penetrates; ++aItr)
+    for (plf::list<Atom *>::iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end() && !penetrates; ++aItr)
     {
         aPos = (m_pOwnerMO->GetPos() + ((*aItr)->GetOffset().GetXFlipped(m_pOwnerMO->m_HFlipped) * m_pOwnerMO->GetRotMatrix())).GetFloored();
         if (g_SceneMan.GetTerrMatter(aPos.m_X, aPos.m_Y) != g_MaterialAir)
@@ -2374,7 +2374,7 @@ float AtomGroup::RatioInTerrain()
     int inTerrain = 0;
     Vector aPos;
 
-    for (list<Atom *>::iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end(); ++aItr)
+    for (plf::list<Atom *>::iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end(); ++aItr)
     {
         aPos = (m_pOwnerMO->GetPos() + ((*aItr)->GetOffset().GetXFlipped(m_pOwnerMO->m_HFlipped) * m_pOwnerMO->GetRotMatrix())).GetFloored();
         if (g_SceneMan.GetTerrMatter(aPos.m_X, aPos.m_Y) != g_MaterialAir)
@@ -2395,8 +2395,8 @@ float AtomGroup::RatioInTerrain()
 bool AtomGroup::ResolveTerrainIntersection(Vector &position, Matrix &rotation, unsigned char strongerThan)
 {
     Vector atomOffset, atomPos, atomNormal, clearPos, exitDirection, atomExitVector, totalExitVector;
-    list<Atom *>::iterator aItr;
-    list<Atom *> intersectingAtoms;
+    plf::list<Atom *>::iterator aItr;
+    plf::list<Atom *> intersectingAtoms;
     MOID hitMaterial = g_MaterialAir;
     float strengthThreshold = strongerThan != g_MaterialAir ? g_SceneMan.GetMaterialFromID(strongerThan)->strength : 0;
     bool rayHit = false;
@@ -2499,8 +2499,8 @@ bool AtomGroup::ResolveMOSIntersection(Vector &position, Matrix &rotation)
         return true;
 
     Vector atomOffset, atomPos, atomNormal, clearPos, exitDirection, atomExitVector, totalExitVector;
-    list<Atom *>::iterator aItr;
-    list<Atom *> intersectingAtoms;
+    plf::list<Atom *>::iterator aItr;
+    plf::list<Atom *> intersectingAtoms;
     MOID hitMOID = g_NoMOID, currentMOID = g_NoMOID;
     MovableObject *pIntersectedMO = 0;
     MOSRotating *pIntersectedMOS = 0;
@@ -2681,7 +2681,7 @@ void AtomGroup::Draw(BITMAP *pTargetBitmap,
 {
     acquire_bitmap(pTargetBitmap);
     Vector aPos, normal;
-    for (list<Atom *>::const_iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end(); ++aItr)
+    for (plf::list<Atom *>::const_iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end(); ++aItr)
     {
         if (!useLimbPos)
             aPos = (m_pOwnerMO->GetPos() + ((*aItr)->GetOffset().GetXFlipped(m_pOwnerMO->m_HFlipped)

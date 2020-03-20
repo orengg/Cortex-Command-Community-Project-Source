@@ -506,9 +506,9 @@ protected:
 	BITMAP *m_pDefaultPreviewBitmap;
 
     // The current set of Scenes being displayed - not owned, nor are the scenes
-    std::list<Scene *> *m_pScenes;
+    plf::list<Scene *> *m_pScenes;
     // The map of Activity:ies, and the Scene:s compatible with each, neither of which are owned here
-    std::map<Activity *, std::list<Scene *> > m_Activities;
+    std::map<Activity *, plf::list<Scene *> > m_Activities;
     // Currently dragged GUI box
     GUICollectionBox *m_pDraggedBox;
     // New potential drag is starting

@@ -323,7 +323,7 @@ int ACraft::Create(const ACraft &reference)
     m_HatchOpenSound = reference.m_HatchOpenSound;
     for (deque<MovableObject *>::const_iterator niItr = reference.m_NewInventory.begin(); niItr != reference.m_NewInventory.end(); ++niItr)
         m_NewInventory.push_back(dynamic_cast<MovableObject *>((*niItr)->Clone()));
-    for (list<Exit>::const_iterator eItr = reference.m_Exits.begin(); eItr != reference.m_Exits.end(); ++eItr)
+    for (plf::list<Exit>::const_iterator eItr = reference.m_Exits.begin(); eItr != reference.m_Exits.end(); ++eItr)
         m_Exits.push_back(*eItr);
     m_CurrentExit = m_Exits.begin();
     m_ExitInterval = reference.m_ExitInterval;
@@ -394,7 +394,7 @@ int ACraft::Save(Writer &writer) const
     writer << m_HatchDelay;
     writer.NewProperty("HatchOpenSound");
     writer << m_HatchOpenSound;
-    for (list<Exit>::const_iterator itr = m_Exits.begin(); itr != m_Exits.end(); ++itr)
+    for (plf::list<Exit>::const_iterator itr = m_Exits.begin(); itr != m_Exits.end(); ++itr)
     {
         writer.NewProperty("AddExit");
         writer << (*itr);
@@ -662,7 +662,7 @@ void ACraft::DropAllInventory()
             return;
 
         bool exitExists = false;
-        list<Exit>::iterator exit = m_Exits.begin();
+        plf::list<Exit>::iterator exit = m_Exits.begin();
         // Check which exits are clear of the terrain, if any
         for (; exit != m_Exits.end(); ++exit)
         {
@@ -875,7 +875,7 @@ void ACraft::Update()
         else if (m_Status == STABLE && m_ExitTimer.IsPastSimMS(EXITSUCKDELAYMS))
         {
             // See if any of the exits have sucked in an MO
-            for (list<Exit>::iterator exit = m_Exits.begin(); exit != m_Exits.end(); ++exit)
+            for (plf::list<Exit>::iterator exit = m_Exits.begin(); exit != m_Exits.end(); ++exit)
             {
                 // If exit sucked in an MO, add it to invetory
                 MOSRotating *pNewObject = exit->SuckInMOs(this);
@@ -1030,7 +1030,7 @@ void ACraft::DrawHUD(BITMAP *pTargetBitmap, const Vector &targetPos, int whichSc
         Vector exitCorner;
         Vector arrowVec;
         // Draw the actual dotted lines
-        for (list<Exit>::iterator exit = m_Exits.begin(); exit != m_Exits.end(); ++exit)
+        for (plf::list<Exit>::iterator exit = m_Exits.begin(); exit != m_Exits.end(); ++exit)
         {
             if (exit->CheckIfClear(m_Pos, m_Rotation, 18))
             {

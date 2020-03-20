@@ -179,7 +179,7 @@ public:
 // Arguments:       None.
 // Return value:    The current list of placed gibs. OINT!
 
-    std::list<MovableObject *> * GetPlacedGibs() { return &m_PlacedGibs; }
+    plf::list<MovableObject *> * GetPlacedGibs() { return &m_PlacedGibs; }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -380,7 +380,7 @@ protected:
     bool m_FacingLeft;
     // List of all the gibs currently placed on the edited object.
     // They are proxies of the actual gib list of the edited object, and are OWNED by editor.
-    std::list<MovableObject *> m_PlacedGibs;
+    plf::list<MovableObject *> m_PlacedGibs;
     // Currently held object to place as a gib. This is what is attached to the cursor and will be placed when the fire button is pressed
     // OWNED by this.
     MovableObject *m_pCurrentGib;

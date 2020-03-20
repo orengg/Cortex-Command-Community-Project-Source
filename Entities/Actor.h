@@ -1452,7 +1452,7 @@ protected:
     // The timer that measures and deducts past time from the remaining white flash time
     Timer m_WhiteFlashTimer;
     // Extra pie menu options that this should add to any Pie Menu that focuses on this
-    std::list<PieMenuGUI::Slice> m_PieSlices;
+    plf::list<PieMenuGUI::Slice> m_PieSlices;
     // What material strength this actor is capable of digging trough.
     float m_DigStrength;
 	// ID of deployment which spawned this actor
@@ -1501,7 +1501,7 @@ protected:
     AIMode m_AIMode;
     // The list of waypoints remaining between which the paths are made. If this is empty, the last path is in teh MovePath
     // The MO pointer in the pair is nonzero if the waypoint is tied to an MO in the scene, and gets updated each UpdateAI. This needs to be checked for validity/existence each UpdateAI
-    std::list<std::pair<Vector, const MovableObject *> > m_Waypoints;
+    plf::list<std::pair<Vector, const MovableObject *> > m_Waypoints;
     // Whether to draw the waypoints or not in the HUD
     bool m_DrawWaypoints;
     // Absolute target to move to on the scene; this is usually the point at the front of the movepath list
@@ -1513,7 +1513,7 @@ protected:
     // The relative, scene-wrapped difference between the current m_Pos and the m_MoveTarget.
     Vector m_MoveVector;
     // The calculated path to get to that move-to target
-    std::list<Vector> m_MovePath;
+    plf::list<Vector> m_MovePath;
     // Whether it's time to update the path
     bool m_UpdateMovePath;
     // The minimum range to consider having reached a move target is considered

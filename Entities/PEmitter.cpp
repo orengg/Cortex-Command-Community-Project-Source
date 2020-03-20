@@ -81,7 +81,7 @@ namespace RTE {
 	{
 		MOSParticle::Create(reference);
 
-		for (list<Emission>::const_iterator itr = reference.m_EmissionList.begin(); itr != reference.m_EmissionList.end(); ++itr)
+		for (plf::list<Emission>::const_iterator itr = reference.m_EmissionList.begin(); itr != reference.m_EmissionList.end(); ++itr)
 			m_EmissionList.push_back(*itr);
 
 		m_EmissionSound = reference.m_EmissionSound;
@@ -140,7 +140,7 @@ namespace RTE {
 			float ppm;
 			reader >> ppm;
 			// Go through all emissions and set the rate so that it emulates the way it used to work, for mod backwards compatibility
-			for (list<Emission>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
+			for (plf::list<Emission>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
 				(*eItr).m_PPM = ppm / m_EmissionList.size();
 		}
 		else if (propName == "MinThrottleRange")
@@ -156,7 +156,7 @@ namespace RTE {
 			int burstSize;
 			reader >> burstSize;
 			// Go through all emissions and set the rate so that it emulates the way it used to work, for mod backwards compatibility
-			for (list<Emission>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
+			for (plf::list<Emission>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
 				(*eItr).m_BurstSize = ceilf((float)burstSize / (float)m_EmissionList.size());
 		}
 		else if (propName == "BurstScale")
@@ -195,7 +195,7 @@ namespace RTE {
 	{
 		MOSParticle::Save(writer);
 
-		for (list<Emission>::const_iterator itr = m_EmissionList.begin(); itr != m_EmissionList.end(); ++itr)
+		for (plf::list<Emission>::const_iterator itr = m_EmissionList.begin(); itr != m_EmissionList.end(); ++itr)
 		{
 			writer.NewProperty("AddEmission");
 			writer << *itr;
@@ -249,7 +249,7 @@ namespace RTE {
 	void PEmitter::Destroy(bool notInherited)
 	{
 		/* Don't own these anymore
-		for (list<MovableObject *>::iterator itr = m_EmissionList.begin();
+		for (plf::list<MovableObject *>::iterator itr = m_EmissionList.begin();
 		itr != m_EmissionList.end(); ++itr)
 		delete (*itr);
 		*/
@@ -276,7 +276,7 @@ namespace RTE {
 	void PEmitter::ResetEmissionTimers()
 	{
 		m_LastEmitTmr.Reset();
-		for (list<Emission>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
+		for (plf::list<Emission>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
 			(*eItr).ResetEmissionTimers();
 	}
 
@@ -314,7 +314,7 @@ namespace RTE {
 			float velMin, velMax, velRange, spread;
 
 			// Go through all emissions and emit them according to their respective rates
-			for (list<Emission>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
+			for (plf::list<Emission>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
 			{
 				// Only check emissions that push the emitter
 				if (eItr->PushesEmitter())
@@ -387,7 +387,7 @@ namespace RTE {
 				m_EmissionSound.Play(g_SceneMan.TargetDistanceScalar(m_Pos));
 
 				// Reset the timers of all emissions so they will start/stop at the correct relative offsets from now
-				for (list<Emission>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
+				for (plf::list<Emission>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
 					(*eItr).ResetEmissionTimers();
 			}
 			// Update the distance attenuation
@@ -425,7 +425,7 @@ namespace RTE {
 			MovableObject *pParticle = 0;
 			Vector parentVel, emitVel, pushImpulses;
 			// Go through all emissions and emit them according to their respective rates
-			for (list<Emission>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
+			for (plf::list<Emission>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
 			{
 				// Make sure the emissions only happen between the start time and end time
 				if (eItr->IsEmissionTime())

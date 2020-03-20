@@ -612,7 +612,7 @@ protected:
     // Timer for the resetting to default
     Timer m_ResetDefaultTimer;
     // All the sensors for detecting Actor:s approaching the door
-    std::list<Sensor> m_Sensors;
+    plf::list<Sensor> m_Sensors;
     // The delay between each sensing pass, in ms
     long m_SensorInterval;
     // Times the exit interval

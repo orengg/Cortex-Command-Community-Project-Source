@@ -683,7 +683,7 @@ ENTITYALLOCATION(SLTerrain)
 // Return value:    Reference to the list that has been filled with Box:es which are
 //                  unwrapped and may be out of bounds of the scene!
 
-    std::list<Box> & GetUpdatedMaterialAreas() { return m_UpdatedMateralAreas; }
+    plf::list<Box> & GetUpdatedMaterialAreas() { return m_UpdatedMateralAreas; }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -790,13 +790,13 @@ protected:
     BITMAP *m_pStructural;
     ContentFile m_BGTextureFile;
 
-    std::list<TerrainFrosting> m_TerrainFrostings;
-    std::list<TerrainDebris *> m_TerrainDebris;
-    std::list<TerrainObject *> m_TerrainObjects;
+    plf::list<TerrainFrosting> m_TerrainFrostings;
+    plf::list<TerrainDebris *> m_TerrainDebris;
+    plf::list<TerrainObject *> m_TerrainObjects;
 
     // List of areas of the material layer which have been affected by the updating of new objects copied to it
     // These boxes are NOT wrapped, and can be out of bounds!
-    std::list<Box> m_UpdatedMateralAreas;
+    plf::list<Box> m_UpdatedMateralAreas;
 
     // Draw the material layer instead of the color layer.
     bool m_DrawMaterial;

@@ -325,7 +325,7 @@ ENTITYALLOCATION(Deployment)
 // Return value:    Whether the deployment spawning is blocked by one of the Objects in
 //                  the list.
 
-    virtual bool DeploymentBlocked(int player, const std::list<SceneObject *> &existingObjects);
+    virtual bool DeploymentBlocked(int player, const plf::list<SceneObject *> &existingObjects);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -240,7 +240,7 @@ namespace RTE {
 		static const std::string m_ClassName; //!< A string with the friendly-formatted type name of this.
 
 		std::ifstream *m_pStream; //!< Currently used stream, is not on the StreamStack until a new stream is opened.
-		std::list<StreamInfo> m_StreamStack; //!< Stack of stream and filepath pairs, each one representing a file opened to read from within another.
+		plf::list<StreamInfo> m_StreamStack; //!< Stack of stream and filepath pairs, each one representing a file opened to read from within another.
 		bool m_EndOfStreams; //!< All streams have been depleted.
 
 		ProgressCallback m_fpReportProgress; //!< Function pointer to report our reading progress to, by calling it and passing a descriptive string to it.

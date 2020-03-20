@@ -230,7 +230,7 @@ int ADoor::Create(const ADoor &reference)
         m_DoorState = OPEN;
 
     m_ResetDefaultDelay = reference.m_ResetDefaultDelay;
-    for (list<Sensor>::const_iterator eItr = reference.m_Sensors.begin(); eItr != reference.m_Sensors.end(); ++eItr)
+    for (plf::list<Sensor>::const_iterator eItr = reference.m_Sensors.begin(); eItr != reference.m_Sensors.end(); ++eItr)
         m_Sensors.push_back(*eItr);
     m_SensorInterval = reference.m_SensorInterval;
     m_DrawWhenOpen = reference.m_DrawWhenOpen;
@@ -353,7 +353,7 @@ int ADoor::Save(Writer &writer) const
     writer << m_ClosedByDefault;
     writer.NewProperty("ResetDefaultDelay");
     writer << m_ResetDefaultDelay;
-    for (list<Sensor>::const_iterator itr = m_Sensors.begin(); itr != m_Sensors.end(); ++itr)
+    for (plf::list<Sensor>::const_iterator itr = m_Sensors.begin(); itr != m_Sensors.end(); ++itr)
     {
         writer.NewProperty("AddSensor");
         writer << (*itr);
@@ -675,7 +675,7 @@ void ADoor::Update()
         bool anySensorInput = false;
 
         // Go through all the sensors, checking for Actor:s breaking the beams
-        for (list<Sensor>::iterator itr = m_Sensors.begin(); itr != m_Sensors.end(); ++itr)
+        for (plf::list<Sensor>::iterator itr = m_Sensors.begin(); itr != m_Sensors.end(); ++itr)
         {
             pFoundActor = (*itr).SenseActor(m_Pos, m_Rotation, m_HFlipped, m_MOID);
 

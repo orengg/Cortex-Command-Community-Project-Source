@@ -645,7 +645,7 @@ int MetagameGUI::Create(Controller *pController)
 
     // Fill flags from what has already been loaded into the PresetMan
     // Get the list of all read-in team flag icons
-    list<Entity *> flagList;
+    plf::list<Entity *> flagList;
     g_PresetMan.GetAllOfGroup(flagList, "Flags", "Icon");
     Icon *pIcon = 0;
     for (int player = Activity::PLAYER_1; player < Activity::MAXPLAYERCOUNT; ++player)
@@ -658,7 +658,7 @@ int MetagameGUI::Create(Controller *pController)
         m_apPlayerTeamSelect[player]->GetListPanel()->SetAlternateDrawMode(true);
         m_apPlayerTeamSelect[player]->SetDropDownStyle(GUIComboBox::DropDownList);
         // Go through the flag list and them to the combo box
-        for (list<Entity *>::iterator itr = flagList.begin(); itr != flagList.end(); ++itr)
+        for (plf::list<Entity *>::iterator itr = flagList.begin(); itr != flagList.end(); ++itr)
         {
             pIcon = dynamic_cast<Icon *>(*itr);
             if (pIcon)
@@ -1333,10 +1333,10 @@ bool MetagameGUI::SaveGame(string saveName, string savePath, bool resaveSceneDat
     indexWriter.NewProperty("ModuleName");
     indexWriter << "Metagame Saves";
     // Get the current list of all MetaSave Preset:s, including the new one we just saved
-    list<Entity *> saveList;
+    plf::list<Entity *> saveList;
     g_PresetMan.GetAllOfType(saveList, "MetaSave");
     // Go through the list and add their names to the combo box
-    for (list<Entity *>::iterator itr = saveList.begin(); itr != saveList.end(); ++itr)
+    for (plf::list<Entity *>::iterator itr = saveList.begin(); itr != saveList.end(); ++itr)
     {
         indexWriter.NewProperty("AddMetaSave");
         indexWriter << (*itr);
@@ -1473,13 +1473,13 @@ void MetagameGUI::Update()
             // Clear out the loadable save list control so we can repopulate it
             m_pSavesToLoadCombo->ClearList();
             // Get the list of all read in MetaSave:s
-            list<Entity *> saveList;
+            plf::list<Entity *> saveList;
             g_PresetMan.GetAllOfType(saveList, "MetaSave");
             // Go through the list and add their names to the combo box
             int i = 0;
             int autoSaveIndex = -1;
             MetaSave *pAutoSave = 0;
-            for (list<Entity *>::iterator itr = saveList.begin(); itr != saveList.end(); ++itr)
+            for (plf::list<Entity *>::iterator itr = saveList.begin(); itr != saveList.end(); ++itr)
             {
                 m_pSavesToLoadCombo->AddItem((*itr)->GetPresetName(), "", 0, *itr);
                 // Take note of the autosave, if it is in here
@@ -1536,10 +1536,10 @@ void MetagameGUI::Update()
             // Clear out the overwrite save list control so we can repopulate it
             m_pSavesToOverwriteCombo->ClearList();
             // Get the list of all read in MetaSave:s
-            list<Entity *> saveList;
+            plf::list<Entity *> saveList;
             g_PresetMan.GetAllOfType(saveList, "MetaSave");
             // Go through the list and add their names to the combo box
-            for (list<Entity *>::iterator itr = saveList.begin(); itr != saveList.end(); ++itr)
+            for (plf::list<Entity *>::iterator itr = saveList.begin(); itr != saveList.end(); ++itr)
                 m_pSavesToOverwriteCombo->AddItem((*itr)->GetPresetName(), "", 0, *itr);
             // Select the first one - don't, let the player select one if they want to overwrite
 //            m_pSavesToOverwriteCombo->SetSelectedIndex(0);
@@ -6287,7 +6287,7 @@ void MetagameGUI::UpdatePlayerSetup()
     int humanPlayers = 0;
     int totalPlayers = 0;
     const Icon *pTeamIcon = 0;
-    list<const Icon *> teamList;
+    plf::list<const Icon *> teamList;
     for (int player = Activity::PLAYER_1; player < Activity::MAXPLAYERCOUNT; ++player)
     {
         if (m_apPlayerControlButton[player]->GetText() == "None")
@@ -6327,7 +6327,7 @@ void MetagameGUI::UpdatePlayerSetup()
             {
                 // See if the player is designated to a new team or one that has already been found
                 bool newTeam = true;
-                for (list<const Icon *>::iterator itr = teamList.begin(); itr != teamList.end(); ++itr)
+                for (plf::list<const Icon *>::iterator itr = teamList.begin(); itr != teamList.end(); ++itr)
                 {
                     // Found existing team!
                     if (pTeamIcon->GetPresetName() == (*itr)->GetPresetName())

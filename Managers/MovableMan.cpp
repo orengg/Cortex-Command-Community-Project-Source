@@ -441,7 +441,7 @@ Actor * MovableMan::GetNextTeamActor(int team, Actor *pAfterThis)
     m_ActorRoster[team].sort(MOXPosComparison());
 
     // Begin at the beginning
-    list<Actor *>::const_iterator aIt = m_ActorRoster[team].begin();
+    plf::list<Actor *>::const_iterator aIt = m_ActorRoster[team].begin();
 
     // Search for the actor to start search from, if specified
     if (pAfterThis)
@@ -526,7 +526,7 @@ Actor * MovableMan::GetPrevTeamActor(int team, Actor *pBeforeThis)
     m_ActorRoster[team].sort(MOXPosComparison());
 
     // Begin at the reverse beginning of roster
-    list<Actor *>::reverse_iterator aIt = m_ActorRoster[team].rbegin();
+    plf::list<Actor *>::reverse_iterator aIt = m_ActorRoster[team].rbegin();
 
     // Search for the actor to start search from, if specified
     if (pBeforeThis)
@@ -593,7 +593,7 @@ Actor * MovableMan::GetClosestTeamActor(int team, int player, const Vector &scen
     // A specific team, so use the rosters instead
     else
     {
-        for (list<Actor *>::iterator aIt = m_ActorRoster[team].begin(); aIt != m_ActorRoster[team].end(); ++aIt)
+        for (plf::list<Actor *>::iterator aIt = m_ActorRoster[team].begin(); aIt != m_ActorRoster[team].end(); ++aIt)
         {
             if ((*aIt) == pExcludeThis || (*aIt)->GetController()->IsPlayerControlled(player) || (pActivity && pActivity->IsOtherPlayerBrain(*aIt, player)))
                 continue;
@@ -709,7 +709,7 @@ Actor * MovableMan::GetClosestBrainActor(int team, const Vector &scenePoint) con
     float shortestDistance = g_SceneMan.GetSceneDim().GetLargest();
     Actor *pClosestBrain = 0;
 
-    for (list<Actor *>::const_iterator aIt = m_ActorRoster[team].begin(); aIt != m_ActorRoster[team].end(); ++aIt)
+    for (plf::list<Actor *>::const_iterator aIt = m_ActorRoster[team].begin(); aIt != m_ActorRoster[team].end(); ++aIt)
     {
         if (!(*aIt)->HasObjectInGroup("Brains"))
             continue;
@@ -773,7 +773,7 @@ Actor * MovableMan::GetUnassignedBrain(int team) const
     if (/*m_Actors.empty() || */m_ActorRoster[team].empty())
         return 0;
 
-    for (list<Actor *>::const_iterator aIt = m_ActorRoster[team].begin(); aIt != m_ActorRoster[team].end(); ++aIt)
+    for (plf::list<Actor *>::const_iterator aIt = m_ActorRoster[team].begin(); aIt != m_ActorRoster[team].end(); ++aIt)
     {
         if ((*aIt)->HasObjectInGroup("Brains") && !g_ActivityMan.GetActivity()->IsAssignedBrain(*aIt))
             return *aIt;
@@ -1427,7 +1427,7 @@ int MovableMan::KillAllActors(int exceptTeam)
 // Description:     Adds to a list ALL Actors in the world and removes them from the
 //                  MovableMan. Ownership IS transferred!
 
-int MovableMan::EjectAllActors(list<SceneObject *> &actorList, int onlyTeam, bool noBrains)
+int MovableMan::EjectAllActors(plf::list<SceneObject *> &actorList, int onlyTeam, bool noBrains)
 {
     int addedCount = 0;
 
@@ -1475,7 +1475,7 @@ int MovableMan::EjectAllActors(list<SceneObject *> &actorList, int onlyTeam, boo
 // Description:     Adds to a list ALL Items in the world and removes them from the
 //                  MovableMan. Ownership IS transferred!
 
-int MovableMan::EjectAllItems(list<SceneObject *> &itemList)
+int MovableMan::EjectAllItems(plf::list<SceneObject *> &itemList)
 {
     int addedCount = 0;
 
@@ -1671,7 +1671,7 @@ void MovableMan::Update()
 
     // Move all last frame's alarm events into the proper buffer, and clear out the new one to fill up with this frame's
     m_AlarmEvents.clear();
-    for (list<AlarmEvent>::iterator aeItr = m_AddedAlarmEvents.begin(); aeItr != m_AddedAlarmEvents.end(); ++aeItr)
+    for (plf::list<AlarmEvent>::iterator aeItr = m_AddedAlarmEvents.begin(); aeItr != m_AddedAlarmEvents.end(); ++aeItr)
         m_AlarmEvents.push_back(*aeItr);
     m_AddedAlarmEvents.clear();
 

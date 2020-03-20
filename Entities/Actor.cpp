@@ -251,7 +251,7 @@ int Actor::Create(const Actor &reference)
 
     m_MaxMass = reference.m_MaxMass;
 
-    for (list<PieMenuGUI::Slice>::const_iterator itr = reference.m_PieSlices.begin(); itr != reference.m_PieSlices.end(); ++itr)
+    for (plf::list<PieMenuGUI::Slice>::const_iterator itr = reference.m_PieSlices.begin(); itr != reference.m_PieSlices.end(); ++itr)
         m_PieSlices.push_back(*itr);
     
     // Only load the static AI mode icons once
@@ -460,7 +460,7 @@ int Actor::Save(Writer &writer) const
     }
     writer.NewProperty("MaxMass");
     writer << m_MaxMass;
-    for (list<PieMenuGUI::Slice>::const_iterator itr = m_PieSlices.begin(); itr != m_PieSlices.end(); ++itr)
+    for (plf::list<PieMenuGUI::Slice>::const_iterator itr = m_PieSlices.begin(); itr != m_PieSlices.end(); ++itr)
     {
         writer.NewProperty("AddPieSlice");
         writer << *itr;
@@ -779,7 +779,7 @@ float Actor::FacingAngle(float angle) const
 bool Actor::AddPieMenuSlices(PieMenuGUI *pPieMenu)
 {
     // Add the custom scripted options of this Actor
-    for (list<PieMenuGUI::Slice>::iterator itr = m_PieSlices.begin(); itr != m_PieSlices.end(); ++itr)
+    for (plf::list<PieMenuGUI::Slice>::iterator itr = m_PieSlices.begin(); itr != m_PieSlices.end(); ++itr)
         pPieMenu->AddSlice(*itr);
 
     m_PieNeedsUpdate = false;
@@ -1390,8 +1390,8 @@ void Actor::UpdateAI()
         }
 
         // Weedle out any MO's we have waypoints to that aren't valid anymore
-        list<pair<Vector, const MovableObject *> >::iterator eraseItr;
-        for (list<pair<Vector, const MovableObject *> >::iterator itr = m_Waypoints.begin(); itr != m_Waypoints.end();)
+        plf::list<pair<Vector, const MovableObject *> >::iterator eraseItr;
+        for (plf::list<pair<Vector, const MovableObject *> >::iterator itr = m_Waypoints.begin(); itr != m_Waypoints.end();)
         {
             // Check to see that an MO we're going after still exists
             if ((*itr).second && !g_MovableMan.ValidMO((*itr).second))
@@ -1507,7 +1507,7 @@ void Actor::Update()
 		Vector notUsed;
         // See if we are close enough to the next move target that we should grab the next in the path that is out of proximity range
         Vector pathPointVec;
-        for (list<Vector>::iterator lItr = m_MovePath.begin(); lItr != m_MovePath.end();)
+        for (plf::list<Vector>::iterator lItr = m_MovePath.begin(); lItr != m_MovePath.end();)
         {
             pathPointVec = g_SceneMan.ShortestDistance(m_Pos, *lItr);
             // Make sure we are within range AND have a clear sight to the path point we're about to eliminate, or it might be around a corner
@@ -1547,7 +1547,7 @@ void Actor::Update()
     /////////////////////////////////////
     // Detract damage caused by wounds from health
 
-    for (list<AEmitter *>::iterator itr = m_Wounds.begin(); itr != m_Wounds.end(); ++itr)
+    for (plf::list<AEmitter *>::iterator itr = m_Wounds.begin(); itr != m_Wounds.end(); ++itr)
         m_Health -= (*itr)->CollectDamage() * m_DamageMultiplier; //Actors must apply DamageMultiplier effects to their main MO by themselves
 
     /////////////////////////////////////////////
@@ -1978,8 +1978,8 @@ void Actor::DrawHUD(BITMAP *pTargetBitmap, const Vector &targetPos, int whichScr
         // Draw the AI paths, from the ultimate destination back up to the actor's position.
         // We do this backwards so the lines won't crawl and the dots can be evenly spaced throughout
         Vector waypoint;
-        list<pair<Vector, const MovableObject *> >::reverse_iterator vLast, vItr;
-        list<Vector>::reverse_iterator lLast, lItr;
+        plf::list<pair<Vector, const MovableObject *> >::reverse_iterator vLast, vItr;
+        plf::list<Vector>::reverse_iterator lLast, lItr;
         int skipPhase = 0;
 
         // Draw the line between the end of the movepath and the first waypoint after that, if any
@@ -2056,21 +2056,21 @@ void Actor::DrawHUD(BITMAP *pTargetBitmap, const Vector &targetPos, int whichScr
 
         Actor *pPrevAdj = 0;
         Actor *pNextAdj = 0;
-        list<Actor *> *pRoster = g_MovableMan.GetTeamRoster(m_Team);
+        plf::list<Actor *> *pRoster = g_MovableMan.GetTeamRoster(m_Team);
 
         if (pRoster->size() > 1)
         {
             // Find this in the list, both ways
-            list<Actor *>::reverse_iterator selfRItr = find(pRoster->rbegin(), pRoster->rend(), this);
+            plf::list<Actor *>::reverse_iterator selfRItr = std::find(pRoster->rbegin(), pRoster->rend(), this);
             RTEAssert(selfRItr != pRoster->rend(), "Actor couldn't find self in Team roster!");
-            list<Actor *>::iterator selfItr = find(pRoster->begin(), pRoster->end(), this);
+            plf::list<Actor *>::iterator selfItr = std::find(pRoster->begin(), pRoster->end(), this);
             RTEAssert(selfItr != pRoster->end(), "Actor couldn't find self in Team roster!");
             
             // Find the adjacent actors
             if (selfItr != pRoster->end())
             {
                 // Get the previous available actor in the list (not controlled by another player)
-                list<Actor *>::reverse_iterator prevItr = selfRItr;
+                plf::list<Actor *>::reverse_iterator prevItr = selfRItr;
                 do
                 {
                     if (++prevItr == pRoster->rend())
@@ -2082,7 +2082,7 @@ void Actor::DrawHUD(BITMAP *pTargetBitmap, const Vector &targetPos, int whichScr
                       g_ActivityMan.GetActivity()->IsOtherPlayerBrain((*prevItr), m_Controller.GetPlayer()));
 
                 // Get the next actor in the list (not controlled by another player)
-                list<Actor *>::iterator nextItr = selfItr;
+                plf::list<Actor *>::iterator nextItr = selfItr;
                 do
                 {
                     if (++nextItr == pRoster->end())

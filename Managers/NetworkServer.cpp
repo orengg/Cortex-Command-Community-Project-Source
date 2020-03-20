@@ -531,8 +531,8 @@ namespace RTE
 
 		// Clear sound events for unconnected players because AudioMan does not know about their state and stores broadcast sounds to their event lists
 		{
-			std::list<AudioMan::NetworkSoundData> ls;
-			std::list<AudioMan::NetworkMusicData> lm;
+			plf::list<AudioMan::NetworkSoundData> ls;
+			plf::list<AudioMan::NetworkMusicData> lm;
 
 			for (int i = 0; i < c_MaxClients; i++)
 			{
@@ -741,10 +741,10 @@ namespace RTE
 
 		Scene * pScene = g_SceneMan.GetScene();
 
-		std::list<SceneLayer *> layers = pScene->GetBackLayers();
+		plf::list<SceneLayer *> layers = pScene->GetBackLayers();
 		int index = 0;
 
-		for (std::list<SceneLayer *>::iterator itr = layers.begin(); itr != layers.end(); ++itr)
+		for (plf::list<SceneLayer *>::iterator itr = layers.begin(); itr != layers.end(); ++itr)
 		{
 			// Recalculate layers internal values for this player
 			(*itr)->UpdateScrollRatiosForNetworkPlayer(player);
@@ -1143,7 +1143,7 @@ namespace RTE
 
 	void NetworkServer::SendPostEffectData(int player)
 	{
-		std::list<PostEffect> effects;
+		plf::list<PostEffect> effects;
 		g_FrameMan.GetPostEffectsList(player, effects);
 
 		if (effects.empty())
@@ -1156,7 +1156,7 @@ namespace RTE
 		msg->FrameNumber = m_FrameNumbers[player];
 		msg->PostEffectsCount = 0;
 
-		for (std::list<PostEffect>::iterator eItr = effects.begin(); eItr != effects.end(); ++eItr)
+		for (plf::list<PostEffect>::iterator eItr = effects.begin(); eItr != effects.end(); ++eItr)
 		{
 			effDataPtr->X = (*eItr).m_Pos.GetX();
 			effDataPtr->Y = (*eItr).m_Pos.GetY();
@@ -1210,7 +1210,7 @@ namespace RTE
 
 	void NetworkServer::SendSoundData(int player)
 	{
-		std::list<AudioMan::NetworkSoundData> events;
+		plf::list<AudioMan::NetworkSoundData> events;
 		g_AudioMan.GetSoundEvents(player, events);
 
 		if (events.empty())
@@ -1223,7 +1223,7 @@ namespace RTE
 		msg->FrameNumber = m_FrameNumbers[player];
 		msg->SoundEventsCount = 0;
 
-		for (std::list<AudioMan::NetworkSoundData>::iterator eItr = events.begin(); eItr != events.end(); ++eItr)
+		for (plf::list<AudioMan::NetworkSoundData>::iterator eItr = events.begin(); eItr != events.end(); ++eItr)
 		{
 			sndDataPtr->State = (*eItr).State;
 			sndDataPtr->Channel = (*eItr).Channel;
@@ -1278,7 +1278,7 @@ namespace RTE
 
 	void NetworkServer::SendMusicData(int player)
 	{
-		std::list<AudioMan::NetworkMusicData> events;
+		plf::list<AudioMan::NetworkMusicData> events;
 		g_AudioMan.GetMusicEvents(player, events);
 
 		if (events.empty())
@@ -1291,7 +1291,7 @@ namespace RTE
 		msg->FrameNumber = m_FrameNumbers[player];
 		msg->MusicEventsCount = 0;
 
-		for (std::list<AudioMan::NetworkMusicData>::iterator eItr = events.begin(); eItr != events.end(); ++eItr)
+		for (plf::list<AudioMan::NetworkMusicData>::iterator eItr = events.begin(); eItr != events.end(); ++eItr)
 		{
 			sndDataPtr->State = (*eItr).State;
 			sndDataPtr->Loops = (*eItr).Loops;

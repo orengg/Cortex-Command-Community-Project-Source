@@ -256,7 +256,7 @@ public:
 // Return value:    Whetehr any items were put in the list at all. false if there are no
 //                  items in the order listbox.
 
-    bool GetOrderList(std::list<const SceneObject *> &listToFill);
+    bool GetOrderList(plf::list<const SceneObject *> &listToFill);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -643,7 +643,7 @@ protected:
 //                  The name of the group to add all objects of. "" or "All" looks for all.
 // Return value:    None.
 
-    void AddObjectsToItemList(std::vector<std::list<Entity *> > &moduleList, std::string type = "", std::string group = "");
+    void AddObjectsToItemList(std::vector<plf::list<Entity *> > &moduleList, std::string type = "", std::string group = "");
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

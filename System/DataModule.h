@@ -189,7 +189,7 @@ namespace RTE {
 		/// Gets the list of all registered Entity groups of this.
 		/// </summary>
 		/// <returns>The list of all groups. Ownership is not transferred.</returns>
-		const std::list<std::string> * GetGroupRegister() const { return &m_GroupRegister; }
+		const plf::list<std::string> * GetGroupRegister() const { return &m_GroupRegister; }
 
 		/// <summary>
 		/// Registers the existence of an Entity group in this module.
@@ -203,7 +203,7 @@ namespace RTE {
 		/// <param name="groupList">The list that all found groups will be ADDED to. OINT.</param>
 		/// <param name="withType">The name of the type to only get groups of.</param>
 		/// <returns>Whether any groups with the specified type was found.</returns>
-		bool GetGroupsWithType(std::list<std::string> &groupList, std::string withType);
+		bool GetGroupsWithType(plf::list<std::string> &groupList, std::string withType);
 
 		/// <summary>
 		/// Adds to a list all previously read in (defined) Entities which are associated with a specific group.
@@ -212,7 +212,7 @@ namespace RTE {
 		/// <param name="group">The group to look for.</param>
 		/// <param name="type">The name of the least common denominator type of the Entities you want. "All" will look at all types.</param>
 		/// <returns>Whether any Entity:s were found and added to the list.</returns>
-		bool GetAllOfGroup(std::list<Entity *> &objectList, std::string group, std::string type);
+		bool GetAllOfGroup(plf::list<Entity *> &objectList, std::string group, std::string type);
 
 		/// <summary>
 		/// Adds to a list all previously read in (defined) Entities, by inexact type.
@@ -220,7 +220,7 @@ namespace RTE {
 		/// <param name="objectList">Reference to a list which will get all matching Entities added to it. Ownership of the list or the Entities placed in it are NOT transferred!</param>
 		/// <param name="type">The name of the least common denominator type of the Entities you want. "All" will look at all types.</param>
 		/// <returns>Whether any Entities were found and added to the list.</returns>
-		bool GetAllOfType(std::list<Entity *> &objectList, std::string type);
+		bool GetAllOfType(plf::list<Entity *> &objectList, std::string type);
 #pragma endregion
 
 #pragma region Material Mapping
@@ -289,8 +289,8 @@ namespace RTE {
 
 		float m_CrabToHumanSpawnRatio; //!< Crab-to-human Spawn ratio to replace value from Constants.lua.
 
-		std::list<const Entity *> m_EntityList; //!< A list of loaded entities solely for the purpose of enumeration presets from Lua.
-		std::list<std::string> m_GroupRegister; //!< List of all Entity groups ever registered in this, all uniques.
+		plf::list<const Entity *> m_EntityList; //!< A list of loaded entities solely for the purpose of enumeration presets from Lua.
+		plf::list<std::string> m_GroupRegister; //!< List of all Entity groups ever registered in this, all uniques.
 		unsigned char m_MaterialMappings[c_PaletteEntriesNumber]; //!< Material mappings local to this DataModule.
 
 		/// <summary>
@@ -298,7 +298,7 @@ namespace RTE {
 		/// This is used to be able to write back all of them in proper order into their respective files in the DataModule when writing this.
 		/// The Entity instances ARE owned by this list.
 		/// </summary>
-		std::list<PresetEntry> m_PresetList;
+		plf::list<PresetEntry> m_PresetList;
 
 		/// <summary>
 		/// Map of class names and map of instance template names and actual Entity instances that were read for this DataModule.
@@ -306,7 +306,7 @@ namespace RTE {
 		/// There can be multiple entries of the same instance name in any of the type sub-maps, but only ONE whose exact class is that of the type-list!
 		/// The Entity instances are NOT owned by this map.
 		/// </summary>
-		std::map<std::string, std::list<std::pair<std::string, Entity *>>> m_TypeMap;
+		std::map<std::string, plf::list<std::pair<std::string, Entity *>>> m_TypeMap;
 
 #pragma region Entity Mapping
 		/// <summary>

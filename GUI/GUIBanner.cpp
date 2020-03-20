@@ -323,8 +323,8 @@ void GUIBanner::Update()
     int flyDirection = m_AnimMode == FLYBYLEFTWARD ? -1 : 1;
     int whichChar = 0;
     // Go through every character, updating their positions and states
-    list<FlyingChar>::iterator prevItr = m_BannerChars.end();
-    for (list<FlyingChar>::iterator cItr = m_BannerChars.begin(); cItr != m_BannerChars.end(); ++cItr)
+    plf::list<FlyingChar>::iterator prevItr = m_BannerChars.end();
+    for (plf::list<FlyingChar>::iterator cItr = m_BannerChars.begin(); cItr != m_BannerChars.end(); ++cItr)
     {
         whichChar++;
         // Start off each character's motion at the appropriate order and timing
@@ -418,7 +418,7 @@ void GUIBanner::Draw(BITMAP *pTargetBitmap)
     // Go through every character in the banner, drawing the ones that are showing
     unsigned char c;
     int mode, charWidth, offX, offY;
-    for (list<FlyingChar>::iterator cItr = m_BannerChars.begin(); cItr != m_BannerChars.end(); ++cItr)
+    for (plf::list<FlyingChar>::iterator cItr = m_BannerChars.begin(); cItr != m_BannerChars.end(); ++cItr)
     {
         // Only draw anything if the character is even visible
         if ((*cItr).m_MoveState >= SHOWING && (*cItr).m_MoveState <= HIDING)

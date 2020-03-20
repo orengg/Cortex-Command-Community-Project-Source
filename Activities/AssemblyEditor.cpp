@@ -557,9 +557,9 @@ BunkerAssembly * AssemblyEditor::BuildAssembly(string saveAsName)
 	pBA->SetPresetName(saveAsName);
 	m_pEditorGUI->SetCurrentAssemblyName(saveAsName);
 
-    const std::list<SceneObject *> *pSceneObjectList = 0;
+    const plf::list<SceneObject *> *pSceneObjectList = 0;
 	pSceneObjectList = g_SceneMan.GetScene()->GetPlacedObjects(Scene::PLACEONLOAD);
-    for (list<SceneObject *>::const_iterator itr = pSceneObjectList->begin(); itr != pSceneObjectList->end(); ++itr)
+    for (plf::list<SceneObject *>::const_iterator itr = pSceneObjectList->begin(); itr != pSceneObjectList->end(); ++itr)
     {
 		//Check if object fits the assembly box
 		bool skip = true;
@@ -802,11 +802,11 @@ void AssemblyEditor::UpdateLoadDialog()
     m_pLoadNameCombo->ClearList();
 
     // Get the list of all read in scenes
-    list<Entity *> sceneList;
+    plf::list<Entity *> sceneList;
     g_PresetMan.GetAllOfType(sceneList, "Scene");
 
     // Go through the list and add their names to the combo box
-    for (list<Entity *>::iterator itr = sceneList.begin(); itr != sceneList.end(); ++itr)
+    for (plf::list<Entity *>::iterator itr = sceneList.begin(); itr != sceneList.end(); ++itr)
     {
 		Scene * pScene = dynamic_cast<Scene *>(*itr);
 		if (pScene)

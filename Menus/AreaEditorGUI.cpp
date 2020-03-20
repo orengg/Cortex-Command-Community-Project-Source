@@ -600,15 +600,15 @@ void AreaEditorGUI::Draw(BITMAP *pTargetBitmap, const Vector &targetPos) const
         return;
 
     // List to capture scene-wrapped boxes
-    list<Box> wrappedBoxes;
+    plf::list<Box> wrappedBoxes;
 
     // First draw all the objects placed in the scene by the Scene Editor
-    const std::list<SceneObject *> *pSceneObjectList = g_SceneMan.GetScene()->GetPlacedObjects(Scene::PLACEONLOAD);
+    const plf::list<SceneObject *> *pSceneObjectList = g_SceneMan.GetScene()->GetPlacedObjects(Scene::PLACEONLOAD);
     if (m_FullFeatured)
     {
         // Draw all already placed Objects, and the currently held one in the order it is about to be placed in the scene
         int i = 0;
-        for (list<SceneObject *>::const_iterator itr = pSceneObjectList->begin(); itr != pSceneObjectList->end(); ++itr, ++i)
+        for (plf::list<SceneObject *>::const_iterator itr = pSceneObjectList->begin(); itr != pSceneObjectList->end(); ++itr, ++i)
         {
            (*itr)->Draw(pTargetBitmap, targetPos);
             // Draw basic HUD if an actor
@@ -636,7 +636,7 @@ void AreaEditorGUI::Draw(BITMAP *pTargetBitmap, const Vector &targetPos) const
             g_SceneMan.WrapBox(*bItr, wrappedBoxes);
 
             // Iterate through the wrapped boxes - will only be one if there's no wrapping
-            for (list<Box>::iterator wItr = wrappedBoxes.begin(); wItr != wrappedBoxes.end(); ++wItr)
+            for (plf::list<Box>::iterator wItr = wrappedBoxes.begin(); wItr != wrappedBoxes.end(); ++wItr)
             {
                 // Draw the rectangle of each Box, adjusted for the offet of the target bitmap in the scene
                 adjCorner = (*wItr).GetCorner() - targetPos;
@@ -654,7 +654,7 @@ void AreaEditorGUI::Draw(BITMAP *pTargetBitmap, const Vector &targetPos) const
         g_SceneMan.WrapBox(m_EditedBox, wrappedBoxes);
 
         // Iterate through the wrapped boxes - will only be one if there's no wrapping
-        for (list<Box>::iterator wItr = wrappedBoxes.begin(); wItr != wrappedBoxes.end(); ++wItr)
+        for (plf::list<Box>::iterator wItr = wrappedBoxes.begin(); wItr != wrappedBoxes.end(); ++wItr)
         {
             adjCorner = (*wItr).GetCorner() - targetPos;
             // Special 'X' drawing when deleting

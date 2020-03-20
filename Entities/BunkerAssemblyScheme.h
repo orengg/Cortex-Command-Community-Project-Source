@@ -377,7 +377,7 @@ protected:
 	BITMAP *m_pIconBitmap;
 
     // The objects that are placed along with this in the scene
-    std::list<SOPlacer> m_ChildObjects;
+    plf::list<SOPlacer> m_ChildObjects;
 
 	// If this is true then sceneman must select a single assembly for this scheme and use it everywhere on the scene
 	bool m_IsOneTypePerScene;

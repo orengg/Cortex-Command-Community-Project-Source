@@ -247,7 +247,7 @@ namespace RTE
 		int m_CurrentFrame;
 
 		Vector m_TargetPos[FRAMES_TO_REMEMBER];
-		std::list<PostEffect> m_PostEffects[FRAMES_TO_REMEMBER];
+		plf::list<PostEffect> m_PostEffects[FRAMES_TO_REMEMBER];
 
 		// List of sounds received from server. OWNED!!!
 		std::map<short int, Sound *> m_Sounds;

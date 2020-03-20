@@ -803,10 +803,10 @@ void SceneEditor::UpdateNewDialog()
     // Refill Terrains
     m_pNewTerrainCombo->ClearList();
     // Get the list of all read in terrains
-    list<Entity *> terrainList;
+    plf::list<Entity *> terrainList;
     g_PresetMan.GetAllOfTypeInModuleSpace(terrainList, "SLTerrain", selectedModuleID);
     // Go through the list and add their names to the combo box
-    for (list<Entity *>::iterator itr = terrainList.begin(); itr != terrainList.end(); ++itr)
+    for (plf::list<Entity *>::iterator itr = terrainList.begin(); itr != terrainList.end(); ++itr)
 	{
 		if ((*itr)->GetPresetName() != "Editor Terrain" &&
 			(*itr)->GetPresetName() != "Physics Test Terrain")
@@ -824,24 +824,24 @@ void SceneEditor::UpdateNewDialog()
     m_pNewBG3Combo->ClearList();
 
     // Get the list of all read in NEAR background layers
-    list<Entity *> bgList;
+    plf::list<Entity *> bgList;
     g_PresetMan.GetAllOfGroupInModuleSpace(bgList, "Near Backdrops", "SceneLayer", selectedModuleID);
     // Go through the list and add their names to the combo box
-    for (list<Entity *>::iterator itr = bgList.begin(); itr != bgList.end(); ++itr)
+    for (plf::list<Entity *>::iterator itr = bgList.begin(); itr != bgList.end(); ++itr)
         m_pNewBG1Combo->AddItem((*itr)->GetPresetName());
 
     // Get the list of all read in MID background layers
     bgList.clear();
     g_PresetMan.GetAllOfGroupInModuleSpace(bgList, "Mid Backdrops", "SceneLayer", selectedModuleID);
     // Go through the list and add their names to the combo box
-    for (list<Entity *>::iterator itr = bgList.begin(); itr != bgList.end(); ++itr)
+    for (plf::list<Entity *>::iterator itr = bgList.begin(); itr != bgList.end(); ++itr)
         m_pNewBG2Combo->AddItem((*itr)->GetPresetName());
 
     // Get the list of all read in FAR background layers
     bgList.clear();
     g_PresetMan.GetAllOfGroupInModuleSpace(bgList, "Far Backdrops", "SceneLayer", selectedModuleID);
     // Go through the list and add their names to the combo box
-    for (list<Entity *>::iterator itr = bgList.begin(); itr != bgList.end(); ++itr)
+    for (plf::list<Entity *>::iterator itr = bgList.begin(); itr != bgList.end(); ++itr)
         m_pNewBG3Combo->AddItem((*itr)->GetPresetName());
 
     // Select the first one for each
@@ -862,11 +862,11 @@ void SceneEditor::UpdateLoadDialog()
     m_pLoadNameCombo->ClearList();
 
     // Get the list of all read in scenes
-    list<Entity *> sceneList;
+    plf::list<Entity *> sceneList;
     g_PresetMan.GetAllOfType(sceneList, "Scene");
 
     // Go through the list and add their names to the combo box
-    for (list<Entity *>::iterator itr = sceneList.begin(); itr != sceneList.end(); ++itr)
+    for (plf::list<Entity *>::iterator itr = sceneList.begin(); itr != sceneList.end(); ++itr)
     {
 		Scene * pScene = dynamic_cast<Scene *>(*itr);
 		if (pScene)

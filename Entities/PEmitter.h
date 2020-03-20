@@ -534,7 +534,7 @@ protected:
 	static Entity::ClassInfo m_sClass;
 
 	// The list of MO instances that get emitted
-	std::list<Emission> m_EmissionList;
+	plf::list<Emission> m_EmissionList;
 	// Sounds
 	Sound m_EmissionSound;
 	Sound m_BurstSound;

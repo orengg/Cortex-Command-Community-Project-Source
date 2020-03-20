@@ -271,7 +271,7 @@ void AreaPickerGUI::UpdateAreasList(string selectAreaName)
         Scene *pScene = g_SceneMan.GetScene();
         int indexToSelect = 0;
         // Add all the current Scene's Area:s to the list!
-        for (list<Scene::Area>::iterator itr = pScene->m_AreaList.begin(); itr != pScene->m_AreaList.end(); ++itr)
+        for (plf::list<Scene::Area>::iterator itr = pScene->m_AreaList.begin(); itr != pScene->m_AreaList.end(); ++itr)
         {
             m_pAreasList->AddItem((*itr).GetName());
             // If an Area's name matches the one we're supposed to leave selected after update, then save teh index

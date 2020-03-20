@@ -80,11 +80,11 @@ int PresetMan::Create()
 int PresetMan::Save(Writer &writer) const
 {
     writer << m_Actors.size();
-    for (list<Actor *>::const_iterator itr = m_Actors.begin(); itr != m_Actors.end(); ++itr)
+    for (plf::list<Actor *>::const_iterator itr = m_Actors.begin(); itr != m_Actors.end(); ++itr)
         writer << **itr;
 
     writer << m_Particles.size();
-    for (list<MovableEntity *>::const_iterator itr2 = m_Particles.begin(); itr2 != m_Particles.end(); ++itr2)
+    for (plf::list<MovableEntity *>::const_iterator itr2 = m_Particles.begin(); itr2 != m_Particles.end(); ++itr2)
         writer << **itr2;
 
     return 0;
@@ -500,7 +500,7 @@ Entity * PresetMan::ReadReflectedPreset(Reader &reader)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Adds to a list all previously read in (defined) Entitys, by type.
 
-bool PresetMan::GetAllOfType(list<Entity *> &entityList, string type, int whichModule)
+bool PresetMan::GetAllOfType(plf::list<Entity *> &entityList, string type, int whichModule)
 {
     if (type.empty())
         return false;
@@ -531,7 +531,7 @@ bool PresetMan::GetAllOfType(list<Entity *> &entityList, string type, int whichM
 // Description:     Adds to a list all previously read in (defined) Entitys which are
 //                  of a specific type, and only exist in a specific module space.
 
-bool PresetMan::GetAllOfTypeInModuleSpace(std::list<Entity *> &entityList, std::string type, int whichModuleSpace)
+bool PresetMan::GetAllOfTypeInModuleSpace(plf::list<Entity *> &entityList, std::string type, int whichModuleSpace)
 {
     if (type.empty())
         return false;
@@ -562,7 +562,7 @@ bool PresetMan::GetAllOfTypeInModuleSpace(std::list<Entity *> &entityList, std::
 // Description:     Adds to a list all previously read in (defined) Entitys which are
 //                  associated with a specific group.
 
-bool PresetMan::GetAllOfGroup(list<Entity *> &entityList, string group, string type, int whichModule)
+bool PresetMan::GetAllOfGroup(plf::list<Entity *> &entityList, string group, string type, int whichModule)
 {
     RTEAssert(!group.empty(), "Looking for empty group!");
 
@@ -599,7 +599,7 @@ Entity * PresetMan::GetRandomOfGroup(string group, string type, int whichModule)
 
     bool foundAny = false;
     // The total list we'll select a random one from
-    list<Entity *> entityList;
+    plf::list<Entity *> entityList;
 
     // All modules
     if (whichModule < 0)
@@ -623,7 +623,7 @@ Entity * PresetMan::GetRandomOfGroup(string group, string type, int whichModule)
     // Pick one and return it
     int current = 0;
     int selection = SelectRand(0, entityList.size() - 1);
-    for (list<Entity *>::iterator itr = entityList.begin(); itr != entityList.end(); ++itr)
+    for (plf::list<Entity *>::iterator itr = entityList.begin(); itr != entityList.end(); ++itr)
     {
         if (current == selection)
             return (*itr);
@@ -647,8 +647,8 @@ Entity * PresetMan::GetRandomBuyableOfGroupFromTech(string group, string type, i
 
     bool foundAny = false;
     // The total list we'll select a random one from
-    list<Entity *> entityList;
-    list<Entity *> tempList;
+    plf::list<Entity *> entityList;
+    plf::list<Entity *> tempList;
 
 
     string techString = " Tech";
@@ -682,7 +682,7 @@ Entity * PresetMan::GetRandomBuyableOfGroupFromTech(string group, string type, i
 		if (group == "Brains")
 		{
 			foundAny = false;
-			for (list<Entity *>::iterator oItr = tempList.begin(); oItr != tempList.end(); ++oItr)
+			for (plf::list<Entity *>::iterator oItr = tempList.begin(); oItr != tempList.end(); ++oItr)
 			{
 				entityList.push_back(*oItr);
 				foundAny = true;
@@ -691,7 +691,7 @@ Entity * PresetMan::GetRandomBuyableOfGroupFromTech(string group, string type, i
 		else
 		{
 			foundAny = false;
-			for (list<Entity *>::iterator oItr = tempList.begin(); oItr != tempList.end(); ++oItr)
+			for (plf::list<Entity *>::iterator oItr = tempList.begin(); oItr != tempList.end(); ++oItr)
 			{
 				SceneObject * pSObject = dynamic_cast<SceneObject *>(*oItr);
 				// Buyable and not brain?
@@ -713,7 +713,7 @@ Entity * PresetMan::GetRandomBuyableOfGroupFromTech(string group, string type, i
     int selection = SelectRand(0, entityList.size() - 1);
 
 	int totalWeight = 0;
-	for (list<Entity *>::iterator itr = entityList.begin(); itr != entityList.end(); ++itr)
+	for (plf::list<Entity *>::iterator itr = entityList.begin(); itr != entityList.end(); ++itr)
 		totalWeight += (*itr)->GetRandomWeight();
 
 	// Use random weights if looking in specific modules
@@ -724,7 +724,7 @@ Entity * PresetMan::GetRandomBuyableOfGroupFromTech(string group, string type, i
 
 		selection = SelectRand(0, totalWeight - 1);
 
-		for (list<Entity *>::iterator itr = entityList.begin(); itr != entityList.end(); ++itr)
+		for (plf::list<Entity *>::iterator itr = entityList.begin(); itr != entityList.end(); ++itr)
 		{
 			bool found = false;
 			int bucketCounter = 0;
@@ -750,7 +750,7 @@ Entity * PresetMan::GetRandomBuyableOfGroupFromTech(string group, string type, i
 	}
 	else 
 	{
-		for (list<Entity *>::iterator itr = entityList.begin(); itr != entityList.end(); ++itr)
+		for (plf::list<Entity *>::iterator itr = entityList.begin(); itr != entityList.end(); ++itr)
 		{
 			if (current == selection)
 				return (*itr);
@@ -770,7 +770,7 @@ Entity * PresetMan::GetRandomBuyableOfGroupFromTech(string group, string type, i
 //                  associated with a specific group, and only exist in a specific module
 //                  space.
 
-bool PresetMan::GetAllOfGroupInModuleSpace(list<Entity *> &entityList, string group, string type, int whichModuleSpace)
+bool PresetMan::GetAllOfGroupInModuleSpace(plf::list<Entity *> &entityList, string group, string type, int whichModuleSpace)
 {
     RTEAssert(!group.empty(), "Looking for empty group!");
 
@@ -807,7 +807,7 @@ Entity * PresetMan::GetRandomOfGroupInModuleSpace(string group, string type, int
 
     bool foundAny = false;
     // The total list we'll select a random one from
-    list<Entity *> entityList;
+    plf::list<Entity *> entityList;
 
     // All modules
     if (whichModuleSpace < 0)
@@ -830,7 +830,7 @@ Entity * PresetMan::GetRandomOfGroupInModuleSpace(string group, string type, int
     // Pick one and return it
     int current = 0;
     int selection = SelectRand(0, entityList.size() - 1);
-    for (list<Entity *>::iterator itr = entityList.begin(); itr != entityList.end(); ++itr)
+    for (plf::list<Entity *>::iterator itr = entityList.begin(); itr != entityList.end(); ++itr)
     {
         if (current == selection)
             return (*itr);
@@ -937,7 +937,7 @@ void PresetMan::RegisterGroup(std::string newGroup, int whichModule)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Gets the list of all groups registered in a specific module.
 
-bool PresetMan::GetGroups(list<string> &groupList, int whichModule, string withType) const
+bool PresetMan::GetGroups(plf::list<string> &groupList, int whichModule, string withType) const
 {
     RTEAssert(whichModule < (int)m_pDataModules.size(), "Tried to access an out of bounds data module number!");
 
@@ -949,7 +949,7 @@ bool PresetMan::GetGroups(list<string> &groupList, int whichModule, string withT
         // Get all applicable groups
         if (withType == "All" || withType.empty())
         {
-            for (list<string>::const_iterator gItr = m_TotalGroupRegister.begin(); gItr != m_TotalGroupRegister.end(); ++gItr)
+            for (plf::list<string>::const_iterator gItr = m_TotalGroupRegister.begin(); gItr != m_TotalGroupRegister.end(); ++gItr)
                 groupList.push_back(*gItr);
 
             foundAny = !m_TotalGroupRegister.empty();
@@ -967,8 +967,8 @@ bool PresetMan::GetGroups(list<string> &groupList, int whichModule, string withT
         // Get ALL groups of that module
         if (withType == "All" || withType.empty())
         {
-            const list<string> *pGroupList = m_pDataModules[whichModule]->GetGroupRegister();
-            for (list<string>::const_iterator gItr = pGroupList->begin(); gItr != pGroupList->end(); ++gItr)
+            const plf::list<string> *pGroupList = m_pDataModules[whichModule]->GetGroupRegister();
+            for (plf::list<string>::const_iterator gItr = pGroupList->begin(); gItr != pGroupList->end(); ++gItr)
                 groupList.push_back(*gItr);
 
             foundAny = !pGroupList->empty();
@@ -988,7 +988,7 @@ bool PresetMan::GetGroups(list<string> &groupList, int whichModule, string withT
 // Description:     Fills out a list with all groups registered in all official, PLUS a
 //                  a specific non-official module as well.
 
-bool PresetMan::GetModuleSpaceGroups(list<string> &groupList, int whichModule, string withType) const
+bool PresetMan::GetModuleSpaceGroups(plf::list<string> &groupList, int whichModule, string withType) const
 {
     RTEAssert(whichModule < (int)m_pDataModules.size(), "Tried to access an out of bounds data module number!");
 
@@ -1000,7 +1000,7 @@ bool PresetMan::GetModuleSpaceGroups(list<string> &groupList, int whichModule, s
         // Just get all groups ever registered
         if (withType == "All" || withType.empty())
         {
-            for (list<string>::const_iterator gItr = m_TotalGroupRegister.begin(); gItr != m_TotalGroupRegister.end(); ++gItr)
+            for (plf::list<string>::const_iterator gItr = m_TotalGroupRegister.begin(); gItr != m_TotalGroupRegister.end(); ++gItr)
                 groupList.push_back(*gItr);
 
             foundAny = !m_TotalGroupRegister.empty();

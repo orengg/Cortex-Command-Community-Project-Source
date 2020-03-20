@@ -303,7 +303,7 @@ public:
 // Arguments:       None.
 // Return value:    List of visible assembly groups.
 
-	std::list<string> GetVisibleAssemblyGroupsList() const { return m_VisibleAssemblyGroupsList; }
+	plf::list<string> GetVisibleAssemblyGroupsList() const { return m_VisibleAssemblyGroupsList; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Method:			GetDisabledModsList
@@ -657,7 +657,7 @@ protected:
 	bool m_DisableLoadingScreen;
 
     // List of assemblies groups always shown in editors
-    std::list<std::string> m_VisibleAssemblyGroupsList;
+    plf::list<std::string> m_VisibleAssemblyGroupsList;
     // List of the module names we disabled
     std::map<std::string, bool> m_DisabledMods;
     // List of the script names we enabled

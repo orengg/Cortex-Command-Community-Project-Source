@@ -12,7 +12,6 @@
 #include <string>
 #include <cstring>
 #include <vector>
-#include <list>
 #include <set>
 #include <map>
 #include <unordered_map>
@@ -32,9 +31,10 @@
 // TODO: don't forget to replace with <filesystem> when eventually enable ++17 standard.
 #include <experimental/filesystem>
 
+#include "PLF/plf_list.h"
+
 // TODO: Get rid of these once alias qualifiers are added.
 using std::string;
-using std::list;
 using std::pair;
 using std::deque;
 using std::map;

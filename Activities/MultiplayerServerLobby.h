@@ -334,9 +334,9 @@ namespace RTE
 		const Scene *m_pSelectedScene;
 
 		// The current set of Scenes being displayed - not owned, nor are the scenes
-		std::list<Scene *> *m_pScenes;
+		plf::list<Scene *> *m_pScenes;
 		// The map of Activity:ies, and the Scene:s compatible with each, neither of which are owned here
-		std::map<Activity *, std::list<Scene *> > m_Activities;
+		std::map<Activity *, plf::list<Scene *> > m_Activities;
 
 		//////////////////////////////////////////////////////////////////////////////////////////
 		// Private member variable and method declarations

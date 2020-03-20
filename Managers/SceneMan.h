@@ -1583,7 +1583,7 @@ public:
 // Return value:    How many additions of the passed in rect was added to the list. 1 if
 //                  no wrapping need was detected, up to 4 possible (if straddling both seams)
 
-    int WrapRect(const IntRect &wrapRect, std::list<IntRect> &outputList);
+    int WrapRect(const IntRect &wrapRect, plf::list<IntRect> &outputList);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1599,7 +1599,7 @@ public:
 // Return value:    How many additions of the passed in Box was added to the list. 1 if
 //                  no wrapping need was detected, up to 4 possible (if straddling both seams)
 
-    int WrapBox(const Box &wrapBox, std::list<Box> &outputList);
+    int WrapBox(const Box &wrapBox, plf::list<Box> &outputList);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1645,7 +1645,7 @@ public:
 //                  The team whose unseen layer should obscure the screen effects here.
 // Return value:    Whether any active post effects were found in that box.
 
-    bool GetPostScreenEffectsWrapped(const Vector &boxPos, int boxWidth, int boxHeight, std::list<PostEffect> &effectsList, int team = -1);
+    bool GetPostScreenEffectsWrapped(const Vector &boxPos, int boxWidth, int boxHeight, plf::list<PostEffect> &effectsList, int team = -1);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1682,7 +1682,7 @@ public:
 //                  the Box:es returned here will be relative to the boxPos passed in above.
 // Return value:    Whether any active post effects were found in that box.
 
-    bool GetGlowAreasWrapped(const Vector &boxPos, int boxWidth, int boxHeight, std::list<Box> &areaList);
+    bool GetGlowAreasWrapped(const Vector &boxPos, int boxWidth, int boxHeight, plf::list<Box> &areaList);
 
 
 
@@ -1829,7 +1829,7 @@ protected:
 //                  The team whose unseen area should block the glows.
 // Return value:    Whether any active post effects were found in that box.
 
-    bool GetPostScreenEffects(Vector boxPos, int boxWidth, int boxHeight, std::list<PostEffect> &effectsList, int team = -1);
+    bool GetPostScreenEffects(Vector boxPos, int boxWidth, int boxHeight, plf::list<PostEffect> &effectsList, int team = -1);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1845,7 +1845,7 @@ protected:
 //                  The team whose unseen area should block the glows.
 // Return value:    Whether any active post effects were found in that box.
 
-    bool GetPostScreenEffects(int left, int top, int right, int bottom, std::list<PostEffect> &effectsList, int team = -1);
+    bool GetPostScreenEffects(int left, int top, int right, int bottom, plf::list<PostEffect> &effectsList, int team = -1);
 
 
     // Member variables
@@ -1867,11 +1867,11 @@ protected:
     // MovableObject ID layer
     SceneLayer *m_pMOIDLayer;
     // All the areas drawn within on the MOID layer since last Update
-    std::list<IntRect> m_MOIDDrawings;
+    plf::list<IntRect> m_MOIDDrawings;
     // All post-processing effects registered for this draw frame in the scene. Vector in scene coordinates, BITMAPs not owned
-    std::list<PostEffect> m_PostSceneEffects;
+    plf::list<PostEffect> m_PostSceneEffects;
     // All the areas to do post glow pixel effects on, in scene coordinates
-    std::list<IntRect> m_GlowAreas;
+    plf::list<IntRect> m_GlowAreas;
 
     // Debug layer for seeing cast rays etc
     SceneLayer *m_pDebugLayer;

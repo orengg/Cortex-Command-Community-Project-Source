@@ -491,10 +491,10 @@ int MainMenuGUI::Create(Controller *pController)
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Load script data and fill the lists
-	std::list<Entity *> globalScripts;
+	plf::list<Entity *> globalScripts;
 	g_PresetMan.GetAllOfType(globalScripts, "GlobalScript");
 
-	for (std::list<Entity *>::iterator sItr = globalScripts.begin(); sItr != globalScripts.end(); ++sItr )
+	for (plf::list<Entity *>::iterator sItr = globalScripts.begin(); sItr != globalScripts.end(); ++sItr )
 	{
 		GlobalScript * script = dynamic_cast<GlobalScript *>(*sItr);
 		if (script)
@@ -1893,11 +1893,11 @@ void MainMenuGUI::UpdateScenesBox()
     m_pSceneSelector->ClearList();
 
     // Get the list of all read in scenes
-    list<Entity *> sceneList;
+    plf::list<Entity *> sceneList;
     g_PresetMan.GetAllOfType(sceneList, "Scene");
 
     // Go through the list and add their names to the combo box
-    for (list<Entity *>::iterator itr = sceneList.begin(); itr != sceneList.end(); ++itr)
+    for (plf::list<Entity *>::iterator itr = sceneList.begin(); itr != sceneList.end(); ++itr)
     {
         m_pSceneSelector->AddItem((*itr)->GetPresetName());
     }

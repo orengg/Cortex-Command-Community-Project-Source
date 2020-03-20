@@ -649,7 +649,7 @@ void BuyMenuGUI::SetModuleExpanded(int whichModule, bool expanded)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Return the list of things currently in the purchase order list box.
 
-bool BuyMenuGUI::GetOrderList(list<const SceneObject *> &listToFill)
+bool BuyMenuGUI::GetOrderList(plf::list<const SceneObject *> &listToFill)
 {
     if (m_pCartList->GetItemList()->empty())
         return false;
@@ -1815,7 +1815,7 @@ void BuyMenuGUI::CategoryChange(bool focusOnCategoryTabs)
     }
 
     // The vector of lists which will be filled with catalog objects, grouped by which data module they were read from
-    vector<list<Entity *> > catalogList;
+    vector<plf::list<Entity *> > catalogList;
 
     if (m_MenuCategory == CRAFT)
     {
@@ -1847,7 +1847,7 @@ void BuyMenuGUI::CategoryChange(bool focusOnCategoryTabs)
     SceneObject *pSObject = 0;
     const DataModule *pModule = 0;
     GUIBitmap *pItemBitmap = 0;
-    list<SceneObject *> tempList;
+    plf::list<SceneObject *> tempList;
     for (int moduleID = 0; moduleID < catalogList.size(); ++moduleID)
     {
         // Don't add an empty module grouping
@@ -1856,7 +1856,7 @@ void BuyMenuGUI::CategoryChange(bool focusOnCategoryTabs)
             tempList.clear();
 
             // Move all valid/desired entities from the module list to the intermediate list
-            for (list<Entity *>::iterator oItr = catalogList[moduleID].begin(); oItr != catalogList[moduleID].end(); ++oItr)
+            for (plf::list<Entity *>::iterator oItr = catalogList[moduleID].begin(); oItr != catalogList[moduleID].end(); ++oItr)
             {
                 pSObject = dynamic_cast<SceneObject *>(*oItr);
                 // Buyable and not brain?
@@ -1881,7 +1881,7 @@ void BuyMenuGUI::CategoryChange(bool focusOnCategoryTabs)
                 if (moduleID == 0 || m_aExpandedModules[moduleID])
                 {
                     // Transfer from the temp intermediate list to the real gui list
-                    for (list<SceneObject *>::iterator tItr = tempList.begin(); tItr != tempList.end(); ++tItr)
+                    for (plf::list<SceneObject *>::iterator tItr = tempList.begin(); tItr != tempList.end(); ++tItr)
                     {
                         // Get a good icon and wrap it, while not passing ownership into the AllegroBitmap
                         pItemBitmap = new AllegroBitmap((*tItr)->GetGraphicalIcon());
@@ -1995,9 +1995,9 @@ bool BuyMenuGUI::DeployLoadout(int index)
 	}
 
     // Get and add all the stuff in the selected loadout
-    list<const SceneObject *> *pCargo = m_Loadouts[index].GetCargoList();
+    plf::list<const SceneObject *> *pCargo = m_Loadouts[index].GetCargoList();
     AllegroBitmap *pItemBitmap = 0;
-    for (list<const SceneObject *>::iterator cItr = pCargo->begin(); cItr != pCargo->end(); ++cItr)
+    for (plf::list<const SceneObject *>::iterator cItr = pCargo->begin(); cItr != pCargo->end(); ++cItr)
     {
         // Get a good icon and wrap it, while not passing ownership into the AllegroBitmap
         pItemBitmap = new AllegroBitmap(const_cast<SceneObject *>(*cItr)->GetGraphicalIcon());
@@ -2056,14 +2056,14 @@ bool BuyMenuGUI::DeployLoadout(int index)
 //                  to the current shop/item list. They will be grouped into the different
 //                  data modules they were read from.
 
-void BuyMenuGUI::AddObjectsToItemList(vector<list<Entity *> > &moduleList, string type, string group)
+void BuyMenuGUI::AddObjectsToItemList(vector<plf::list<Entity *> > &moduleList, string type, string group)
 {
 
 	if (g_SettingsMan.ShowForeignItems() || m_NativeTechModule <= 0)
 	{
 		// Make as many datamodule entries as necessary in the vector
 		while (moduleList.size() < g_PresetMan.GetTotalModuleCount())
-			moduleList.push_back(list<Entity *>());
+			moduleList.push_back(plf::list<Entity *>());
 
 		// Go through all the data modules, gathering the objects that match the criteria in each one
 		for (int moduleID = 0; moduleID < g_PresetMan.GetTotalModuleCount(); ++moduleID)
@@ -2076,7 +2076,7 @@ void BuyMenuGUI::AddObjectsToItemList(vector<list<Entity *> > &moduleList, strin
 	} else {
 		// Make as many datamodule entries as necessary in the vector
 		while (moduleList.size() < g_PresetMan.GetTotalModuleCount())
-			moduleList.push_back(list<Entity *>());
+			moduleList.push_back(plf::list<Entity *>());
 
 		// Go through all the data modules, gathering the objects that match the criteria in each one
 		for (int moduleID = 0; moduleID < g_PresetMan.GetTotalModuleCount(); ++moduleID)
@@ -2096,9 +2096,9 @@ void BuyMenuGUI::AddObjectsToItemList(vector<list<Entity *> > &moduleList, strin
 	{
 		for (int moduleID = 0; moduleID < moduleList.size(); ++moduleID)
 		{
-			list<Entity *> toRemove;
+			plf::list<Entity *> toRemove;
 
-			for (list<Entity *>::iterator itr = moduleList[moduleID].begin(); itr != moduleList[moduleID].end(); ++itr)
+			for (plf::list<Entity *>::iterator itr = moduleList[moduleID].begin(); itr != moduleList[moduleID].end(); ++itr)
 			{
 				bool allowed = false;
 
@@ -2113,7 +2113,7 @@ void BuyMenuGUI::AddObjectsToItemList(vector<list<Entity *> > &moduleList, strin
 			}
 
 			// Remove items from the list
-			for (list<Entity *>::iterator itr = toRemove.begin(); itr != toRemove.end(); ++itr)
+			for (plf::list<Entity *>::iterator itr = toRemove.begin(); itr != toRemove.end(); ++itr)
 				moduleList[moduleID].remove((*itr));
 		}
 	}
@@ -2123,9 +2123,9 @@ void BuyMenuGUI::AddObjectsToItemList(vector<list<Entity *> > &moduleList, strin
 	{
 		for (int moduleID = 0; moduleID < moduleList.size(); ++moduleID)
 		{
-			list<Entity *> toRemove;
+			plf::list<Entity *> toRemove;
 
-			for (list<Entity *>::iterator itr = moduleList[moduleID].begin(); itr != moduleList[moduleID].end(); ++itr)
+			for (plf::list<Entity *>::iterator itr = moduleList[moduleID].begin(); itr != moduleList[moduleID].end(); ++itr)
 			{
 				bool allowed = true;
 
@@ -2140,7 +2140,7 @@ void BuyMenuGUI::AddObjectsToItemList(vector<list<Entity *> > &moduleList, strin
 			}
 
 			// Remove items from the list
-			for (list<Entity *>::iterator itr = toRemove.begin(); itr != toRemove.end(); ++itr)
+			for (plf::list<Entity *>::iterator itr = toRemove.begin(); itr != toRemove.end(); ++itr)
 				moduleList[moduleID].remove((*itr));
 		}
 	}
@@ -2150,9 +2150,9 @@ void BuyMenuGUI::AddObjectsToItemList(vector<list<Entity *> > &moduleList, strin
 	{
 		for (int moduleID = 0; moduleID < moduleList.size(); ++moduleID)
 		{
-			list<Entity *> toRemove;
+			plf::list<Entity *> toRemove;
 
-			for (list<Entity *>::iterator itr = moduleList[moduleID].begin(); itr != moduleList[moduleID].end(); ++itr)
+			for (plf::list<Entity *>::iterator itr = moduleList[moduleID].begin(); itr != moduleList[moduleID].end(); ++itr)
 			{
 				bool allowed = false;
 
@@ -2170,7 +2170,7 @@ void BuyMenuGUI::AddObjectsToItemList(vector<list<Entity *> > &moduleList, strin
 			}
 
 			// Remove items from the list
-			for (list<Entity *>::iterator itr = toRemove.begin(); itr != toRemove.end(); ++itr)
+			for (plf::list<Entity *>::iterator itr = toRemove.begin(); itr != toRemove.end(); ++itr)
 				moduleList[moduleID].remove((*itr));
 		}
 	}
@@ -2203,7 +2203,7 @@ void BuyMenuGUI::AddPresetsToItemList()
 			loadoutLabel = (*lItr).GetPresetName() + ":\n";
 
         // Go through the cargo setup of each loadout and encode a meaningful label for the list item
-        for (list<const SceneObject *>::iterator cItr = (*lItr).GetCargoList()->begin(); cItr != (*lItr).GetCargoList()->end(); ++cItr)
+        for (plf::list<const SceneObject *>::iterator cItr = (*lItr).GetCargoList()->begin(); cItr != (*lItr).GetCargoList()->end(); ++cItr)
         {
             // If not the first one, add a comma separator to the label
             if (cItr != (*lItr).GetCargoList()->begin())

@@ -108,7 +108,7 @@ namespace RTE {
 			/// Gets the names of all ClassInfos in existence.
 			/// </summary>
 			/// <returns>A list of the names.</returns>
-			static std::list<std::string> GetClassNames();
+			static plf::list<std::string> GetClassNames();
 
 			/// <summary>
 			/// Gets the ClassInfo of a particular RTE class corresponding to a friendly-formatted string name. 
@@ -349,7 +349,7 @@ namespace RTE {
 		/// Gets the list of groups this is member of.
 		/// </summary>
 		/// <returns>A pointer to a list of strings which describes the groups this is added to. Ownership is NOT transferred!</returns>
-		const std::list<std::string> * GetGroupList() { return &m_Groups; }
+		const plf::list<std::string> * GetGroupList() { return &m_Groups; }
 
 		/// <summary>
 		/// Shows whether this is part of a specific group or not.
@@ -431,7 +431,7 @@ namespace RTE {
 		int m_DefinedInModule; //!< The DataModule ID that this was successfully added to at some point. -1 if not added to anything yet.
 
 		//TODO Consider replacing this with an unordered_set. See https://github.com/cortex-command-community/Cortex-Command-Community-Project-Source/issues/88
-		std::list<std::string> m_Groups; //!< List of all tags associated with this. The groups are used to categorize and organize Entities.  
+		plf::list<std::string> m_Groups; //!< List of all tags associated with this. The groups are used to categorize and organize Entities.  
 		std::string m_LastGroupSearch; //!< Last group search string, for more efficient response on multiple tries for the same group name.  
 		bool m_LastGroupResult; //!< Last group search result, for more efficient response on multiple tries for the same group name.
 

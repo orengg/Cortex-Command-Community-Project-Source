@@ -267,7 +267,7 @@ ENTITYALLOCATION(AtomGroup)
 // Arguments:       None.
 // Return value:    A reference to the list.
 
-    const std::list<Atom *> & GetAtomList() const { return m_Atoms; }
+    const plf::list<Atom *> & GetAtomList() const { return m_Atoms; }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -377,7 +377,7 @@ ENTITYALLOCATION(AtomGroup)
 // Arguments:       Whether or not this should check for collisions with MOs or not.
 // Return value:    None.
 
-    void SetToHitMOs(bool hitMOs) { for (std::list<Atom *>::iterator itr = m_Atoms.begin(); itr != m_Atoms.end(); ++itr)
+    void SetToHitMOs(bool hitMOs) { for (plf::list<Atom *>::iterator itr = m_Atoms.begin(); itr != m_Atoms.end(); ++itr)
                                         (*itr)->SetToHitMOs(hitMOs); }
 */
 
@@ -453,7 +453,7 @@ ENTITYALLOCATION(AtomGroup)
 //                  The rotation of the placed atoms around the above offset.
 // Return value:    None.
 
-    void AddAtoms(const std::list<Atom *> &atomList, long int subID = 0, const Vector &offset = Vector(), const Matrix &offsetRotation = Matrix());
+    void AddAtoms(const plf::list<Atom *> &atomList, long int subID = 0, const Vector &offset = Vector(), const Matrix &offsetRotation = Matrix());
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -727,9 +727,9 @@ private:
     // the Atom:s of this AtomGroup are located, in pixels.
     int m_Depth;
     // List of Atoms that constitute the group. Owned by this
-    std::list<Atom *> m_Atoms;
+    plf::list<Atom *> m_Atoms;
     // Sub groupings of atoms, not owned in here. Point to atoms owned in m_Atoms.
-	std::unordered_map<long int, std::list<Atom *> > m_SubGroups;
+	std::unordered_map<long int, plf::list<Atom *> > m_SubGroups;
     // Moment of Inertia for this AtomGroup
     float m_MomInertia;
     // The owner of this AtomGroup. The owner is obviously not owned by this AtomGroup.
@@ -740,7 +740,7 @@ private:
     // origin when used as a limb.
     Vector m_JointOffset;
 	// ignore hits with MOs of these IDs
-	std::list<MOID> m_IgnoreMOIDs;
+	plf::list<MOID> m_IgnoreMOIDs;
 
 // TODO: REMOVE THIS")
     Vector m_TestPos;

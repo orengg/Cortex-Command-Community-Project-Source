@@ -385,7 +385,7 @@ protected:
     // Currently placed scene object to make blink when drawing it. NOT OWNED.
     const SceneObject *m_pObjectToBlink;
     // Path found between brain pos and the sky to make sure fair brain placement
-    std::list<Vector> m_BrainSkyPath;
+    plf::list<Vector> m_BrainSkyPath;
     // The cost of the path from the current position of the brain to the sky
     float m_BrainSkyPathCost;
     // Valid brain path line dots

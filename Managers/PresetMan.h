@@ -307,7 +307,7 @@ public:
 //                  Whether to only get those of one specific DataModule (0-n), or all (-1).
 // Return value:    Whether any Entity:s were found and added to the list.
 
-    bool GetAllOfType(std::list<Entity *> &entityList, std::string type, int whichModule = -1);
+    bool GetAllOfType(plf::list<Entity *> &entityList, std::string type, int whichModule = -1);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -323,7 +323,7 @@ public:
 //                  get ALL groups ever reg'd.
 // Return value:    Whether any Entity:s were found and added to the list.
 
-    bool GetAllOfTypeInModuleSpace(std::list<Entity *> &entityList, std::string type, int whichModuleSpace);
+    bool GetAllOfTypeInModuleSpace(plf::list<Entity *> &entityList, std::string type, int whichModuleSpace);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -339,7 +339,7 @@ public:
 //                  Whether to only get those of one specific DataModule (0-n), or all (-1).
 // Return value:    Whether any Entity:s were found and added to the list.
 
-    bool GetAllOfGroup(std::list<Entity *> &entityList, std::string group, std::string type = "All", int whichModule = -1);
+    bool GetAllOfGroup(plf::list<Entity *> &entityList, std::string group, std::string type = "All", int whichModule = -1);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -386,7 +386,7 @@ public:
 //                  get ALL groups ever reg'd.
 // Return value:    Whether any Entity:s were found and added to the list.
 
-    bool GetAllOfGroupInModuleSpace(std::list<Entity *> &entityList, std::string group, std::string type, int whichModuleSpace);
+    bool GetAllOfGroupInModuleSpace(plf::list<Entity *> &entityList, std::string group, std::string type, int whichModuleSpace);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -474,7 +474,7 @@ public:
 //                  be included. "All" means don't consider what types are in the groups.
 // Return value:    Whether any groups were found and thus added to the list.
 
-    bool GetGroups(std::list<std::string> &groupList, int whichModule = -1, std::string withType = "All") const;
+    bool GetGroups(plf::list<std::string> &groupList, int whichModule = -1, std::string withType = "All") const;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -490,7 +490,7 @@ public:
 //                  be included. "All" means don't consider what types are in the groups.
 // Return value:    Whether any groups were found and thus added to the list.
 
-    bool GetModuleSpaceGroups(std::list<std::string> &groupList, int whichModule, std::string withType = "All") const;
+    bool GetModuleSpaceGroups(plf::list<std::string> &groupList, int whichModule, std::string withType = "All") const;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -536,7 +536,7 @@ protected:
 
     // List of all Entity groups ever registered, all uniques
     // This is just a handy total of all the groups registered in all the individual DataModule:s
-    std::list<std::string> m_TotalGroupRegister;
+    plf::list<std::string> m_TotalGroupRegister;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

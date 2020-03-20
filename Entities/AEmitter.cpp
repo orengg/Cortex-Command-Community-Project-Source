@@ -29,7 +29,7 @@ CONCRETECLASSINFO(AEmitter, Attachable, 0)
 
 void AEmitter::Clear()
 {
-	for (list<Emission *>::const_iterator itr = m_EmissionList.begin(); itr != m_EmissionList.end(); ++itr)
+	for (plf::list<Emission *>::const_iterator itr = m_EmissionList.begin(); itr != m_EmissionList.end(); ++itr)
 		delete (*itr);
     m_EmissionList.clear();
     m_EmissionSound.Reset();
@@ -87,7 +87,7 @@ int AEmitter::Create(const AEmitter &reference)
 {
     Attachable::Create(reference);
 
-    for (list<Emission *>::const_iterator itr = reference.m_EmissionList.begin(); itr != reference.m_EmissionList.end(); ++itr)
+    for (plf::list<Emission *>::const_iterator itr = reference.m_EmissionList.begin(); itr != reference.m_EmissionList.end(); ++itr)
         m_EmissionList.push_back(dynamic_cast<Emission *>((*itr)->Clone()));
 
     m_EmissionSound = reference.m_EmissionSound;
@@ -155,7 +155,7 @@ int AEmitter::ReadProperty(std::string propName, Reader &reader)
         float ppm;
         reader >> ppm;
         // Go through all emissions and set the rate so that it emulates the way it used to work, for mod backwards compatibility
-        for (list<Emission *>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
+        for (plf::list<Emission *>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
             (*eItr)->m_PPM = ppm / m_EmissionList.size();
     }
     else if (propName == "MinThrottleRange")
@@ -171,7 +171,7 @@ int AEmitter::ReadProperty(std::string propName, Reader &reader)
         int burstSize;
         reader >> burstSize;
         // Go through all emissions and set the rate so that it emulates the way it used to work, for mod backwards compatibility
-        for (list<Emission *>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
+        for (plf::list<Emission *>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
             (*eItr)->m_BurstSize = ceilf((float)burstSize / (float)m_EmissionList.size());
     }
     else if (propName == "BurstScale")
@@ -226,7 +226,7 @@ int AEmitter::Save(Writer &writer) const
 {
     Attachable::Save(writer);
 
-    for (list<Emission *>::const_iterator itr = m_EmissionList.begin(); itr != m_EmissionList.end(); ++itr)
+    for (plf::list<Emission *>::const_iterator itr = m_EmissionList.begin(); itr != m_EmissionList.end(); ++itr)
     {
         writer.NewProperty("AddEmission");
         writer << *itr;
@@ -288,7 +288,7 @@ int AEmitter::Save(Writer &writer) const
 void AEmitter::Destroy(bool notInherited)
 {
 /* Don't own these anymore
-    for (list<MovableObject *>::iterator itr = m_EmissionList.begin();
+    for (plf::list<MovableObject *>::iterator itr = m_EmissionList.begin();
          itr != m_EmissionList.end(); ++itr)
         delete (*itr);
 */
@@ -317,7 +317,7 @@ void AEmitter::Destroy(bool notInherited)
 void AEmitter::ResetEmissionTimers()
 {
     m_LastEmitTmr.Reset();
-    for (list<Emission *>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
+    for (plf::list<Emission *>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
         (*eItr)->ResetEmissionTimers();
 }
 
@@ -355,7 +355,7 @@ float AEmitter::EstimateImpulse(bool burst)
         float velMin, velMax, velRange, spread;
         
         // Go through all emissions and emit them according to their respective rates
-        for (list<Emission *>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
+        for (plf::list<Emission *>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
         {
             // Only check emissions that push the emitter
             if ((*eItr)->PushesEmitter())
@@ -437,7 +437,7 @@ void AEmitter::Update()
             m_EmissionSound.Play(g_SceneMan.TargetDistanceScalar(m_Pos));
 
             // Reset the timers of all emissions so they will start/stop at the correct relative offsets from now
-            for (list<Emission *>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
+            for (plf::list<Emission *>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
                 (*eItr)->ResetEmissionTimers();
         }
         // Update the distance attenuation
@@ -475,7 +475,7 @@ void AEmitter::Update()
         MovableObject *pParticle = 0;
         Vector parentVel, emitVel, pushImpulses;
         // Go through all emissions and emit them according to their respective rates
-        for (list<Emission *>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
+        for (plf::list<Emission *>::iterator eItr = m_EmissionList.begin(); eItr != m_EmissionList.end(); ++eItr)
         {
             // Make sure the emissions only happen between the start time and end time
             if ((*eItr)->IsEmissionTime())

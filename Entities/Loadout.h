@@ -226,7 +226,7 @@ ENTITYALLOCATION(Loadout)
 // Arguments:       None.
 // Return value:    A pointer to the list of cargo Entity items. OINT.
 
-    virtual std::list<const SceneObject *> * GetCargoList() { return &m_CargoItems; }
+    virtual plf::list<const SceneObject *> * GetCargoList() { return &m_CargoItems; }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -251,7 +251,7 @@ protected:
     // Preset instance of the delivery craft, not owned by this.
     const ACraft *m_pDeliveryCraft;
     // The cargo of this loadout, all preset instances not owned by this
-    std::list<const SceneObject *> m_CargoItems;
+    plf::list<const SceneObject *> m_CargoItems;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

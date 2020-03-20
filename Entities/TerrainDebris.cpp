@@ -221,7 +221,7 @@ void TerrainDebris::ApplyDebris(SLTerrain *pTerrain)
     int currentBitmap, x, y, depth, checkPixel;
     bool place = false;
     // First is index into the bitmap array, second is blit location
-    list<pair<int, Vector> > piecesToPlace;
+    plf::list<pair<int, Vector> > piecesToPlace;
     Vector location;
     Box pieceBox;
 
@@ -282,7 +282,7 @@ void TerrainDebris::ApplyDebris(SLTerrain *pTerrain)
     }
 
     // Now draw all the debris onto the terrain
-    for (list<pair<int, Vector> >::iterator itr = piecesToPlace.begin(); itr != piecesToPlace.end(); ++itr)
+    for (plf::list<pair<int, Vector> >::iterator itr = piecesToPlace.begin(); itr != piecesToPlace.end(); ++itr)
     {
         // Draw the color sprite onto the terrain color layer.
         draw_sprite(pTerrBitmap, m_aBitmaps[itr->first], itr->second.m_X, itr->second.m_Y);

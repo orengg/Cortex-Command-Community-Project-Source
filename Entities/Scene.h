@@ -695,10 +695,10 @@ ENTITYALLOCATION(Scene)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Gets access to the background layer list.
 // Arguments:       None.
-// Return value:    A reference to the std::list containing all the background layers.
+// Return value:    A reference to the list containing all the background layers.
 //                  Ownership is NOT transferred!
 
-    std::list<SceneLayer *> & GetBackLayers() { return m_BackLayerList; }
+    plf::list<SceneLayer *> & GetBackLayers() { return m_BackLayerList; }
 
 
 
@@ -755,7 +755,7 @@ ENTITYALLOCATION(Scene)
 // Arguments:       Which team to get the unseen layer for.
 // Return value:    The list of pixel coordinates in the unseen layer's scale.
 
-    std::list<Vector> & GetSeenPixels(int team = Activity::TEAM_1) { return m_SeenPixels[team]; }
+    plf::list<Vector> & GetSeenPixels(int team = Activity::TEAM_1) { return m_SeenPixels[team]; }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -887,7 +887,7 @@ ENTITYALLOCATION(Scene)
 // Arguments:       Which set of placed objects to get. See the PlacedObjectSets enum.
 // Return value:    The list of of placed objects. Ownership is NOT transferred!
 
-    const std::list<SceneObject *> * GetPlacedObjects(int whichSet) const { return &m_PlacedObjects[whichSet]; }
+    const plf::list<SceneObject *> * GetPlacedObjects(int whichSet) const { return &m_PlacedObjects[whichSet]; }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1291,7 +1291,7 @@ const SceneObject * PickPlacedActorInRange(int whichSet, Vector &scenePoint, int
 // Return value:    The total minimum difficulty cost calculated between the two points on
 //                  the scene.
 
-    float CalculatePath(const Vector &start, const Vector &end, std::list<Vector> &pathResult, float digStrenght = 1);
+    float CalculatePath(const Vector &start, const Vector &end, plf::list<Vector> &pathResult, float digStrenght = 1);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1400,7 +1400,7 @@ const SceneObject * PickPlacedActorInRange(int whichSet, Vector &scenePoint, int
 	BITMAP * GetPreviewBitmap() const { return m_pPreviewBitmap; };
 
     // Holds the path calculated by CalculateScenePath
-    std::list<Vector> m_ScenePath;
+    plf::list<Vector> m_ScenePath;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Protected member variable and method declarations
@@ -1443,22 +1443,22 @@ protected:
     Timer m_FullPathUpdateTimer;
     Timer m_PartialPathUpdateTimer;
     // SceneObject:s to be placed in the scene, divided up by different sets - OWNED HERE
-    std::list<SceneObject *> m_PlacedObjects[PLACEDSETSCOUNT];
+    plf::list<SceneObject *> m_PlacedObjects[PLACEDSETSCOUNT];
     // List of background layers, first is the closest to the terrain, last is closest to the back
-    std::list<SceneLayer *> m_BackLayerList;
+    plf::list<SceneLayer *> m_BackLayerList;
     // Dimensions of the pixels of the unseen layers, when they are dynamically generated. If 0, the layer was not generated
     Vector m_UnseenPixelSize[Activity::MAXTEAMCOUNT];
     // Layers representing the unknown areas for each team
     SceneLayer *m_apUnseenLayer[Activity::MAXTEAMCOUNT];
     // Which pixels of the unseen map have just been revealed this frame, in the coordinates of the unseen map
-    std::list<Vector> m_SeenPixels[Activity::MAXTEAMCOUNT];
+    plf::list<Vector> m_SeenPixels[Activity::MAXTEAMCOUNT];
     // Pixels on the unseen map deemed to be orphans and cleaned up, will be moved to seen pixels next update
-    std::list<Vector> m_CleanedPixels[Activity::MAXTEAMCOUNT];
+    plf::list<Vector> m_CleanedPixels[Activity::MAXTEAMCOUNT];
     // Whether this Scene is scheduled to be orbitally scanned by any team
     bool m_ScanScheduled[Activity::MAXTEAMCOUNT];
 
     // List of all the specified Area:s of the scene
-    std::list<Area> m_AreaList;
+    plf::list<Area> m_AreaList;
     // Whether the scene's bitmaps are locked or not.
     bool m_Locked;
     // The global acceleration vector in m/s^2. (think gravity/wind)
@@ -1478,7 +1478,7 @@ protected:
 	// Whether this scene must be shown anywhere in UIs
 	bool m_IsMetagameInternal;
 
-	std::list<Deployment *>m_Deployments;
+	plf::list<Deployment *>m_Deployments;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Private member variable and method declarations
