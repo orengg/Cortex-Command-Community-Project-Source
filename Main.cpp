@@ -138,7 +138,7 @@ Controller *g_pMainMenuController = 0;
 enum StarSize {
     StarSmall = 0,
     StarLarge,
-    StarHuge,
+    StarHuge
 };
 
 struct Star {
@@ -156,7 +156,7 @@ struct Star {
     StarSize m_Size;
 
     Star() { m_pBitmap = 0; m_Pos.Reset(); m_ScrollRatio = 1.0; m_Intensity = 1.0; m_Size = StarSmall; }
-    Star(BITMAP *pBitmap, Vector &pos, float scrollRatio, float intensity) { m_pBitmap = pBitmap; m_Pos = pos; m_ScrollRatio = scrollRatio; m_Intensity = intensity; }
+    Star(BITMAP *pBitmap, const Vector &pos, const float scrollRatio, const float intensity) { m_pBitmap = pBitmap; m_Pos = pos; m_ScrollRatio = scrollRatio; m_Intensity = intensity; }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -438,14 +438,25 @@ bool PlayIntroTitle() {
     StarSize size;
 
     for (int star = 0; star < starCount; ++star) {
-        aStars[star].m_Size = size = PosRand() < 0.95 ? StarSmall : (PosRand() < 0.85 ? StarLarge : StarHuge);
-        aStars[star].m_pBitmap = size  == StarSmall ? apStarSmallBitmaps[SelectRand(0, starSmallBitmapCount - 1)] :
-                                (size  == StarLarge ? apStarLargeBitmaps[SelectRand(0, starLargeBitmapCount - 1)] : apStarHugeBitmaps[SelectRand(0, starLargeBitmapCount - 1)]);
+        if (PosRand() < 0.95) {
+            aStars[star].m_Size = StarSmall;
+            aStars[star].m_pBitmap = apStarSmallBitmaps[SelectRand(0, starSmallBitmapCount - 1)];
+            aStars[star].m_Intensity = RangeRand(0.001, 0.5);
+        }
+        else if (PosRand() < 0.85) {
+            aStars[star].m_Size = StarLarge;
+            aStars[star].m_pBitmap = apStarLargeBitmaps[SelectRand(0, starLargeBitmapCount - 1)];
+            aStars[star].m_Intensity = RangeRand(0.6, 1.0);
+        }
+        else {
+            aStars[star].m_Size = StarHuge;
+            aStars[star].m_pBitmap = apStarHugeBitmaps[SelectRand(0, starLargeBitmapCount - 1)];
+            aStars[star].m_Intensity = RangeRand(0.9, 1.0);
+        }
         aStars[star].m_Pos.SetXY(resX * PosRand(), pBackdrop->GetBitmap()->h * PosRand());//resY * PosRand());
         aStars[star].m_Pos.Floor();
         // To match the nebula scroll
         aStars[star].m_ScrollRatio = backdropScrollRatio;
-        aStars[star].m_Intensity = size == StarSmall ? RangeRand(0.001, 0.5) : (size == StarLarge ? RangeRand(0.6, 1.0) : RangeRand(0.9, 1.0));
     }
 
     // Font stuff
@@ -1061,8 +1072,9 @@ bool PlayIntroTitle() {
                 g_AudioMan.PlayMusic("Base.rte/Music/Hubnester/ccintro.ogg", 0);
                 g_AudioMan.SetMusicPosition(0.05);
                 // Override music volume setting for the intro if it's set to anything
-                if (g_AudioMan.GetMusicVolume() > 0.1)
+                if (g_AudioMan.GetMusicVolume() > 0.1) {
                     g_AudioMan.SetTempMusicVolume(1.0);
+                }
 //                songTimer.Reset();
                 songTimer.SetElapsedRealTimeS(0.05);
             }
@@ -1748,7 +1760,7 @@ bool RunGameLoop() {
 				if (g_MetaMan.GameInProgress()) {
 					g_IntroState = CAMPAIGNFADEIN;
 				} else {
-					Activity * pActivity = g_ActivityMan.GetActivity();
+					const Activity * pActivity = g_ActivityMan.GetActivity();
 					// If we edited something then return to main menu instead of scenario menu player will probably switch to area/scene editor.
 					if (pActivity && pActivity->GetPresetName() == "None") {
 						g_IntroState = MENUAPPEAR;
@@ -1759,9 +1771,9 @@ bool RunGameLoop() {
 				PlayIntroTitle();
 			}
 			// Resetting the simulation
-			if (g_ResetActivity) {
-				// Reset and quit if user quit during reset loading
-				if (!ResetActivity()) { break; }
+            // Reset and quit if user quit during reset loading
+			if (g_ResetActivity && !ResetActivity()) {
+				break;
 			}
 			// Resuming the simulation
 			if (g_ResumeActivity) { ResumeActivity(); }
@@ -1805,36 +1817,30 @@ bool RunGameLoop() {
 bool HandleMainArgs(int argc, char *argv[], int &appExitVar) {
 
     // If no additional arguments passed, just continue (first argument is the program path)
-    if (argc == 1) {
+    if (argc <= 1) {
 		return true;
 	}
     // Default program return var if fail
     appExitVar = 2;
 
-    if (argc >= 2) {
-        for (int i = 1; i < argc; i++) {
-            // Print loading screen console to cout
-			if (std::strcmp(argv[i], "-cout") == 0) {
-				g_System.SetLogToCLI(true);
-			} else if (i + 1 < argc) {
-				// Launch game in server mode
-                if (std::strcmp(argv[i], "-server") == 0 && i + 1 < argc) {
-                    std::string port = argv[++i];
-                    g_NetworkServer.EnableServerMode();
-                    g_NetworkServer.SetServerPort(port);
-				// Load a single module right after the official modules
-                } else if (std::strcmp(argv[i], "-module") == 0 && i + 1 < argc) {
-					g_PresetMan.SetSingleModuleToLoad(argv[++i]);
-				// Launch game directly into editor activity
-				} else if (std::strcmp(argv[i], "-editor") == 0 && i + 1 < argc) {
-					const char *editorName = argv[++i];
-					if (std::strcmp(editorName, "") == 1) {
-						g_EditorToLaunch = editorName;
-						g_LaunchIntoEditor = true;
-					}
-				}
-            }
-        }
+    for (int i = 1; i < argc; i++) {
+        // Print loading screen console to cout
+		if (std::strcmp(argv[i], "-cout") == 0) {
+			g_System.SetLogToCLI(true);
+		}
+        // Launch game in server mode
+        else if (std::strcmp(argv[i], "-server") == 0 && i + 1 < argc) {
+            std::string port = argv[++i];
+            g_NetworkServer.EnableServerMode();
+            g_NetworkServer.SetServerPort(port);
+		// Load a single module right after the official modules
+        } else if (std::strcmp(argv[i], "-module") == 0 && i + 1 < argc) {
+			g_PresetMan.SetSingleModuleToLoad(argv[++i]);
+		// Launch game directly into editor activity
+		} else if (std::strcmp(argv[i], "-editor") == 0 && i + 1 < argc && std::strcmp(argv[i + 1], "") == 1) {
+			g_EditorToLaunch = argv[++i];
+			g_LaunchIntoEditor = true;
+		}
     }
     return true;
 }
