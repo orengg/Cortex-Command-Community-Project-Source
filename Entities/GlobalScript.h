@@ -66,7 +66,7 @@ ENTITYALLOCATION(GlobalScript)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the GlobalScript object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create() { return 0; }
@@ -77,7 +77,7 @@ ENTITYALLOCATION(GlobalScript)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates an GlobalScript to be identical to another, by deep copy.
 // Arguments:       A reference to the GlobalScript to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const GlobalScript &reference);
@@ -105,7 +105,7 @@ ENTITYALLOCATION(GlobalScript)
 // Description:     Saves the complete state of this GlobalScript to an output stream for
 //                  later recreation with Create(istream &stream);
 // Arguments:       A Writer that the GlobalScript will save itself to.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
@@ -160,7 +160,7 @@ ENTITYALLOCATION(GlobalScript)
 //                  preset in the PresetMan with the updated scripts so future objects
 //                  spawned will use the new scripts.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int ReloadScripts();

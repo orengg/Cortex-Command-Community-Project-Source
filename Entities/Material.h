@@ -79,7 +79,7 @@ ENTITYALLOCATION(Material)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the Material object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -90,7 +90,7 @@ ENTITYALLOCATION(Material)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a Material to be identical to another, by deep copy.
 // Arguments:       A reference to the Material to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(const Material &reference);
@@ -129,7 +129,7 @@ ENTITYALLOCATION(Material)
 // Description:     Saves the complete state of this Material to an output stream for
 //                  later recreation with Create(istream &stream);
 // Arguments:       A Writer that the Material will save itself to.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

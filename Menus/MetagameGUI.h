@@ -198,7 +198,7 @@ public:
 // Description:     Makes the MetagameGUI object ready for use.
 // Arguments:       A poitner to a Controller which will control this Menu. Ownership is
 //                  NOT TRANSFERRED!
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(Controller *pController);
@@ -226,7 +226,7 @@ public:
 // Description:     Saves the complete state of this MetagameGUI to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the MetagameGUI will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
@@ -487,7 +487,7 @@ protected:
 //                  and not complete version of the one that takes a controller.
 //                  It is only for init after reading stuff from file as a Serializable.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();

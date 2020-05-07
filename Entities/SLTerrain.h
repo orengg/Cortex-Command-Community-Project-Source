@@ -81,7 +81,7 @@ class SLTerrain:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Description:     Makes the TerrainFrosting object ready for use.
     // Arguments:       None.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Create();
@@ -92,7 +92,7 @@ class SLTerrain:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Description:     Creates a TerrainFrosting to be identical to another, by deep copy.
     // Arguments:       A reference to the TerrainFrosting to deep copy.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         int Create(const TerrainFrosting &reference);
@@ -131,7 +131,7 @@ class SLTerrain:
     // Description:     Saves the complete state of this TerrainFrosting to an output stream for
     //                  later recreation with Create(Reader &reader);
     // Arguments:       A Writer that the TerrainFrosting will save itself with.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Save(Writer &writer) const;
@@ -261,7 +261,7 @@ ENTITYALLOCATION(SLTerrain)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the SLTerrain object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -287,7 +287,7 @@ ENTITYALLOCATION(SLTerrain)
 //                  which any scroll operations will be done in. A special command is if
 //                  wrap is false and the corresponding component is -1.0, that signals
 //                  that the own width or height should be used as scrollInfo input.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
 // TODO: streamline interface")
@@ -304,7 +304,7 @@ ENTITYALLOCATION(SLTerrain)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a SLTerrain to be identical to another, by deep copy.
 // Arguments:       A reference to the SLTerrain to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(const SLTerrain &reference);
@@ -316,7 +316,7 @@ ENTITYALLOCATION(SLTerrain)
 // Description:     Actually loads previously specified/created data into memory. Has
 //                  to be done before using this SceneLayer.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int LoadData();
@@ -388,7 +388,7 @@ ENTITYALLOCATION(SLTerrain)
 // Description:     Saves the complete state of this SLTerrain to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the SLTerrain will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

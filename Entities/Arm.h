@@ -69,7 +69,7 @@ ENTITYALLOCATION(Arm)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the Arm object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -80,7 +80,7 @@ ENTITYALLOCATION(Arm)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a Arm to be identical to another, by deep copy.
 // Arguments:       A reference to the Arm to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(const Arm &reference);
@@ -119,7 +119,7 @@ ENTITYALLOCATION(Arm)
 // Description:     Saves the complete state of this Arm to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the Arm will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

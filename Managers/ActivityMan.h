@@ -150,7 +150,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the Activity object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -161,7 +161,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a Activity to be identical to another, by deep copy.
 // Arguments:       A reference to the Activity to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const Activity &reference);
@@ -200,7 +200,7 @@ public:
 // Description:     Saves the complete state of this Activity to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the Activity will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
@@ -271,7 +271,7 @@ public:
 // Method:          SetActivityState
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Overrides the current game state. Should not be used much, use dedicted
-//                  state setting funcitons instead.
+//                  state setting functions instead.
 // Arguments:       The new state to set.
 // Return value:    None.
 
@@ -1014,7 +1014,7 @@ public:
 // Description:     Officially starts this. Creates all the data etc necessary to start
 //                  the activity.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Start();
@@ -1237,7 +1237,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the ActivityMan object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -1265,7 +1265,7 @@ public:
 // Description:     Saves the complete state of this ActivityMan to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the ActivityMan will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
@@ -1385,7 +1385,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Officially starts the activity passed in. Ownership IS transferred!
 // Arguments:       The new activity to start. Ownership IS passed in!
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int StartActivity(Activity *pActivity);
@@ -1397,7 +1397,7 @@ public:
 // Description:     Officially gets and starts the activity described.
 // Arguments:       The class and instance names of the activity to start. Has to have
 //                  been read in already (duh).
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int StartActivity(std::string className, std::string instanceName);
@@ -1408,7 +1408,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Completely restarts whatever activity was last started.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int RestartActivity();

@@ -75,7 +75,7 @@ ENTITYALLOCATION(SceneLayer)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the SceneLayer object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -101,7 +101,7 @@ ENTITYALLOCATION(SceneLayer)
 //                  which any scroll operations will be done in. A special command is if
 //                  wrap is false and the corresponding component is -1.0, that signals
 //                  that the own width or height should be used as scrollInfo input.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
 // TODO: streamline interface")
@@ -133,7 +133,7 @@ ENTITYALLOCATION(SceneLayer)
 //                  which any scroll operations will be done in. A special command is if
 //                  wrap is false and the corresponding component is -1.0, that signals
 //                  that the own width or height should be used as scrollInfo input.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
 // TODO: streamline interface")
@@ -233,7 +233,7 @@ ENTITYALLOCATION(SceneLayer)
 // Description:     Saves the complete state of this SceneLayer to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the SceneLayer will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
@@ -246,7 +246,7 @@ ENTITYALLOCATION(SceneLayer)
 // Arguments:       An input stream that the SceneLayer will create itself from.
 //                  Whether there is a class name in the stream to check against to make
 //                  sure the correct type is being read from the stream.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(std::istream &stream, bool checkType = true);
@@ -258,7 +258,7 @@ ENTITYALLOCATION(SceneLayer)
 // Description:     Saves the complete state of this SceneLayer to an output stream for
 //                  later recreation with Create(istream &stream);
 // Arguments:       An output stream that the SceneLayer will save itself to.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(std::ostream &stream) const;
@@ -573,7 +573,7 @@ protected:
 // Arguments:       Whether the area above or below the contour should be filled.
 //                  A ContentFile pointer that handles a contour file. If the pointer
 //                  is 0, the whole 
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int LoadContour(bool fillBelowContour, ContentFile *contourFile);
@@ -585,7 +585,7 @@ protected:
 // Description:     Loads a terrain contour file and applies it to this SceneLayer.
 // Arguments:       The material index that should be filled into one side of 
 //                  A ContentFile reference that handles a contour file.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int LoadContour(char material, bool dirtBelowContour, ContentFile &contourFile);

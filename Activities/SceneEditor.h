@@ -80,7 +80,7 @@ ENTITYALLOCATION(SceneEditor)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the SceneEditor object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -91,7 +91,7 @@ ENTITYALLOCATION(SceneEditor)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a SceneEditor to be identical to another, by deep copy.
 // Arguments:       A reference to the SceneEditor to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const SceneEditor &reference);
@@ -130,7 +130,7 @@ ENTITYALLOCATION(SceneEditor)
 // Description:     Saves the complete state of this SceneEditor to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the SceneEditor will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
@@ -192,7 +192,7 @@ ENTITYALLOCATION(SceneEditor)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Officially starts the game accroding to parameters previously set.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Start();

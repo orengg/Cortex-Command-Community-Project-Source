@@ -253,7 +253,7 @@ private:
         //////////////////////////////////////////////////////////////////////////////////////////
         // Description:     Makes the InputMapping object ready for use.
         // Arguments:       None.
-        // Return value:    An error return value signaling sucess or any particular failure.
+        // Return value:    An error return value signaling success or any particular failure.
         //                  Anything below 0 is an error signal.
 
             virtual int Create();
@@ -264,7 +264,7 @@ private:
         //////////////////////////////////////////////////////////////////////////////////////////
         // Description:     Creates a InputMapping to be identical to another, by deep copy.
         // Arguments:       A reference to the InputMapping to deep copy.
-        // Return value:    An error return value signaling sucess or any particular failure.
+        // Return value:    An error return value signaling success or any particular failure.
         //                  Anything below 0 is an error signal.
 
             int Create(const InputMapping &reference);
@@ -292,7 +292,7 @@ private:
         // Description:     Saves the complete state of this InputMapping to an output stream for
         //                  later recreation with Create(Reader &reader);
         // Arguments:       A Writer that the InputMapping will save itself with.
-        // Return value:    An error return value signaling sucess or any particular failure.
+        // Return value:    An error return value signaling success or any particular failure.
         //                  Anything below 0 is an error signal.
 
             virtual int Save(Writer &writer) const;
@@ -505,7 +505,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Description:     Makes the InputScheme object ready for use.
     // Arguments:       None.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Create();
@@ -516,7 +516,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Description:     Creates a InputScheme to be identical to another, by deep copy.
     // Arguments:       A reference to the InputScheme to deep copy.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         int Create(const InputScheme &reference);
@@ -544,7 +544,7 @@ private:
     // Description:     Saves the complete state of this InputScheme to an output stream for
     //                  later recreation with Create(Reader &reader);
     // Arguments:       A Writer that the InputScheme will save itself with.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Save(Writer &writer) const;
@@ -727,7 +727,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the UInputMan object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -766,7 +766,7 @@ public:
 // Description:     Saves the complete state of this UInputMan to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the UInputMan will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
@@ -1501,7 +1501,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Updates the state of this UInputMan. Supposed to be done every frame.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Update();

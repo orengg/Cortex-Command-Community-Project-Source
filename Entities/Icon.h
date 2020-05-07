@@ -89,7 +89,7 @@ ENTITYALLOCATION(Icon)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the Icon object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -100,7 +100,7 @@ ENTITYALLOCATION(Icon)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a Icon to be identical to another, by deep copy.
 // Arguments:       A reference to the Icon to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(const Icon &reference);
@@ -139,7 +139,7 @@ ENTITYALLOCATION(Icon)
 // Description:     Saves the complete state of this Icon to an output stream for
 //                  later recreation with Create(istream &stream);
 // Arguments:       A Writer that the Icon will save itself to.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

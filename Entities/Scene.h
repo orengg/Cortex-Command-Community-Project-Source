@@ -99,7 +99,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Description:     Makes the Area object ready for use.
     // Arguments:       None.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Create();
@@ -110,7 +110,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Description:     Creates a Area to be identical to another, by deep copy.
     // Arguments:       A reference to the Area to deep copy.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Create(const Area &reference);
@@ -149,7 +149,7 @@ public:
     // Description:     Saves the complete state of this Area to an output stream for
     //                  later recreation with Create(Reader &reader);
     // Arguments:       A Writer that the Area will save itself with.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Save(Writer &writer) const;
@@ -361,7 +361,7 @@ ENTITYALLOCATION(Scene)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the Scene object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -372,7 +372,7 @@ ENTITYALLOCATION(Scene)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the Scene object ready for use.
 // Arguments:       The Terrain to use. Ownership IS transferred!
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(SLTerrain *pNewTerrain);
@@ -383,7 +383,7 @@ ENTITYALLOCATION(Scene)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a Scene to be identical to another, by deep copy.
 // Arguments:       A reference to the Scene to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(const Scene &reference);
@@ -400,7 +400,7 @@ ENTITYALLOCATION(Scene)
 //                  Whether to do pathfinding init, which should be avoided if we are only
 //                  loading and saving purposes of MetaMan, for example.
 //					Whether to place actors and deployments (doors not affected).
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int LoadData(bool placeObjects = true, bool initPathfinding = true, bool placeUnits = true);
@@ -494,7 +494,7 @@ ENTITYALLOCATION(Scene)
 // Description:     Saves the complete state of this Scene to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the Scene will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

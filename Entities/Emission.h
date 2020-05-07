@@ -51,7 +51,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////////////////////
 	// Description:     Makes the Emission object ready for use.
 	// Arguments:       None.
-	// Return value:    An error return value signaling sucess or any particular failure.
+	// Return value:    An error return value signaling success or any particular failure.
 	//                  Anything below 0 is an error signal.
 
 	virtual int Create();
@@ -62,7 +62,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////////////////////
 	// Description:     Creates a Emission to be identical to another, by deep copy.
 	// Arguments:       A reference to the Emission to deep copy.
-	// Return value:    An error return value signaling sucess or any particular failure.
+	// Return value:    An error return value signaling success or any particular failure.
 	//                  Anything below 0 is an error signal.
 
 	int Create(const Emission &reference);
@@ -101,7 +101,7 @@ public:
 	// Description:     Saves the complete state of this Emission to an output stream for
 	//                  later recreation with Create(Reader &reader);
 	// Arguments:       A Writer that the Emission will save itself with.
-	// Return value:    An error return value signaling sucess or any particular failure.
+	// Return value:    An error return value signaling success or any particular failure.
 	//                  Anything below 0 is an error signal.
 
 	virtual int Save(Writer &writer) const;

@@ -158,7 +158,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Description:     Creates a Slice to be identical to another, by deep copy.
     // Arguments:       A reference to the Slice to deep copy.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Create(const Slice &reference);
@@ -182,7 +182,7 @@ public:
     // Arguments:       A Reader that the Serializable will create itself from.
     //                  Whether there is a class name in the stream to check against to make
     //                  sure the correct type is being read from the stream.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Create(Reader &reader, bool checkType = true, bool doCreate = true)
@@ -226,7 +226,7 @@ public:
     // Description:     Saves the complete state of this Slice to an output stream for
     //                  later recreation with Create(Reader &reader);
     // Arguments:       A Writer that the Slice will save itself with.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Save(Writer &writer) const;
@@ -346,7 +346,7 @@ public:
 //                  NOT TRANSFERRED!
 //                  The actor that this menu is currently associated with. Ownership is NOT
 //                  TRANSFERRED! This is optional.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(Controller *pController, Actor *pFocusActor = 0);

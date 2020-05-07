@@ -89,7 +89,7 @@ ENTITYALLOCATION(MOSprite)
 //                  A Vector specifying the initial position.
 //                  A Vector specifying the initial velocity.
 //                  The amount of time in ms this MovableObject will exist. 0 means unlim.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(ContentFile spriteFile,
@@ -105,7 +105,7 @@ ENTITYALLOCATION(MOSprite)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a MOSprite to be identical to another, by deep copy.
 // Arguments:       A reference to the MOSprite to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const MOSprite &reference);
@@ -116,7 +116,7 @@ ENTITYALLOCATION(MOSprite)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the MOSprite object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -155,7 +155,7 @@ ENTITYALLOCATION(MOSprite)
 // Description:     Saves the complete state of this MOSprite to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the MOSprite will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

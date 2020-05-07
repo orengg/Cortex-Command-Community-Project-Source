@@ -70,7 +70,7 @@ ENTITYALLOCATION(Round)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the Round object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -81,7 +81,7 @@ ENTITYALLOCATION(Round)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a Round to be identical to another, by deep copy.
 // Arguments:       A reference to the Round to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(const Round &reference);
@@ -120,7 +120,7 @@ ENTITYALLOCATION(Round)
 // Description:     Saves the complete state of this Round to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the Round will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
@@ -393,7 +393,7 @@ ENTITYALLOCATION(Magazine)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the Magazine object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -404,7 +404,7 @@ ENTITYALLOCATION(Magazine)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a Magazine to be identical to another, by deep copy.
 // Arguments:       A reference to the Magazine to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(const Magazine &reference);
@@ -443,7 +443,7 @@ ENTITYALLOCATION(Magazine)
 // Description:     Saves the complete state of this Magazine to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the Magazine will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

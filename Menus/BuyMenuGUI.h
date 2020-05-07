@@ -81,7 +81,7 @@ public:
 // Description:     Makes the BuyMenuGUI object ready for use.
 // Arguments:       A poitner to a Controller which will control this Menu. Ownership is
 //                  NOT TRANSFERRED!
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(Controller *pController);

@@ -96,7 +96,7 @@ enum
     //////////////////////////////////////////////////////////////////////////////////////////
     // Description:     Makes the Exit object ready for use.
     // Arguments:       None.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Create();
@@ -107,7 +107,7 @@ enum
     //////////////////////////////////////////////////////////////////////////////////////////
     // Description:     Creates a Exit to be identical to another, by deep copy.
     // Arguments:       A reference to the Exit to deep copy.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Create(const Exit &reference);
@@ -146,7 +146,7 @@ enum
     // Description:     Saves the complete state of this Exit to an output stream for
     //                  later recreation with Create(Reader &reader);
     // Arguments:       A Writer that the Exit will save itself with.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Save(Writer &writer) const;
@@ -314,7 +314,7 @@ enum
 // Arguments:       A Reader that the ACraft will create itself with.
 //                  Whether there is a class name in the stream to check against to make
 //                  sure the correct type is being read from the stream.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -325,7 +325,7 @@ enum
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a ACraft to be identical to another, by deep copy.
 // Arguments:       A reference to the ACraft to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const ACraft &reference);
@@ -364,7 +364,7 @@ enum
 // Description:     Saves the complete state of this ACraft to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the ACraft will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

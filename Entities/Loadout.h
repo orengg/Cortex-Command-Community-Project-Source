@@ -83,7 +83,7 @@ ENTITYALLOCATION(Loadout)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a Loadout to be identical to another, by deep copy.
 // Arguments:       A reference to the Loadout to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const Loadout &reference);
@@ -122,7 +122,7 @@ ENTITYALLOCATION(Loadout)
 // Description:     Saves the complete state of this Loadout to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the Loadout will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

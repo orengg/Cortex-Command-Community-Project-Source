@@ -70,7 +70,7 @@ ENTITYALLOCATION(MOSParticle)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the MOSParticle object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -87,7 +87,7 @@ ENTITYALLOCATION(MOSParticle)
 //                  A Vector specifying the initial position.
 //                  A Vector specifying the initial velocity.
 //                  The amount of time in ms this MovableObject will exist. 0 means unlim.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(ContentFile spriteFile,
@@ -103,7 +103,7 @@ ENTITYALLOCATION(MOSParticle)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a MOSParticle to be identical to another, by deep copy.
 // Arguments:       A reference to the MOSParticle to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(const MOSParticle &reference);
@@ -142,7 +142,7 @@ ENTITYALLOCATION(MOSParticle)
 // Description:     Saves the complete state of this MOSParticle to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the MOSParticle will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

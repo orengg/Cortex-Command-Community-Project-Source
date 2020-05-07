@@ -352,7 +352,7 @@ bool PlayIntroTitle() {
     apIntroSlides[SLIDEFRONTIER] = introSlideFile.LoadAndReleaseBitmap();
 
     ContentFile alphaFile;
-    BITMAP *pAlpha = 0;
+    // BITMAP *pAlpha = 0; //unused variable
 
     MOSParticle *pDRLogo = new MOSParticle();
     pDRLogo->Create(ContentFile("Base.rte/GUIs/Title/Intro/DRLogo5x.bmp"));
@@ -614,7 +614,7 @@ bool PlayIntroTitle() {
             for (int star = 0; star < starCount; ++star)
             {
                 size = aStars[star].m_Size;
-                int intensity = 185 * aStars[star].m_Intensity + (size == StarSmall ? 35 : (size == StarLarge ? 70 : 70)) * PosRand();
+                int intensity = 185 * aStars[star].m_Intensity + (size == StarSmall ? 35 : 70) * PosRand();
                 set_screen_blender(intensity, intensity, intensity, intensity);
                 starDrawPos.SetXY(aStars[star].m_Pos.m_X, aStars[star].m_Pos.m_Y - scrollOffset.m_Y * aStars[star].m_ScrollRatio);
                 draw_trans_sprite(g_FrameMan.GetBackBuffer32(), aStars[star].m_pBitmap, starDrawPos.GetFloorIntX(), starDrawPos.GetFloorIntY());
@@ -850,13 +850,13 @@ bool PlayIntroTitle() {
             if (apIntroSlides[slide]->w <= resX)
                 slidePos.m_X = (resX / 2) - (apIntroSlides[slide]->w / 2);
             // The slides wider than the screen, pan sideways
-            else
-            {
-                if (elapsed < slideFadeInDuration)
-                    slidePos.m_X = 0;
-                else if (elapsed < duration - slideFadeOutDuration)
-                    slidePos.m_X = EaseInOut(0, resX - apIntroSlides[slide]->w, (elapsed - slideFadeInDuration) / (duration - slideFadeInDuration - slideFadeOutDuration));
-                else
+            else if (elapsed < slideFadeInDuration) {
+                slidePos.m_X = 0;
+            }
+            else if (elapsed < duration - slideFadeOutDuration) {
+                slidePos.m_X = EaseInOut(0, resX - apIntroSlides[slide]->w, (elapsed - slideFadeInDuration) / (duration - slideFadeInDuration - slideFadeOutDuration));
+            }
+            else{
                     slidePos.m_X = resX - apIntroSlides[slide]->w;
             }
 

@@ -75,7 +75,7 @@ ENTITYALLOCATION(TerrainObject)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the TerrainObject object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -101,7 +101,7 @@ ENTITYALLOCATION(TerrainObject)
 //                  which any scroll operations will be done in. A special command is if
 //                  wrap is false and the corresponding component is -1.0, that signals
 //                  that the own width or height should be used as scrollInfo input.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
 // TODO: streamline interface")
@@ -118,7 +118,7 @@ ENTITYALLOCATION(TerrainObject)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a TerrainObject to be identical to another, by deep copy.
 // Arguments:       A reference to the TerrainObject to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(const TerrainObject &reference);
@@ -157,7 +157,7 @@ ENTITYALLOCATION(TerrainObject)
 // Description:     Saves the complete state of this TerrainObject to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the TerrainObject will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
@@ -170,7 +170,7 @@ ENTITYALLOCATION(TerrainObject)
 // Arguments:       An input stream that the TerrainObject will create itself from.
 //                  Whether there is a class name in the stream to check against to make
 //                  sure the correct type is being read from the stream.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(std::istream &stream, bool checkType = true);
@@ -182,7 +182,7 @@ ENTITYALLOCATION(TerrainObject)
 // Description:     Saves the complete state of this TerrainObject to an output stream for
 //                  later recreation with Create(istream &stream);
 // Arguments:       An output stream that the TerrainObject will save itself to.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(std::ostream &stream) const;

@@ -73,7 +73,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the ConsoleMan object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -101,7 +101,7 @@ public:
 // Description:     Saves the complete state of this ConsoleMan to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the ConsoleMan will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

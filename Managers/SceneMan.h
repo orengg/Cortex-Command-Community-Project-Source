@@ -147,7 +147,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the SceneMan object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -159,7 +159,7 @@ public:
 // Description:     Makes the SceneMan object ready for use.
 // Arguments:       A string with the filepath to a Reader file from screen this SceneMan's
 //                  data should be created.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(std::string readerFile);
@@ -195,7 +195,7 @@ public:
 // Arguments:       The instance of the Scene, ownership IS transferred!
 //                  Whether the scene should actually apply all its SceneObject:s placed
 //                  in its definition.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int LoadScene(Scene *pNewScene, bool placeObjects = true, bool placeUnits = true);
@@ -220,7 +220,7 @@ public:
 // Arguments:       The name of the Scene preset instance to load.
 //                  Whether the scene should actually apply all its SceneObject:s placed
 //                  in its definition.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int SetSceneToLoad(std::string sceneName, bool placeObjects = true, bool placeUnits = true);
@@ -241,7 +241,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Actually loads the Scene set to be loaded in SetSceneToLoad.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int LoadScene();
@@ -255,7 +255,7 @@ public:
 //                  Whether the scene should actually apply all its SceneObject:s placed
 //                  in its definition.
 //                  Whether the scene should actually deploy all units placed in its definition.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int LoadScene(std::string sceneName, bool placeObjects = true, bool placeUnits = true);
@@ -268,7 +268,7 @@ public:
 // Arguments:       The name of the Scene preset instance to load.
 //                  Whether the scene should actually apply all its SceneObject:s placed
 //                  in its definition.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
 	virtual int LoadScene(std::string sceneName, bool placeObjects = true) { return LoadScene(sceneName, placeObjects, true); }
@@ -307,7 +307,7 @@ public:
 // Description:     Saves the complete state of this SceneMan to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the SceneMan will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

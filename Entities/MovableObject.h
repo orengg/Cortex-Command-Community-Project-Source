@@ -101,7 +101,7 @@ ENTITYALLOCATION(MovableObject)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the MovableObject object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -119,7 +119,7 @@ ENTITYALLOCATION(MovableObject)
 //                  The amount of time in ms this MovableObject will exist. 0 means unlim.
 //                  Whether or not this MO will collide with other MO's while travelling.
 //                  Whether or not this MO be collided with bt other MO's during their travel.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(float mass,
@@ -137,7 +137,7 @@ ENTITYALLOCATION(MovableObject)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a MovableObject to be identical to another, by deep copy.
 // Arguments:       A reference to the MovableObject to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(const MovableObject &reference);
@@ -176,7 +176,7 @@ ENTITYALLOCATION(MovableObject)
 // Description:     Saves the complete state of this MovableObject with a Writer for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the MovableObject will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
@@ -1560,7 +1560,7 @@ ENTITYALLOCATION(MovableObject)
 // Description:     Updates this MovableObject's Lua scripts. Supposed to be done every
 //                  frame after the rest of the hardcoded C++ update is done.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int UpdateScripts();

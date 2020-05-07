@@ -85,7 +85,7 @@ ENTITYALLOCATION(AtomGroup)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the AtomGroup object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -96,7 +96,7 @@ ENTITYALLOCATION(AtomGroup)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a AtomGroup to be identical to another, by deep copy.
 // Arguments:       A reference to the AtomGroup to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const AtomGroup &reference);
@@ -119,7 +119,7 @@ ENTITYALLOCATION(AtomGroup)
 // Arguments:       A pointer to an MOSRotating whose outline will be approximated by Atoms
 //                  of this AtomGroup, and that will be set as the owner of this AtomGroup.
 //                  Ownership is not transferred!
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(MOSRotating *pOwnerMOSRotating);
@@ -139,7 +139,7 @@ ENTITYALLOCATION(AtomGroup)
 //                  silhouette. 1 means higest res, 2 means every other pixel on the
 //                  MOSRotating's edge is covered by an atom, 3 mean every third, etc.
 //                  The depth into the sprite that the atom:s should be placed.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(MOSRotating *pOwnerMOSRotating, Material const * material, int resolution = 1, int depth = 0);
@@ -178,7 +178,7 @@ ENTITYALLOCATION(AtomGroup)
 // Description:     Saves the complete state of this AtomGroup to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the AtomGroup will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

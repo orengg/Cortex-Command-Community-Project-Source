@@ -215,7 +215,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the Atom object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -230,7 +230,7 @@ public:
 //                  The owner MovableObject of this Atom. Ownership is NOT transferred!
 //                  The trail color.
 //                  The trail length. If 0, no trail will be drawn.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const Vector &offset,
@@ -245,7 +245,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a Atom to be identical to another, by deep copy.
 // Arguments:       A reference to the Atom to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const Atom &reference);
@@ -284,7 +284,7 @@ public:
 // Description:     Saves the complete state of this Atom to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the Atom will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

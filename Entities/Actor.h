@@ -100,7 +100,7 @@ ADD_SCRIPT_FUNCTION_NAMES(MOSRotating, "UpdateAI")
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the Actor object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -119,7 +119,7 @@ ADD_SCRIPT_FUNCTION_NAMES(MOSRotating, "UpdateAI")
 //                  The amount of time in ms this MovableObject will exist. 0 means unlim.
 //                  An initial Status.
 //                  An int with the initial health value of this Actor.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(BITMAP *pSprite,
@@ -138,7 +138,7 @@ ADD_SCRIPT_FUNCTION_NAMES(MOSRotating, "UpdateAI")
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a Actor to be identical to another, by deep copy.
 // Arguments:       A reference to the Actor to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const Actor &reference);
@@ -177,7 +177,7 @@ ADD_SCRIPT_FUNCTION_NAMES(MOSRotating, "UpdateAI")
 // Description:     Saves the complete state of this Actor to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the Actor will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
@@ -198,7 +198,7 @@ ADD_SCRIPT_FUNCTION_NAMES(MOSRotating, "UpdateAI")
     /// </summary>
     /// <param name="scriptPath">The path to the script to load.</param>
     /// <param name="loadAsEnabledScript">Whether or not the script should load as enabled. Defaults to true.</param>
-    /// <returns>An error return value signaling sucess or any particular failure. Anything below 0 is an error signal.</returns>
+    /// <returns>An error return value signaling success or any particular failure. Anything below 0 is an error signal.</returns>
     virtual int LoadScript(std::string const &scriptPath, bool loadAsEnabledScript = false);
 
 

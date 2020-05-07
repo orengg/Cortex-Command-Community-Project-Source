@@ -76,7 +76,7 @@ ENTITYALLOCATION(HeldDevice)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the HeldDevice object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -87,7 +87,7 @@ ENTITYALLOCATION(HeldDevice)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a HeldDevice to be identical to another, by deep copy.
 // Arguments:       A reference to the HeldDevice to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(const HeldDevice &reference);
@@ -126,7 +126,7 @@ ENTITYALLOCATION(HeldDevice)
 // Description:     Saves the complete state of this HeldDevice to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the HeldDevice will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

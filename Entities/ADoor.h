@@ -88,7 +88,7 @@ enum DoorState
     //////////////////////////////////////////////////////////////////////////////////////////
     // Description:     Makes the Sensor object ready for use.
     // Arguments:       None.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Create();
@@ -99,7 +99,7 @@ enum DoorState
     //////////////////////////////////////////////////////////////////////////////////////////
     // Description:     Creates a Sensor to be identical to another, by deep copy.
     // Arguments:       A reference to the Sensor to deep copy.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Create(const Sensor &reference);
@@ -138,7 +138,7 @@ enum DoorState
     // Description:     Saves the complete state of this Sensor to an output stream for
     //                  later recreation with Create(Reader &reader);
     // Arguments:       A Writer that the Sensor will save itself with.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success osuccess any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Save(Writer &writer) const;
@@ -272,7 +272,7 @@ ENTITYALLOCATION(ADoor)
 // Arguments:       A Reader that the ADoor will create itself with.
 //                  Whether there is a class name in the stream to check against to make
 //                  sure the correct type is being read from the stream.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -283,7 +283,7 @@ ENTITYALLOCATION(ADoor)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a ADoor to be identical to another, by deep copy.
 // Arguments:       A reference to the ADoor to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const ADoor &reference);
@@ -322,7 +322,7 @@ ENTITYALLOCATION(ADoor)
 // Description:     Saves the complete state of this ADoor to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the ADoor will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

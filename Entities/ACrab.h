@@ -100,7 +100,7 @@ ENTITYALLOCATION(ACrab)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the ACrab object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -119,7 +119,7 @@ ENTITYALLOCATION(ACrab)
 //                  The amount of time in ms this MovableObject will exist. 0 means unlim.
 //                  An initial Status.
 //                  An int with the initial health value of this ACrab.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(BITMAP *pSprite,
@@ -138,7 +138,7 @@ ENTITYALLOCATION(ACrab)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a ACrab to be identical to another, by deep copy.
 // Arguments:       A reference to the ACrab to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const ACrab &reference);
@@ -177,7 +177,7 @@ ENTITYALLOCATION(ACrab)
 // Description:     Saves the complete state of this ACrab to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the ACrab will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

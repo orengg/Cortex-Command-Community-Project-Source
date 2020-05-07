@@ -76,7 +76,7 @@ ENTITYALLOCATION(BunkerAssembly)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the BunkerAssembly object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -87,7 +87,7 @@ ENTITYALLOCATION(BunkerAssembly)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the BunkerAssembly object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(BunkerAssemblyScheme * scheme);
@@ -98,7 +98,7 @@ ENTITYALLOCATION(BunkerAssembly)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a BunkerAssembly to be identical to another, by deep copy.
 // Arguments:       A reference to the BunkerAssembly to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(const BunkerAssembly &reference);
@@ -137,7 +137,7 @@ ENTITYALLOCATION(BunkerAssembly)
 // Description:     Saves the complete state of this BunkerAssembly to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the BunkerAssembly will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
@@ -150,7 +150,7 @@ ENTITYALLOCATION(BunkerAssembly)
 // Arguments:       An input stream that the BunkerAssembly will create itself from.
 //                  Whether there is a class name in the stream to check against to make
 //                  sure the correct type is being read from the stream.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(std::istream &stream, bool checkType = true);
@@ -162,7 +162,7 @@ ENTITYALLOCATION(BunkerAssembly)
 // Description:     Saves the complete state of this BunkerAssembly to an output stream for
 //                  later recreation with Create(istream &stream);
 // Arguments:       An output stream that the BunkerAssembly will save itself to.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(std::ostream &stream) const;

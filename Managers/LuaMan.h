@@ -87,7 +87,7 @@ enum ServerResult
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the LuaMan object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -115,7 +115,7 @@ enum ServerResult
 // Description:     Saves the complete state of this LuaMan to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the LuaMan will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

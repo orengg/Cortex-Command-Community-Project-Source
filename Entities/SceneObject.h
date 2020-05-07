@@ -75,7 +75,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Description:     Makes the SOPlacer object ready for use.
     // Arguments:       None.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Create();
@@ -86,7 +86,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Description:     Creates a SOPlacer to be identical to another, by deep copy.
     // Arguments:       A reference to the SOPlacer to deep copy.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Create(const SOPlacer &reference);
@@ -125,7 +125,7 @@ public:
     // Description:     Saves the complete state of this SOPlacer to an output stream for
     //                  later recreation with Create(Reader &reader);
     // Arguments:       A Writer that the SOPlacer will save itself with.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Save(Writer &writer) const;
@@ -299,7 +299,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the SceneObject object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create() { return 0; }
@@ -310,7 +310,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates an SceneObject to be identical to another, by deep copy.
 // Arguments:       A reference to the SceneObject to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const SceneObject &reference);
@@ -338,7 +338,7 @@ public:
 // Description:     Saves the complete state of this SceneObject to an output stream for
 //                  later recreation with Create(istream &stream);
 // Arguments:       A Writer that the SceneObject will save itself to.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const = 0;

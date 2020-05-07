@@ -79,7 +79,7 @@ public:
 //                  Which DataModule space to be picking from. -1 means pick from ALL
 //                  objects loaded in all DataModule:s.
 //                  Which lowest common denominator type to be showing.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(Controller *pController, int whichModuleSpace = -1, std::string onlyOfType = "All");

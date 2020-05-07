@@ -108,7 +108,7 @@ friend class MetaSave;
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the MetaMan object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -170,7 +170,7 @@ friend class MetaSave;
 // Description:     Saves the complete state of this MetaMan to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the MetaMan will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
@@ -761,7 +761,7 @@ ENTITYALLOCATION(MetaSave)
 // Description:     Makes the MetaSave object ready for use from the currently loaded
 //                  MetaMan state.
 // Arguments:       The path of the file to where the MetaMan state should be saved.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(std::string savePath);
@@ -772,7 +772,7 @@ ENTITYALLOCATION(MetaSave)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a MetaSave to be identical to another, by deep copy.
 // Arguments:       A reference to the MetaSave to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(const MetaSave &reference);
@@ -811,7 +811,7 @@ ENTITYALLOCATION(MetaSave)
 // Description:     Saves the complete state of this MetaSave to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the MetaSave will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;

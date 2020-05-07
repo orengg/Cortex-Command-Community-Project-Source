@@ -85,7 +85,7 @@ namespace RTE
 		//////////////////////////////////////////////////////////////////////////////////////////
 		// Description:     Makes the MultiplayerGame object ready for use.
 		// Arguments:       None.
-		// Return value:    An error return value signaling sucess or any particular failure.
+		// Return value:    An error return value signaling success or any particular failure.
 		//                  Anything below 0 is an error signal.
 
 		virtual int Create();
@@ -96,7 +96,7 @@ namespace RTE
 		//////////////////////////////////////////////////////////////////////////////////////////
 		// Description:     Creates a MultiplayerGame to be identical to another, by deep copy.
 		// Arguments:       A reference to the MultiplayerGame to deep copy.
-		// Return value:    An error return value signaling sucess or any particular failure.
+		// Return value:    An error return value signaling success or any particular failure.
 		//                  Anything below 0 is an error signal.
 
 		virtual int Create(const MultiplayerGame &reference);
@@ -135,7 +135,7 @@ namespace RTE
 		// Description:     Saves the complete state of this MultiplayerGame to an output stream for
 		//                  later recreation with Create(Reader &reader);
 		// Arguments:       A Writer that the MultiplayerGame will save itself with.
-		// Return value:    An error return value signaling sucess or any particular failure.
+		// Return value:    An error return value signaling success or any particular failure.
 		//                  Anything below 0 is an error signal.
 
 		virtual int Save(Writer &writer) const;
@@ -177,7 +177,7 @@ namespace RTE
 		//////////////////////////////////////////////////////////////////////////////////////////
 		// Description:     Officially starts the game accroding to parameters previously set.
 		// Arguments:       None.
-		// Return value:    An error return value signaling sucess or any particular failure.
+		// Return value:    An error return value signaling success or any particular failure.
 		//                  Anything below 0 is an error signal.
 
 		virtual int Start();

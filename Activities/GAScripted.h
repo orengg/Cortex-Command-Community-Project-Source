@@ -73,7 +73,7 @@ ENTITYALLOCATION(GAScripted)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the GAScripted object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -85,7 +85,7 @@ ENTITYALLOCATION(GAScripted)
 // Description:     Makes the GAScripted object ready for use.
 // Arguments:       The filepath to the script that defines this' Lua-defined derivation
 //                  of this class.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(std::string scriptPath, std::string scriptClassName) { m_ScriptPath = scriptPath; m_LuaClassName = scriptClassName; return Create(); };
@@ -96,7 +96,7 @@ ENTITYALLOCATION(GAScripted)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a GAScripted to be identical to another, by deep copy.
 // Arguments:       A reference to the GAScripted to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const GAScripted &reference);
@@ -135,7 +135,7 @@ ENTITYALLOCATION(GAScripted)
 // Description:     Saves the complete state of this GAScripted to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the GAScripted will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
@@ -160,7 +160,7 @@ ENTITYALLOCATION(GAScripted)
 //                  preset in the PresetMan with the updated scripts so future objects
 //                  spawned will use the new scripts.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int ReloadScripts();
@@ -221,7 +221,7 @@ ENTITYALLOCATION(GAScripted)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Officially starts the game accroding to parameters previously set.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Start();

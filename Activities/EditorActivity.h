@@ -94,7 +94,7 @@ ENTITYALLOCATION(EditorActivity)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the EditorActivity object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -105,7 +105,7 @@ ENTITYALLOCATION(EditorActivity)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a EditorActivity to be identical to another, by deep copy.
 // Arguments:       A reference to the EditorActivity to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const EditorActivity &reference);
@@ -144,7 +144,7 @@ ENTITYALLOCATION(EditorActivity)
 // Description:     Saves the complete state of this EditorActivity to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the EditorActivity will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
@@ -206,7 +206,7 @@ ENTITYALLOCATION(EditorActivity)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Officially starts the game accroding to parameters previously set.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Start();

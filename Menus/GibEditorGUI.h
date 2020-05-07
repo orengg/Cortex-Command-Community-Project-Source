@@ -90,7 +90,7 @@ public:
 //                  NOT TRANSFERRED!
 //                  Which module space that this eidtor will be able to pick objects from.
 //                  -1 means all modules.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(Controller *pController, int whichModuleSpace = -1);

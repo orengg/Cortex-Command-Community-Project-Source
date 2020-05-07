@@ -97,7 +97,7 @@ public:
 //                  -1 means all modules.
 //                  Which Tech module that will be presented as the native one to the player.
 //                  The multiplier of all foreign techs' costs.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     int Create(Controller *pController, FeatureSets featureSet = ONLOADEDIT, int whichModuleSpace = -1, int nativeTechModule = 0, float foreignCostMult = 1.0);

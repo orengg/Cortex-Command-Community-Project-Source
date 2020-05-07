@@ -84,7 +84,7 @@ friend class LuaMan;
     //////////////////////////////////////////////////////////////////////////////////////////
     // Description:     Makes the Gib object ready for use.
     // Arguments:       None.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Create();
@@ -95,7 +95,7 @@ friend class LuaMan;
     //////////////////////////////////////////////////////////////////////////////////////////
     // Description:     Creates a Gib to be identical to another, by deep copy.
     // Arguments:       A reference to the Gib to deep copy.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Create(const Gib &reference);
@@ -134,7 +134,7 @@ friend class LuaMan;
     // Description:     Saves the complete state of this Gib to an output stream for
     //                  later recreation with Create(Reader &reader);
     // Arguments:       A Writer that the Gib will save itself with.
-    // Return value:    An error return value signaling sucess or any particular failure.
+    // Return value:    An error return value signaling success or any particular failure.
     //                  Anything below 0 is an error signal.
 
         virtual int Save(Writer &writer) const;
@@ -306,7 +306,7 @@ ENTITYALLOCATION(MOSRotating)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Makes the MOSRotating object ready for use.
 // Arguments:       None.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create();
@@ -323,7 +323,7 @@ ENTITYALLOCATION(MOSRotating)
 //                  A Vector specifying the initial position.
 //                  A Vector specifying the initial velocity.
 //                  The amount of time in ms this MovableObject will exist. 0 means unlim.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(ContentFile spriteFile,
@@ -339,7 +339,7 @@ ENTITYALLOCATION(MOSRotating)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Description:     Creates a MOSRotating to be identical to another, by deep copy.
 // Arguments:       A reference to the MOSRotating to deep copy.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Create(const MOSRotating &reference);
@@ -378,7 +378,7 @@ ENTITYALLOCATION(MOSRotating)
 // Description:     Saves the complete state of this MOSRotating to an output stream for
 //                  later recreation with Create(Reader &reader);
 // Arguments:       A Writer that the MOSRotating will save itself with.
-// Return value:    An error return value signaling sucess or any particular failure.
+// Return value:    An error return value signaling success or any particular failure.
 //                  Anything below 0 is an error signal.
 
     virtual int Save(Writer &writer) const;
