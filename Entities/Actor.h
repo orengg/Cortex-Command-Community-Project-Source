@@ -395,15 +395,6 @@ ADD_SCRIPT_FUNCTION_NAMES(MOSRotating, "UpdateAI")
 
     float GetAimAngle(bool adjustForFlipped = true) const { return adjustForFlipped ? FacingAngle(m_AimAngle) : m_AimAngle; }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// Method:          GetPassengerSlots
-//////////////////////////////////////////////////////////////////////////////////////////
-// Description:     Gets this Actor's passenger slots.
-// Arguments:       None.
-// Return value:    The Actor's passenger plots
-
-    int GetPassengerSlots() const { return m_PassengerSlots; }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Virtual method:  GetCPUPos
@@ -538,15 +529,6 @@ ADD_SCRIPT_FUNCTION_NAMES(MOSRotating, "UpdateAI")
 // Return value:    None.
 
     void SetAimAngle(float newAngle) { m_AimAngle = newAngle; Clamp(m_AimAngle, m_AimRange, -m_AimRange); }
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Method:          SetPassengerSlots
-//////////////////////////////////////////////////////////////////////////////////////////
-// Description:     Sets this Actor's passenger slots.
-// Arguments:       A new amount of passenger slots.
-// Return value:    None.
-
-    void SetPassengerSlots(int newPassengerSlots) { m_PassengerSlots = newPassengerSlots;; }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1472,8 +1454,6 @@ protected:
     float m_DigStrength;
 	// ID of deployment which spawned this actor
 	unsigned int m_DeploymentID;
-    // How many passenger slots this actor will take in a craft
-    int m_PassengerSlots;
 
 
     ////////////////////
