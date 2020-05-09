@@ -307,6 +307,259 @@ void EnterEditorActivity(const char *editorToEnter) {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//! Class that contains variables and methods for the function PlayIntroTitle()
+class IntroTitleParams {
+public:
+    bool m_keyPressed;
+    bool m_sectionSwitch;
+    int m_startYOffset;
+    int m_titleAppearYOffset;
+    Timer m_sectionTimer;
+    Timer m_songTimer;
+    double m_elapsed;
+    double m_duration;
+    double m_sectionProgress;
+    double m_scrollProgress;
+    double m_scrollStart;
+    double m_scrollDuration;
+    Vector m_scrollOffset;
+    SceneLayer* m_pBackdrop;
+    int m_starCount;
+    float m_backdropScrollRatio;
+    StarSize m_size;
+    Star* m_aStars;
+    Vector m_planetPos;
+    MOSParticle* m_pMoon;
+    MOSParticle* m_pPlanet;
+    long long m_lastShake;
+    Vector m_shakeOffset;
+    float m_orbitRotation;
+    Vector m_capsuleOffset;
+    float m_orbitRadius;
+    MOSRotating* m_pPioneerCapsule;
+    Vector m_stationOffset;
+    MOSRotating* m_pStation;
+    long long m_lastPuff;
+    bool m_puffActive;
+    int m_puffCount;
+    MOSParticle* m_pFirePuffLarge;
+    MOSParticle* m_pFirePuffMedium;
+    long long m_lastPuffFrame;
+    int m_puffFrame;
+    int m_preMenuYOffset;
+    MOSParticle* m_pTitleGlow;
+    MOSParticle* m_pTitle;
+
+    /* the original order of commands in the playintrotitle loop is:
+    initial things
+    scrolling logic
+    DRL logo drawing
+    FMOD logo drawing
+    notice drawing
+    scene drawing
+    game logo drawing
+    menu drawing
+    slides drawing
+    intro sequence logic
+    additional user input and skipping handling
+    final things*/
+
+    //! Empty Constructor
+    IntroTitleParams() {}
+    
+    //! Method of things to do at the start of each while loop.
+    void StartOfWhile() {
+        m_keyPressed = g_UInputMan.AnyStartPress();
+        // Reset the key press states
+        g_UInputMan.Update();
+        g_TimerMan.Update();
+        g_TimerMan.UpdateSim();
+        g_ConsoleMan.Update();
+
+        g_AudioMan.Update();
+
+        if (m_sectionSwitch) { m_sectionTimer.Reset(); }
+        m_elapsed = m_sectionTimer.GetElapsedRealTimeS();
+        // Calculate the normalized ITP.m_sectionProgress scalar
+        m_sectionProgress = m_duration <= 0 ? 0 : (m_elapsed / m_duration);
+        // Clamp the ITP.m_sectionProgress scalar
+        m_sectionProgress = min(m_sectionProgress, 0.9999);
+
+        if (g_NetworkServer.IsServerModeEnabled()) { g_NetworkServer.Update(); }
+    }
+
+    //! Scrolling logic for these states: (g_IntroState >= FADEIN && g_IntroState <= PRETITLE)
+    void FadeinToPretitle() {
+        m_scrollProgress = (m_songTimer.GetElapsedRealTimeS() - m_scrollStart) / m_scrollDuration;
+        m_scrollOffset.m_Y = LERP(0, 1.0, m_startYOffset, m_titleAppearYOffset, m_scrollProgress);
+    }
+
+    //! Scrolling logic for these states: (g_IntroState >= TITLEAPPEAR && g_IntroState <= PLANETSCROLL)
+    void TitleappearToPlanetscroll() {
+        m_scrollProgress = (m_songTimer.GetElapsedRealTimeS() - m_scrollStart) / m_scrollDuration;
+        m_scrollOffset.m_Y = EaseOut(m_titleAppearYOffset, m_preMenuYOffset, m_scrollProgress);
+    }
+
+    //! Game logo drawing for these states: ((g_IntroState >= TITLEAPPEAR && g_IntroState < SCENARIOFADEIN) || g_IntroState == MAINTOCAMPAIGN)
+    void TitleGlow() {
+        m_pTitleGlow->SetPos(m_pTitle->GetPos());
+        m_pTitle->Draw(g_FrameMan.GetBackBuffer32(), Vector(), g_DrawAlpha);
+        // Screen blend the title glow on top, with some flickering in its intensity
+        int blendAmount = 220 + 35 * NormalRand();
+        set_screen_blender(blendAmount, blendAmount, blendAmount, blendAmount);
+        m_pTitleGlow->Draw(g_FrameMan.GetBackBuffer32(), Vector(), g_DrawTrans);
+    }
+
+    //! Scene drawing for states after and including FADEIN.
+    void FromFadeinOnward() {
+        g_FrameMan.ClearBackBuffer32();
+        Box backdropBox;
+        m_pBackdrop->Draw(g_FrameMan.GetBackBuffer32(), backdropBox, m_scrollOffset * m_backdropScrollRatio);
+        Vector starDrawPos;
+        for (int star = 0; star < m_starCount; ++star) {
+            m_size = m_aStars[star].m_Size;
+            int intensity = 185 * m_aStars[star].m_Intensity + (m_size == StarSmall ? 35 : 70) * PosRand();
+            set_screen_blender(intensity, intensity, intensity, intensity);
+            starDrawPos.SetXY(m_aStars[star].m_Pos.m_X, m_aStars[star].m_Pos.m_Y - m_scrollOffset.m_Y * m_aStars[star].m_ScrollRatio);
+            draw_trans_sprite(g_FrameMan.GetBackBuffer32(), m_aStars[star].m_pBitmap, starDrawPos.GetFloorIntX(), starDrawPos.GetFloorIntY());
+        }
+        m_planetPos.SetXY(g_FrameMan.GetResX() / 2, 567 - m_scrollOffset.GetFloorIntY());
+        m_pMoon->SetPos(Vector(m_planetPos.m_X + 200, 364 - m_scrollOffset.GetFloorIntY() * 0.60));
+        m_pPlanet->SetPos(m_planetPos);
+        m_pMoon->Draw(g_FrameMan.GetBackBuffer32(), Vector(), g_DrawAlpha);
+        m_pPlanet->Draw(g_FrameMan.GetBackBuffer32(), Vector(), g_DrawAlpha);
+        // Manually shake our m_shakeOffset to randomize some effects
+        if (g_TimerMan.GetAbsoulteTime() > m_lastShake + 50000) {
+            m_shakeOffset.m_X = RangeRand(-3, 3);
+            m_shakeOffset.m_Y = RangeRand(-3, 3);
+            m_lastShake = g_TimerMan.GetAbsoulteTime();
+        }
+        // Tell the menu that PP promo is off
+        g_pMainMenuGUI->DisablePioneerPromoButton();
+    }
+
+    //! Scene drawing for these states: g_IntroState < MAINTOCAMPAIGN && g_IntroState >= FADEIN
+    /*! Method to do things in these states: g_IntroState < MAINTOCAMPAIGN && g_IntroState >= FADEIN
+    Draw pioneer promo capsule.*/
+    void FadeinToScenariomenu() {
+        if (m_orbitRotation < -c_PI * 1.27 && m_orbitRotation > -c_PI * 1.85) {
+            // Start drawing pioneer capsule
+            // Slowly decrease radius to show that the capsule is falling
+            float radiusperc = 1 - ((fabs(m_orbitRotation) - (1.27 * c_PI)) / (0.35 * c_PI) / 4);
+            // Slowly decrease m_size to make the capsule disappear after a while
+            float sizeperc = 1 - ((fabs(m_orbitRotation) - (1.27 * c_PI)) / (0.35 * c_PI) / 1.5);
+            // Rotate, place and draw capsule
+            m_capsuleOffset.SetXY(m_orbitRadius * radiusperc, 0);
+            m_capsuleOffset.RadRotate(m_orbitRotation);
+            m_pPioneerCapsule->SetScale(sizeperc);
+            m_pPioneerCapsule->SetPos(m_planetPos + m_capsuleOffset);
+            m_pPioneerCapsule->SetRotAngle(m_orbitRotation);
+            m_pPioneerCapsule->Draw(g_FrameMan.GetBackBuffer32());
+        }
+    }
+
+    //! Scene drawing for states after and including FADEIN.
+    /*! Place, rotate and draw station.
+    A second method of things to do in the states after and including FADEIN.
+    Divided into two functions because that's how it was originally.
+    The order of commands probably matters. */
+    void FromFadeinOnward2() {
+        m_stationOffset.SetXY(m_orbitRadius, 0);
+        m_stationOffset.RadRotate(m_orbitRotation);
+        m_pStation->SetPos(m_planetPos + m_stationOffset);
+        m_pStation->SetRotAngle(-c_HalfPI + m_orbitRotation);
+        m_pStation->Draw(g_FrameMan.GetBackBuffer32());
+    }
+
+    //! Scene drawing for states: g_IntroState < MAINTOCAMPAIGN && g_IntroState >= FADEIN
+    /*! Start explosion effects to show that there's something wrong with the station, but only if we're not in campaign.
+    A second method of things to do in these states: g_IntroState < MAINTOCAMPAIGN && g_IntroState >= FADEIN
+    Divided into two functions because that's how it was originally.
+    The order of commands probably matters.*/
+    void FadeinToScenariomenu2() {
+        if (m_orbitRotation < -c_PI * 1.25 && m_orbitRotation > -c_TwoPI) {
+            // Add explosions delay and count them
+            if (g_TimerMan.GetAbsoulteTime() > m_lastPuff + 1000000) {
+                m_lastPuff = g_TimerMan.GetAbsoulteTime();
+                m_puffActive = true;
+                m_puffCount++;
+            }
+            // If explosion was authorized
+            if (m_puffActive) {
+                // First explosion is big while other are smaller
+                if (m_puffCount == 1) {
+                    m_pFirePuffLarge->SetPos(m_planetPos + m_stationOffset);
+                    if (g_TimerMan.GetAbsoulteTime() > m_lastPuffFrame + 50000) {
+                        m_lastPuffFrame = g_TimerMan.GetAbsoulteTime();
+                        m_puffFrame++;
+                        if (m_puffFrame >= m_pFirePuffLarge->GetFrameCount()) {
+                            // Manually reset frame counters and disable other explosions until it's time
+                            m_puffFrame = 0;
+                            m_puffActive = 0;
+                        }
+                        m_pFirePuffLarge->SetFrame(m_puffFrame);
+                    }
+                    m_pFirePuffLarge->Draw(g_FrameMan.GetBackBuffer32());
+                }
+                else {
+                    m_pFirePuffMedium->SetPos(m_planetPos + m_stationOffset + m_shakeOffset);
+                    if (g_TimerMan.GetAbsoulteTime() > m_lastPuffFrame + 50000) {
+                        m_lastPuffFrame = g_TimerMan.GetAbsoulteTime();
+                        m_puffFrame++;
+                        if (m_puffFrame >= m_pFirePuffLarge->GetFrameCount()) {
+                            // Manually reset frame counters and disable other explosions until it's time
+                            m_puffFrame = 0;
+                            m_puffActive = 0;
+                        }
+                        m_pFirePuffMedium->SetFrame(m_puffFrame);
+                    }
+                    m_pFirePuffMedium->Draw(g_FrameMan.GetBackBuffer32());
+                }
+            }
+        }
+    }
+
+    //! Scene drawing for states after and including FADEIN.
+    /*! A third method of things to do in the states after and including FADEIN.
+    Divided into two functions because that's how it was originally.
+    The order of commands probably matters.*/
+    void FromFadeinOnward3() {
+        m_orbitRotation -= 0.0020; // 0.0015
+        // Keep the rotation angle from getting too large
+        if (m_orbitRotation < -c_TwoPI) {
+            m_orbitRotation += c_TwoPI;
+        }
+        g_StationOffsetX = m_stationOffset.m_X;
+        g_StationOffsetY = m_stationOffset.m_Y;
+    }
+
+    //! Additional user input and skipping handling.
+    /*! Method for things to do in these states: g_IntroState >= FADEIN && g_IntroState <= SLIDE8*/
+    void FadeinToSlide8() {
+        if (m_keyPressed) {
+            g_IntroState = MENUAPPEAR;
+            m_sectionSwitch = true;
+            m_scrollOffset.m_Y = m_preMenuYOffset;
+            m_orbitRotation = c_HalfPI - c_EighthPI;
+            m_orbitRotation = -c_PI * 1.20;
+        }
+    }
+};
+
+//! Function that returns whether to continue regularly or stop.
+bool KeepWhiling() {
+    return (!g_Quit && !g_ResumeActivity);
+}
+
+//! Function that does things at the end of each while loop
+void EndOfWhile() {
+    // Draw the console in the menu
+    g_ConsoleMan.Draw(g_FrameMan.GetBackBuffer32());
+    // Wait for vertical sync before flipping frames
+    vsync();
+    g_FrameMan.FlipFrameBuffers();
+}
+
 /// <summary>
 /// Load and display the into, title and menu sequence.
 /// </summary>
@@ -314,7 +567,7 @@ void EnterEditorActivity(const char *editorToEnter) {
 bool PlayIntroTitle() {
     // Disable time averaging since it can make the music timing creep off target.
     g_TimerMan.EnableAveraging(false);
-    
+
     // Untrap the mouse and keyboard
     g_UInputMan.DisableKeys(false);
     g_UInputMan.TrapMousePos(false);
@@ -327,13 +580,16 @@ bool PlayIntroTitle() {
     int resX = g_FrameMan.GetResX();
     int resY = g_FrameMan.GetResY();
 
+    //Object that contains relevant variables and methods
+    IntroTitleParams ITP;
+
     // The fade-in/out screens
-    BITMAP *pFadeScreen = create_bitmap_ex(32, resX, resY);
+    BITMAP* pFadeScreen = create_bitmap_ex(32, resX, resY);
     clear_to_color(pFadeScreen, 0);
     int fadePos = 0;
 
     // Load the Intro slides
-    BITMAP **apIntroSlides = new BITMAP *[SLIDECOUNT];
+    BITMAP** apIntroSlides = new BITMAP* [SLIDECOUNT];
     ContentFile introSlideFile("Base.rte/GUIs/Title/Intro/IntroSlideA.bmp");
     apIntroSlides[SLIDEPAST] = introSlideFile.LoadAndReleaseBitmap();
     introSlideFile.SetDataPath("Base.rte/GUIs/Title/Intro/IntroSlideB.bmp");
@@ -352,424 +608,913 @@ bool PlayIntroTitle() {
     apIntroSlides[SLIDEFRONTIER] = introSlideFile.LoadAndReleaseBitmap();
 
     ContentFile alphaFile;
-    BITMAP *pAlpha = 0;
+    BITMAP* pAlpha = 0;
 
-    MOSParticle *pDRLogo = new MOSParticle();
+    MOSParticle* pDRLogo = new MOSParticle();
     pDRLogo->Create(ContentFile("Base.rte/GUIs/Title/Intro/DRLogo5x.bmp"));
     pDRLogo->SetWrapDoubleDrawing(false);
 
-	MOSParticle *pFMODLogo = new MOSParticle();
-	pFMODLogo->Create(ContentFile("Base.rte/GUIs/Title/Intro/FMODLogo.bmp"));
-	pFMODLogo->SetWrapDoubleDrawing(false);
+    MOSParticle* pFMODLogo = new MOSParticle();
+    pFMODLogo->Create(ContentFile("Base.rte/GUIs/Title/Intro/FMODLogo.bmp"));
+    pFMODLogo->SetWrapDoubleDrawing(false);
 
-    SceneLayer *pBackdrop = new SceneLayer();
-    pBackdrop->Create(ContentFile("Base.rte/GUIs/Title/Nebula.bmp"), false, Vector(), false, false, Vector(0, -1.0));//startYOffset + resY));
-    float backdropScrollRatio = 1.0F / 3.0F;
+    ITP.m_pBackdrop = new SceneLayer();
+    ITP.m_pBackdrop->Create(ContentFile("Base.rte/GUIs/Title/Nebula.bmp"), false, Vector(), false, false, Vector(0, -1.0));
+    ITP.m_backdropScrollRatio = 1.0F / 3.0F;
 
-    MOSParticle *pTitle = new MOSParticle();
-    pTitle->Create(ContentFile("Base.rte/GUIs/Title/Title.bmp"));
-    pTitle->SetWrapDoubleDrawing(false);
+    ITP.m_pTitle = new MOSParticle();
+    ITP.m_pTitle->Create(ContentFile("Base.rte/GUIs/Title/Title.bmp"));
+    ITP.m_pTitle->SetWrapDoubleDrawing(false);
     // Logo glow effect
-    MOSParticle *pTitleGlow = new MOSParticle();
-    pTitleGlow->Create(ContentFile("Base.rte/GUIs/Title/TitleGlow.bmp"));
-    pTitleGlow->SetWrapDoubleDrawing(false);
+    ITP.m_pTitleGlow = new MOSParticle();
+    ITP.m_pTitleGlow->Create(ContentFile("Base.rte/GUIs/Title/TitleGlow.bmp"));
+    ITP.m_pTitleGlow->SetWrapDoubleDrawing(false);
     // Add alpha
     alphaFile.SetDataPath("Base.rte/GUIs/Title/TitleAlpha.bmp");
     set_write_alpha_blender();
-    draw_trans_sprite(pTitle->GetSpriteFrame(0), alphaFile.GetAsBitmap(), 0, 0);
+    draw_trans_sprite(ITP.m_pTitle->GetSpriteFrame(0), alphaFile.GetAsBitmap(), 0, 0);
 
-    MOSParticle *pPlanet = new MOSParticle();
-    pPlanet->Create(ContentFile("Base.rte/GUIs/Title/Planet.bmp"));
-    pPlanet->SetWrapDoubleDrawing(false);
+    ITP.m_pPlanet = new MOSParticle();
+    ITP.m_pPlanet->Create(ContentFile("Base.rte/GUIs/Title/Planet.bmp"));
+    ITP.m_pPlanet->SetWrapDoubleDrawing(false);
     // Add alpha
     alphaFile.SetDataPath("Base.rte/GUIs/Title/PlanetAlpha.bmp");
     set_write_alpha_blender();
-    draw_trans_sprite(pPlanet->GetSpriteFrame(0), alphaFile.GetAsBitmap(), 0, 0);
+    draw_trans_sprite(ITP.m_pPlanet->GetSpriteFrame(0), alphaFile.GetAsBitmap(), 0, 0);
 
-    MOSParticle *pMoon = new MOSParticle();
-    pMoon->Create(ContentFile("Base.rte/GUIs/Title/Moon.bmp"));
-    pMoon->SetWrapDoubleDrawing(false);
+    ITP.m_pMoon = new MOSParticle();
+    ITP.m_pMoon->Create(ContentFile("Base.rte/GUIs/Title/Moon.bmp"));
+    ITP.m_pMoon->SetWrapDoubleDrawing(false);
     // Add alpha
     alphaFile.SetDataPath("Base.rte/GUIs/Title/MoonAlpha.bmp");
     set_write_alpha_blender();
-    draw_trans_sprite(pMoon->GetSpriteFrame(0), alphaFile.GetAsBitmap(), 0, 0);
+    draw_trans_sprite(ITP.m_pMoon->GetSpriteFrame(0), alphaFile.GetAsBitmap(), 0, 0);
 
-    MOSRotating *pStation = new MOSRotating();
-    pStation->Create(ContentFile("Base.rte/GUIs/Title/Station.bmp"));
-    pStation->SetWrapDoubleDrawing(false);
+    ITP.m_pStation = new MOSRotating();
+    ITP.m_pStation->Create(ContentFile("Base.rte/GUIs/Title/Station.bmp"));
+    ITP.m_pStation->SetWrapDoubleDrawing(false);
 
-	MOSRotating *pPioneerCapsule = new MOSRotating();
-	pPioneerCapsule->Create(ContentFile("Base.rte/GUIs/Title/Promo/PioneerCapsule.bmp"));
-	pPioneerCapsule->SetWrapDoubleDrawing(false);
+    ITP.m_pPioneerCapsule = new MOSRotating();
+    ITP.m_pPioneerCapsule->Create(ContentFile("Base.rte/GUIs/Title/Promo/PioneerCapsule.bmp"));
+    ITP.m_pPioneerCapsule->SetWrapDoubleDrawing(false);
 
-	MOSRotating *pPioneerScreaming = new MOSRotating();
-	pPioneerScreaming->Create(ContentFile("Base.rte/GUIs/Title/Promo/PioneerScreaming.bmp"));
-	pPioneerScreaming->SetWrapDoubleDrawing(false);
+    MOSRotating* pPioneerScreaming = new MOSRotating();
+    pPioneerScreaming->Create(ContentFile("Base.rte/GUIs/Title/Promo/PioneerScreaming.bmp"));
+    pPioneerScreaming->SetWrapDoubleDrawing(false);
 
-	MOSRotating *pPioneerPromo = new MOSRotating();
-	pPioneerPromo->Create(ContentFile("Base.rte/GUIs/Title/Promo/PioneerPromo.bmp"));
-	pPioneerPromo->SetWrapDoubleDrawing(false);
+    MOSRotating* pPioneerPromo = new MOSRotating();
+    pPioneerPromo->Create(ContentFile("Base.rte/GUIs/Title/Promo/PioneerPromo.bmp"));
+    pPioneerPromo->SetWrapDoubleDrawing(false);
 
-	MOSParticle * pFirePuffLarge = dynamic_cast<MOSParticle *>(g_PresetMan.GetEntityPreset("MOSParticle", "Fire Puff Large", "Base.rte")->Clone());
-	MOSParticle * pFirePuffMedium = dynamic_cast<MOSParticle *>(g_PresetMan.GetEntityPreset("MOSParticle", "Fire Puff Medium", "Base.rte")->Clone());
+    ITP.m_pFirePuffLarge = dynamic_cast<MOSParticle*>(g_PresetMan.GetEntityPreset("MOSParticle", "Fire Puff Large", "Base.rte")->Clone());
+    ITP.m_pFirePuffMedium = dynamic_cast<MOSParticle*>(g_PresetMan.GetEntityPreset("MOSParticle", "Fire Puff Medium", "Base.rte")->Clone());
 
-	long long lastShake = 0;
-	long long lastPuffFrame = 0;
-	long long lastPuff = 0;
-	bool puffActive = false;
-	int puffFrame = 0;
-	int puffCount = 0;
+    ITP.m_lastShake = 0;
+    ITP.m_lastPuffFrame = 0;
+    ITP.m_lastPuff = 0;
+    ITP.m_puffActive = false;
+    ITP.m_puffFrame = 0;
+    ITP.m_puffCount = 0;
 
-	Vector shakeOffset(0, 0);
+    ITP.m_shakeOffset = Vector(0, 0);
 
     // Generate stars!
-    int starArea = resX * pBackdrop->GetBitmap()->h;
-    int starCount = starArea / 1000;
+    int starArea = resX * ITP.m_pBackdrop->GetBitmap()->h;
+    ITP.m_starCount = starArea / 1000;
     ContentFile starSmallFile("Base.rte/GUIs/Title/Stars/StarSmall.bmp");
     ContentFile starLargeFile("Base.rte/GUIs/Title/Stars/StarLarge.bmp");
     ContentFile starHugeFile("Base.rte/GUIs/Title/Stars/StarHuge.bmp");
     int starSmallBitmapCount = 4;
     int starLargeBitmapCount = 1;
     int starHugeBitmapCount = 2;
-    BITMAP **apStarSmallBitmaps = starSmallFile.GetAsAnimation(starSmallBitmapCount);
-    BITMAP **apStarLargeBitmaps = starLargeFile.GetAsAnimation(starLargeBitmapCount);
-    BITMAP **apStarHugeBitmaps = starHugeFile.GetAsAnimation(starHugeBitmapCount);
-    Star *aStars = new Star[starCount];
-    StarSize size;
+    BITMAP** apStarSmallBitmaps = starSmallFile.GetAsAnimation(starSmallBitmapCount);
+    BITMAP** apStarLargeBitmaps = starLargeFile.GetAsAnimation(starLargeBitmapCount);
+    BITMAP** apStarHugeBitmaps = starHugeFile.GetAsAnimation(starHugeBitmapCount);
+    ITP.m_aStars = new Star[ITP.m_starCount];
 
-    for (int star = 0; star < starCount; ++star) {
+    for (int star = 0; star < ITP.m_starCount; ++star) {
         if (PosRand() < 0.95) {
-            aStars[star].m_Size = StarSmall;
-            aStars[star].m_pBitmap = apStarSmallBitmaps[SelectRand(0, starSmallBitmapCount - 1)];
-            aStars[star].m_Intensity = RangeRand(0.001, 0.5);
+            ITP.m_aStars[star].m_Size = StarSmall;
+            ITP.m_aStars[star].m_pBitmap = apStarSmallBitmaps[SelectRand(0, starSmallBitmapCount - 1)];
+            ITP.m_aStars[star].m_Intensity = RangeRand(0.001, 0.5);
         }
         else if (PosRand() < 0.85) {
-            aStars[star].m_Size = StarLarge;
-            aStars[star].m_pBitmap = apStarLargeBitmaps[SelectRand(0, starLargeBitmapCount - 1)];
-            aStars[star].m_Intensity = RangeRand(0.6, 1.0);
+            ITP.m_aStars[star].m_Size = StarLarge;
+            ITP.m_aStars[star].m_pBitmap = apStarLargeBitmaps[SelectRand(0, starLargeBitmapCount - 1)];
+            ITP.m_aStars[star].m_Intensity = RangeRand(0.6, 1.0);
         }
         else {
-            aStars[star].m_Size = StarHuge;
-            aStars[star].m_pBitmap = apStarHugeBitmaps[SelectRand(0, starLargeBitmapCount - 1)];
-            aStars[star].m_Intensity = RangeRand(0.9, 1.0);
+            ITP.m_aStars[star].m_Size = StarHuge;
+            ITP.m_aStars[star].m_pBitmap = apStarHugeBitmaps[SelectRand(0, starLargeBitmapCount - 1)];
+            ITP.m_aStars[star].m_Intensity = RangeRand(0.9, 1.0);
         }
-        aStars[star].m_Pos.SetXY(resX * PosRand(), pBackdrop->GetBitmap()->h * PosRand());//resY * PosRand());
-        aStars[star].m_Pos.Floor();
+        ITP.m_aStars[star].m_Pos.SetXY(resX * PosRand(), ITP.m_pBackdrop->GetBitmap()->h * PosRand());//resY * PosRand());
+        ITP.m_aStars[star].m_Pos.Floor();
         // To match the nebula scroll
-        aStars[star].m_ScrollRatio = backdropScrollRatio;
+        ITP.m_aStars[star].m_ScrollRatio = ITP.m_backdropScrollRatio;
     }
 
     // Font stuff
-    GUISkin *pSkin = g_pMainMenuGUI->GetGUIControlManager()->GetSkin();
-    GUIFont *pFont = pSkin->GetFont("fatfont.bmp");
+    GUISkin* pSkin = g_pMainMenuGUI->GetGUIControlManager()->GetSkin();
+    GUIFont* pFont = pSkin->GetFont("fatfont.bmp");
     AllegroBitmap backBuffer(g_FrameMan.GetBackBuffer32());
     int yTextPos = 0;
     // Timers
-    Timer totalTimer, songTimer, sectionTimer;
+    Timer totalTimer;
     // Convenience for how many seconds have elapsed on each section
-    double elapsed = 0;
+    ITP.m_elapsed = 0;
     // How long each section is, in s
-    double duration = 0, scrollDuration = 0, scrollStart = 0, slideFadeInDuration = 0.5, slideFadeOutDuration = 0.5;
+    ITP.m_duration = 0;
+    ITP.m_scrollDuration = 0;
+    ITP.m_scrollStart = 0;
+    double slideFadeInDuration = 0.5;
+    double slideFadeOutDuration = 0.5;
     // Progress made on a section, from 0.0 to 1.0
-    double sectionProgress = 0, scrollProgress = 0;
+    ITP.m_sectionProgress = 0;
+    ITP.m_scrollProgress = 0;
     // When a section is supposed to end, relative to the song timer
     long sectionSongEnd = 0;
 
     // Scrolling data
-	bool keyPressed = false;
-	bool sectionSwitch = true;
+    ITP.m_keyPressed = false;
+    ITP.m_sectionSwitch = true;
     float planetRadius = 240;
-    float orbitRadius = 274;
-    float orbitRotation = c_HalfPI - c_EighthPI;
+    ITP.m_orbitRadius = 274;
+    ITP.m_orbitRotation = c_HalfPI - c_EighthPI;
     // Set the start so that the nebula is fully scrolled up
-    int startYOffset = pBackdrop->GetBitmap()->h / backdropScrollRatio - (resY / backdropScrollRatio);
-    int titleAppearYOffset = 900;
-    int preMenuYOffset = 100;
+    ITP.m_startYOffset = ITP.m_pBackdrop->GetBitmap()->h / ITP.m_backdropScrollRatio - (resY / ITP.m_backdropScrollRatio);
+    ITP.m_titleAppearYOffset = 900;
+    ITP.m_preMenuYOffset = 100;
     int topMenuYOffset = 0;
     // So planet is centered on the screen regardless of resolution
     int planetViewYOffset = 325 + planetRadius - (resY / 2);
     // Set Y to title offset so there's no jump when entering the main menu
-    Vector scrollOffset(0, preMenuYOffset), planetPos, stationOffset, capsuleOffset, slidePos;
+    ITP.m_scrollOffset = Vector(0, ITP.m_preMenuYOffset);
+    Vector slidePos;
 
     totalTimer.Reset();
-    sectionTimer.Reset();
-    while (!g_Quit && g_IntroState != END && !g_ResumeActivity) {
-        keyPressed = g_UInputMan.AnyStartPress();
-//        g_Quit = key[KEY_ESC];
-        // Reset the key press states
-        g_UInputMan.Update();
-        g_TimerMan.Update();
-        g_TimerMan.UpdateSim();
-        g_ConsoleMan.Update();
+    ITP.m_sectionTimer.Reset();
 
-		g_AudioMan.Update();
+    // this block represents the first iteration of the original while loop.
+    ITP.StartOfWhile();
+    if (g_IntroState == START)
+    {
+        g_IntroState = LOGOFADEIN;
+        ITP.m_sectionSwitch = true;
+    }
+    EndOfWhile();
 
-		if (sectionSwitch) { sectionTimer.Reset(); }
-        elapsed = sectionTimer.GetElapsedRealTimeS();
-        // Calculate the normalized sectionProgress scalar
-        sectionProgress = duration <= 0 ? 0 : (elapsed / duration);
-        // Clamp the sectionProgress scalar
-        sectionProgress = min(sectionProgress, 0.9999);
+    while (KeepWhiling() && g_IntroState == LOGOFADEIN) {
+        ITP.StartOfWhile();
 
-		if (g_NetworkServer.IsServerModeEnabled()) { g_NetworkServer.Update(); }
-			
-        ////////////////////////////////
+        // Draw the early build notice
+        g_FrameMan.ClearBackBuffer32();
+        pDRLogo->SetPos(Vector(g_FrameMan.GetResX() / 2, (g_FrameMan.GetResY() / 2) - 35));
+        pDRLogo->Draw(g_FrameMan.GetBackBuffer32());
+
+        if (ITP.m_sectionSwitch) {
+            // Play juicy logo signature jingle/sound
+            g_GUISound.SplashSound()->Play();
+            // Black fade
+            clear_to_color(pFadeScreen, 0);
+            ITP.m_duration = 0.25;
+            ITP.m_sectionSwitch = false;
+        }
+        fadePos = 255 - (255 * ITP.m_sectionProgress);
+        set_trans_blender(fadePos, fadePos, fadePos, fadePos);
+        draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
+        if (ITP.m_elapsed >= ITP.m_duration) {
+            g_IntroState = LOGODISPLAY;
+            ITP.m_sectionSwitch = true;
+        }
+        else if (ITP.m_keyPressed) {
+            g_IntroState = LOGOFADEOUT;
+            ITP.m_sectionSwitch = true;
+        }
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState == LOGODISPLAY) {
+        ITP.StartOfWhile();
+
+        // Draw the early build notice
+        g_FrameMan.ClearBackBuffer32();
+        pDRLogo->SetPos(Vector(g_FrameMan.GetResX() / 2, (g_FrameMan.GetResY() / 2) - 35));
+        pDRLogo->Draw(g_FrameMan.GetBackBuffer32());
+
+        if (ITP.m_sectionSwitch) {
+            ITP.m_duration = 2.0;
+            ITP.m_sectionSwitch = false;
+        }
+        if (ITP.m_elapsed > ITP.m_duration || ITP.m_keyPressed) {
+            g_IntroState = LOGOFADEOUT;
+            ITP.m_sectionSwitch = true;
+        }
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState == LOGOFADEOUT) {
+        ITP.StartOfWhile();
+
+        // Draw the early build notice
+        g_FrameMan.ClearBackBuffer32();
+        pDRLogo->SetPos(Vector(g_FrameMan.GetResX() / 2, (g_FrameMan.GetResY() / 2) - 35));
+        pDRLogo->Draw(g_FrameMan.GetBackBuffer32());
+
+        if (ITP.m_sectionSwitch) {
+            // Black fade
+            clear_to_color(pFadeScreen, 0);
+            ITP.m_duration = 0.25;
+            ITP.m_sectionSwitch = false;
+        }
+        fadePos = 255 * ITP.m_sectionProgress;
+        set_trans_blender(fadePos, fadePos, fadePos, fadePos);
+        draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
+        if (ITP.m_elapsed >= ITP.m_duration || ITP.m_keyPressed) {
+            g_IntroState = FMODLOGOFADEIN;
+            ITP.m_sectionSwitch = true;
+        }
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState == FMODLOGOFADEIN) {
+        ITP.StartOfWhile();
+
+        // Draw FMOD Logo
+        g_FrameMan.ClearBackBuffer32();
+        pFMODLogo->SetPos(Vector(g_FrameMan.GetResX() / 2, (g_FrameMan.GetResY() / 2) - 35));
+        pFMODLogo->Draw(g_FrameMan.GetBackBuffer32());
+
+        if (ITP.m_sectionSwitch) {
+            // Black fade
+            clear_to_color(pFadeScreen, 0);
+            ITP.m_duration = 0.25;
+            ITP.m_sectionSwitch = false;
+        }
+        fadePos = 255 - (255 * ITP.m_sectionProgress);
+        set_trans_blender(fadePos, fadePos, fadePos, fadePos);
+        draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
+        if (ITP.m_elapsed >= ITP.m_duration) {
+            g_IntroState = FMODLOGODISPLAY;
+            ITP.m_sectionSwitch = true;
+        }
+        else if (ITP.m_keyPressed) {
+            g_IntroState = FMODLOGOFADEOUT;
+            ITP.m_sectionSwitch = true;
+        }
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState == FMODLOGODISPLAY) {
+        ITP.StartOfWhile();
+
+        // Draw FMOD Logo
+        g_FrameMan.ClearBackBuffer32();
+        pFMODLogo->SetPos(Vector(g_FrameMan.GetResX() / 2, (g_FrameMan.GetResY() / 2) - 35));
+        pFMODLogo->Draw(g_FrameMan.GetBackBuffer32());
+
+        if (ITP.m_sectionSwitch) {
+            ITP.m_duration = 2.0;
+            ITP.m_sectionSwitch = false;
+        }
+        if (ITP.m_elapsed > ITP.m_duration || ITP.m_keyPressed) {
+            g_IntroState = FMODLOGOFADEOUT;
+            ITP.m_sectionSwitch = true;
+        }
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState == FMODLOGOFADEOUT) {
+        ITP.StartOfWhile();
+
+        // Draw FMOD Logo
+        g_FrameMan.ClearBackBuffer32();
+        pFMODLogo->SetPos(Vector(g_FrameMan.GetResX() / 2, (g_FrameMan.GetResY() / 2) - 35));
+        pFMODLogo->Draw(g_FrameMan.GetBackBuffer32());
+
+        if (ITP.m_sectionSwitch) {
+            // Black fade
+            clear_to_color(pFadeScreen, 0);
+            ITP.m_duration = 0.25;
+            ITP.m_sectionSwitch = false;
+        }
+        fadePos = 255 * ITP.m_sectionProgress;
+        set_trans_blender(fadePos, fadePos, fadePos, fadePos);
+        draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
+        if (ITP.m_elapsed >= ITP.m_duration || ITP.m_keyPressed) {
+            g_IntroState = NOTICEFADEIN;
+            ITP.m_sectionSwitch = true;
+        }
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState == NOTICEFADEIN) {
+        ITP.StartOfWhile();
+
+        // Draw the early build notice
+        g_FrameMan.ClearBackBuffer32();
+        yTextPos = g_FrameMan.GetResY() / 3;
+        pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("N O T E :"), GUIFont::Centre);
+        yTextPos += pFont->GetFontHeight() * 2;
+        pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("This game plays great with up to FOUR people on a BIG-SCREEN TV!"), GUIFont::Centre);
+        yTextPos += pFont->GetFontHeight() * 2;
+        pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("So invite some friends/enemies over, plug in those USB controllers, and have a blast -"), GUIFont::Centre);
+        yTextPos += pFont->GetFontHeight() * 4;
+        pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("Press ALT+ENTER to toggle FULLSCREEN mode"), GUIFont::Centre);
+        // Draw the copyright notice
+        yTextPos = g_FrameMan.GetResY() - pFont->GetFontHeight();
+        char copyRight[512];
+        sprintf_s(copyRight, sizeof(copyRight), "Cortex Command is TM and %c 2017 Data Realms, LLC", -35);
+        pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, copyRight, GUIFont::Centre);
+
+        if (ITP.m_sectionSwitch) {
+            // Black fade
+            clear_to_color(pFadeScreen, 0);
+            ITP.m_duration = 0.5;
+            ITP.m_sectionSwitch = false;
+        }
+        fadePos = 255 - (255 * ITP.m_sectionProgress);
+        set_trans_blender(fadePos, fadePos, fadePos, fadePos);
+        draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
+        if (ITP.m_elapsed >= ITP.m_duration) {
+            g_IntroState = NOTICEDISPLAY;
+            ITP.m_sectionSwitch = true;
+        }
+        else if (ITP.m_keyPressed) {
+            g_IntroState = NOTICEFADEOUT;
+            ITP.m_sectionSwitch = true;
+        }
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState == NOTICEDISPLAY) {
+        ITP.StartOfWhile();
+
+        // Draw the early build notice
+        g_FrameMan.ClearBackBuffer32();
+        yTextPos = g_FrameMan.GetResY() / 3;
+        pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("N O T E :"), GUIFont::Centre);
+        yTextPos += pFont->GetFontHeight() * 2;
+        pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("This game plays great with up to FOUR people on a BIG-SCREEN TV!"), GUIFont::Centre);
+        yTextPos += pFont->GetFontHeight() * 2;
+        pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("So invite some friends/enemies over, plug in those USB controllers, and have a blast -"), GUIFont::Centre);
+        yTextPos += pFont->GetFontHeight() * 4;
+        pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("Press ALT+ENTER to toggle FULLSCREEN mode"), GUIFont::Centre);
+        // Draw the copyright notice
+        yTextPos = g_FrameMan.GetResY() - pFont->GetFontHeight();
+        char copyRight[512];
+        sprintf_s(copyRight, sizeof(copyRight), "Cortex Command is TM and %c 2017 Data Realms, LLC", -35);
+        pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, copyRight, GUIFont::Centre);
+
+        if (ITP.m_sectionSwitch) {
+            ITP.m_duration = 7.0;
+            ITP.m_sectionSwitch = false;
+        }
+        if (ITP.m_elapsed > ITP.m_duration || ITP.m_keyPressed) {
+            g_IntroState = NOTICEFADEOUT;
+            ITP.m_sectionSwitch = true;
+        }
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState == NOTICEFADEOUT) {
+        ITP.StartOfWhile();
+
+        // Draw the early build notice
+        g_FrameMan.ClearBackBuffer32();
+        yTextPos = g_FrameMan.GetResY() / 3;
+        pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("N O T E :"), GUIFont::Centre);
+        yTextPos += pFont->GetFontHeight() * 2;
+        pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("This game plays great with up to FOUR people on a BIG-SCREEN TV!"), GUIFont::Centre);
+        yTextPos += pFont->GetFontHeight() * 2;
+        pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("So invite some friends/enemies over, plug in those USB controllers, and have a blast -"), GUIFont::Centre);
+        yTextPos += pFont->GetFontHeight() * 4;
+        pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("Press ALT+ENTER to toggle FULLSCREEN mode"), GUIFont::Centre);
+        // Draw the copyright notice
+        yTextPos = g_FrameMan.GetResY() - pFont->GetFontHeight();
+        char copyRight[512];
+        sprintf_s(copyRight, sizeof(copyRight), "Cortex Command is TM and %c 2017 Data Realms, LLC", -35);
+        pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, copyRight, GUIFont::Centre);
+
+        if (ITP.m_sectionSwitch) {
+            // Black fade
+            clear_to_color(pFadeScreen, 0);
+            ITP.m_duration = 0.5;
+            ITP.m_sectionSwitch = false;
+        }
+        fadePos = 255 * ITP.m_sectionProgress;
+        set_trans_blender(fadePos, fadePos, fadePos, fadePos);
+        draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
+        if (ITP.m_elapsed >= ITP.m_duration || ITP.m_keyPressed) {
+            g_IntroState = FADEIN;
+            ITP.m_sectionSwitch = true;
+        }
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState == FADEIN) {
+        ITP.StartOfWhile();
+        
+        // this block only for FADEIN
+        if (ITP.m_sectionSwitch) {
+            ITP.m_songTimer.SetElapsedRealTimeS(0.05);
+            ITP.m_scrollStart = ITP.m_songTimer.GetElapsedRealTimeS();
+            // 66.6s This is the end of PRETITLE
+            ITP.m_scrollDuration = 66.6 - ITP.m_scrollStart;
+        }
+
+        ITP.FadeinToPretitle();
+
+        ITP.FromFadeinOnward();
+
+        ITP.FadeinToScenariomenu();
+
+        ITP.FromFadeinOnward2();
+
+        ITP.FadeinToScenariomenu2();
+
+        ITP.FromFadeinOnward3();
+        
+        /*! this block only for FADEIN
+        Intro sequence logic */
+        if (ITP.m_sectionSwitch) {
+            // Start scroll at the bottom
+            ITP.m_scrollOffset.m_Y = ITP.m_startYOffset;
+            // Black fade
+            clear_to_color(pFadeScreen, 0);
+            ITP.m_duration = 1.0;
+            ITP.m_sectionSwitch = false;
+            // Play intro music
+            g_AudioMan.PlayMusic("Base.rte/Music/Hubnester/ccintro.ogg", 0);
+            g_AudioMan.SetMusicPosition(0.05);
+            // Override music volume setting for the intro if it's set to anything
+            if (g_AudioMan.GetMusicVolume() > 0.1) {
+                g_AudioMan.SetTempMusicVolume(1.0);
+            }
+            //songTimer.Reset();
+            ITP.m_songTimer.SetElapsedRealTimeS(0.05);
+        }
+        fadePos = 255 - (255 * ITP.m_sectionProgress);
+        set_trans_blender(fadePos, fadePos, fadePos, fadePos);
+        draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
+        if (ITP.m_elapsed >= ITP.m_duration) {
+            g_IntroState = SPACEPAUSE1;
+            ITP.m_sectionSwitch = true;
+        }
+        
+        ITP.FadeinToSlide8();
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState == SPACEPAUSE1) {
+        ITP.StartOfWhile();
+
+        ITP.FadeinToPretitle();
+
+        ITP.FromFadeinOnward();
+
+        ITP.FadeinToScenariomenu();
+
+        ITP.FromFadeinOnward2();
+
+        ITP.FadeinToScenariomenu2();
+
+        ITP.FromFadeinOnward3();
+
+        // this block only for SPACEPAUSE1. taken from intro sequence logic.
+        if (ITP.m_sectionSwitch) {
+            sectionSongEnd = 3.7;
+            ITP.m_duration = sectionSongEnd - ITP.m_songTimer.GetElapsedRealTimeS();
+            ITP.m_sectionSwitch = false;
+        }
+        if (ITP.m_elapsed >= ITP.m_duration) {
+            g_IntroState = SHOWSLIDE1;
+            ITP.m_sectionSwitch = true;
+        }
+
+        ITP.FadeinToSlide8();
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState >= SHOWSLIDE1 && g_IntroState <= SHOWSLIDE8) {
+        ITP.StartOfWhile();
+
+        ITP.FadeinToPretitle();
+
+        ITP.FromFadeinOnward();
+
+        ITP.FadeinToScenariomenu();
+
+        ITP.FromFadeinOnward2();
+
+        ITP.FadeinToScenariomenu2();
+
+        ITP.FromFadeinOnward3();
+
+        /*! Slides Drawing
+        This block only for SHOWSLIDE1 to SHOWSLIDE8*/
+        int slide = g_IntroState - SHOWSLIDE1;
+        Vector slideCenteredPos((resX / 2) - (apIntroSlides[slide]->w / 2), (resY / 2) - (apIntroSlides[slide]->h / 2));
+        // Screen wide slide
+        if (apIntroSlides[slide]->w <= resX) {
+            slidePos.m_X = (resX / 2) - (apIntroSlides[slide]->w / 2);
+        }
+        // The slides wider than the screen, pan sideways
+        else {
+            if (ITP.m_elapsed < slideFadeInDuration) {
+                slidePos.m_X = 0;
+            }
+            else if (ITP.m_elapsed < ITP.m_duration - slideFadeOutDuration) {
+            slidePos.m_X = EaseInOut(0, resX - apIntroSlides[slide]->w, (ITP.m_elapsed - slideFadeInDuration) / (ITP.m_duration - slideFadeInDuration - slideFadeOutDuration));
+        }
+            else {
+                slidePos.m_X = resX - apIntroSlides[slide]->w;
+            }
+        }
+        // TEMP?
+        slidePos.m_Y = slideCenteredPos.m_Y;
+        // TEMP?
+        if (ITP.m_elapsed < slideFadeInDuration) {
+            fadePos = EaseOut(0, 255, ITP.m_elapsed / slideFadeInDuration);
+            //                slidePos.m_Y = EaseOut(slideCenteredPos.m_Y - slideFadeDistance, slideCenteredPos.m_Y, ITP.m_elapsed / slideFadeInDuration);
+        }
+        else if (ITP.m_elapsed < ITP.m_duration - slideFadeOutDuration) {
+            fadePos = 255;
+            slidePos.m_Y = slideCenteredPos.m_Y;
+        }
+        else {
+            fadePos = EaseIn(255, 0, (ITP.m_elapsed - ITP.m_duration + slideFadeOutDuration) / slideFadeOutDuration);
+            //                slidePos.m_Y = EaseIn(slideCenteredPos.m_Y, slideCenteredPos.m_Y + slideFadeDistance, (ITP.m_elapsed - ITP.m_duration + slideFadeOutDuration) / slideFadeOutDuration);
+        }
+        if (fadePos > 0) {
+            set_trans_blender(fadePos, fadePos, fadePos, fadePos);
+            draw_trans_sprite(g_FrameMan.GetBackBuffer32(), apIntroSlides[slide], slidePos.m_X, slidePos.m_Y);
+        }
+
+        // Intro sequence logic
+        if (g_IntroState == SHOWSLIDE1) {
+            if (ITP.m_sectionSwitch) {
+                sectionSongEnd = 11.4;
+                slideFadeInDuration = 2.0;
+                slideFadeOutDuration = 0.5;
+                ITP.m_duration = sectionSongEnd - ITP.m_songTimer.GetElapsedRealTimeS();
+                ITP.m_sectionSwitch = false;
+            }
+
+            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
+            if (ITP.m_elapsed > 1.25) {
+                pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "At the end of humanity's darkest century...", GUIFont::Centre);
+            }
+            if (ITP.m_elapsed >= ITP.m_duration) {
+                g_IntroState = SHOWSLIDE2;
+                ITP.m_sectionSwitch = true;
+            }
+        }
+        else if (g_IntroState == SHOWSLIDE2) {
+            if (ITP.m_sectionSwitch) {
+                sectionSongEnd = 17.3;
+                slideFadeInDuration = 0.5;
+                slideFadeOutDuration = 2.5;
+                ITP.m_duration = sectionSongEnd - ITP.m_songTimer.GetElapsedRealTimeS();
+                ITP.m_sectionSwitch = false;
+            }
+            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
+            if (ITP.m_elapsed < ITP.m_duration - 1.75) {
+                pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "...a curious symbiosis between man and machine emerged.", GUIFont::Centre);
+            }
+
+            if (ITP.m_elapsed >= ITP.m_duration) {
+                g_IntroState = SHOWSLIDE3;
+                ITP.m_sectionSwitch = true;
+            }
+        }
+        else if (g_IntroState == SHOWSLIDE3) {
+            if (ITP.m_sectionSwitch) {
+                sectionSongEnd = 25.1;
+                slideFadeInDuration = 0.5;
+                slideFadeOutDuration = 0.5;
+                ITP.m_duration = sectionSongEnd - ITP.m_songTimer.GetElapsedRealTimeS();
+                ITP.m_sectionSwitch = false;
+            }
+            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
+            if (/*ITP.m_elapsed > 0.75 && */ITP.m_sectionProgress < 0.49) {
+                pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "This eventually enabled humans to leave their natural bodies...", GUIFont::Centre);
+            }
+            else if (ITP.m_sectionProgress > 0.51) {
+                pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "...and to free their minds from obsolete constraints.", GUIFont::Centre);
+            }
+            if (ITP.m_elapsed >= ITP.m_duration) {
+                g_IntroState = SHOWSLIDE4;
+                ITP.m_sectionSwitch = true;
+            }
+        }
+        else if (g_IntroState == SHOWSLIDE4) {
+            if (ITP.m_sectionSwitch) {
+                sectionSongEnd = 31.3;
+                slideFadeInDuration = 0.5;
+                slideFadeOutDuration = 0.5;
+                ITP.m_duration = sectionSongEnd - ITP.m_songTimer.GetElapsedRealTimeS();
+                ITP.m_sectionSwitch = false;
+            }
+            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
+            pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "With their brains sustained by artificial means, space travel also became feasible.", GUIFont::Centre);
+            if (ITP.m_elapsed >= ITP.m_duration) {
+                g_IntroState = SHOWSLIDE5;
+                ITP.m_sectionSwitch = true;
+            }
+        }
+        else if (g_IntroState == SHOWSLIDE5) {
+            if (ITP.m_sectionSwitch) {
+                sectionSongEnd = 38.0;
+                slideFadeInDuration = 0.5;
+                slideFadeOutDuration = 0.5;
+                ITP.m_duration = sectionSongEnd - ITP.m_songTimer.GetElapsedRealTimeS();
+                ITP.m_sectionSwitch = false;
+            }
+            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
+            pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "Other civilizations were encountered...", GUIFont::Centre);
+            if (ITP.m_elapsed >= ITP.m_duration) {
+                g_IntroState = SHOWSLIDE6;
+                ITP.m_sectionSwitch = true;
+            }
+        }
+        else if (g_IntroState == SHOWSLIDE6) {
+            if (ITP.m_sectionSwitch) {
+                sectionSongEnd = 44.1;
+                slideFadeInDuration = 0.5;
+                slideFadeOutDuration = 0.5;
+                ITP.m_duration = sectionSongEnd - ITP.m_songTimer.GetElapsedRealTimeS();
+                ITP.m_sectionSwitch = false;
+            }
+            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
+            pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "...and peaceful intragalactic trade soon established.", GUIFont::Centre);
+            if (ITP.m_elapsed >= ITP.m_duration) {
+                g_IntroState = SHOWSLIDE7;
+                ITP.m_sectionSwitch = true;
+            }
+        }
+        else if (g_IntroState == SHOWSLIDE7) {
+            if (ITP.m_sectionSwitch) {
+                sectionSongEnd = 51.5;
+                slideFadeInDuration = 0.5;
+                slideFadeOutDuration = 0.5;
+                ITP.m_duration = sectionSongEnd - ITP.m_songTimer.GetElapsedRealTimeS();
+                ITP.m_sectionSwitch = false;
+            }
+            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
+            pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "Now, the growing civilizations create a huge demand for resources...", GUIFont::Centre);
+            if (ITP.m_elapsed >= ITP.m_duration) {
+                g_IntroState = SHOWSLIDE8;
+                ITP.m_sectionSwitch = true;
+            }
+        }
+        else if (g_IntroState == SHOWSLIDE8) {
+            if (ITP.m_sectionSwitch) {
+                sectionSongEnd = 64.5;
+                slideFadeInDuration = 0.5;
+                slideFadeOutDuration = 0.5;
+                ITP.m_duration = sectionSongEnd - ITP.m_songTimer.GetElapsedRealTimeS();
+                ITP.m_sectionSwitch = false;
+            }
+            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
+            if (ITP.m_sectionProgress < 0.30) {
+                pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "...which can only be satisfied by the ever-expanding frontier.", GUIFont::Centre);
+            }
+            else if (ITP.m_sectionProgress > 0.33 && ITP.m_sectionProgress < 0.64) {
+                pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "Competition is brutal and anything goes in this galactic gold rush.", GUIFont::Centre);
+            }
+            else if (ITP.m_sectionProgress > 0.67) {
+                pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "You will now join it on a venture to an untapped planet...", GUIFont::Centre);
+            }
+
+            if (ITP.m_elapsed >= ITP.m_duration) {
+                g_IntroState = PRETITLE;
+                ITP.m_sectionSwitch = true;
+            }
+        }
+
+        ITP.FadeinToSlide8();
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState == PRETITLE) {
+        ITP.StartOfWhile();
+
+        ITP.FadeinToPretitle();
+
+        ITP.FromFadeinOnward();
+
+        ITP.FadeinToScenariomenu();
+
+        ITP.FromFadeinOnward2();
+
+        ITP.FadeinToScenariomenu2();
+
+        ITP.FromFadeinOnward3();
+
+        // Intro sequence logic
+        if (ITP.m_sectionSwitch) {
+            sectionSongEnd = 66.6;
+            ITP.m_duration = sectionSongEnd - ITP.m_songTimer.GetElapsedRealTimeS();
+            ITP.m_sectionSwitch = false;
+        }
+        yTextPos = (g_FrameMan.GetResY() / 2);
+        if (ITP.m_elapsed > 0.05) {
+            pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "Prepare to assume...", GUIFont::Centre);
+        }
+        if (ITP.m_elapsed >= ITP.m_duration) {
+            g_IntroState = TITLEAPPEAR;
+            ITP.m_sectionSwitch = true;
+        }
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState == TITLEAPPEAR) {
+        ITP.StartOfWhile();
+
         // Scrolling logic
+        if (ITP.m_sectionSwitch) {
+            ITP.m_scrollStart = ITP.m_songTimer.GetElapsedRealTimeS();
+            ITP.m_scrollDuration = 92.4 - ITP.m_scrollStart;
+        }
+        
+        ITP.TitleappearToPlanetscroll();
 
-        if (g_IntroState >= FADEIN && g_IntroState <= PRETITLE)
-        {
-            if (g_IntroState == FADEIN && sectionSwitch)
-            {
-                songTimer.SetElapsedRealTimeS(0.05);
-                scrollStart = songTimer.GetElapsedRealTimeS();
-                // 66.6s This is the end of PRETITLE
-                scrollDuration = 66.6 - scrollStart;
-            }
-            scrollProgress = (double)(songTimer.GetElapsedRealTimeS() - scrollStart) / (double)scrollDuration;
-            scrollOffset.m_Y = LERP(0, 1.0, startYOffset, titleAppearYOffset,  scrollProgress);
+        ITP.FromFadeinOnward();
+
+        ITP.FadeinToScenariomenu();
+
+        ITP.FromFadeinOnward2();
+
+        ITP.FadeinToScenariomenu2();
+
+        ITP.FromFadeinOnward3();
+
+        // Game logo drawing
+        ITP.m_pTitle->SetPos(Vector(resX / 2, (resY / 2) - 20));
+
+        ITP.TitleGlow();
+
+        // Intro sequence logic
+        if (ITP.m_sectionSwitch) {
+            // White fade
+            clear_to_color(pFadeScreen, 0xFFFFFFFF);
+            sectionSongEnd = 68.2;
+            ITP.m_duration = sectionSongEnd - ITP.m_songTimer.GetElapsedRealTimeS();
+            ITP.m_sectionSwitch = false;
         }
-        // Scroll after the slide-show
-        else if (g_IntroState >= TITLEAPPEAR && g_IntroState <= PLANETSCROLL)
-        {
-            if (g_IntroState == TITLEAPPEAR && sectionSwitch)
-            {
-                scrollStart = songTimer.GetElapsedRealTimeS();
-                // This is the end of PLANETSCROLL
-                scrollDuration = 92.4 - scrollStart;
-            }
-            scrollProgress = (double)(songTimer.GetElapsedRealTimeS() - scrollStart) / (double)scrollDuration;
-//            scrollOffset.m_Y = LERP(scrollStart, 92.4, titleAppearYOffset, preMenuYOffset, songTimer.GetElapsedRealTimeS());
-            scrollOffset.m_Y = EaseOut(titleAppearYOffset, preMenuYOffset, scrollProgress);
+        fadePos = LERP(0, 0.5, 255, 0, ITP.m_sectionProgress);
+        if (fadePos >= 0) {
+            set_trans_blender(fadePos, fadePos, fadePos, fadePos);
+            draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
         }
+        if (ITP.m_elapsed >= ITP.m_duration) {
+            g_IntroState = PLANETSCROLL;
+            ITP.m_sectionSwitch = true;
+        }
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState == PLANETSCROLL) {
+        ITP.StartOfWhile();
+
+        ITP.TitleappearToPlanetscroll();
+
+        ITP.FromFadeinOnward();
+
+        ITP.FadeinToScenariomenu();
+
+        ITP.FromFadeinOnward2();
+
+        ITP.FadeinToScenariomenu2();
+
+        ITP.FromFadeinOnward3();
+
+        // Game logo drawing
+        if (ITP.m_sectionProgress > 0.5) {
+            ITP.m_pTitle->SetPos(Vector(resX / 2, EaseIn((resY / 2) - 20, 120, (ITP.m_sectionProgress - 0.5) / 0.5)));
+        }
+
+        ITP.TitleGlow();
+
+        // Intro sequence logic
+        if (ITP.m_sectionSwitch) {
+            sectionSongEnd = 92.4;
+            ITP.m_duration = sectionSongEnd - ITP.m_songTimer.GetElapsedRealTimeS();
+            ITP.m_sectionSwitch = false;
+        }
+        if (ITP.m_elapsed >= ITP.m_duration) {
+            g_IntroState = PREMENU;
+            ITP.m_sectionSwitch = true;
+        }
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState == PREMENU) {
+        ITP.StartOfWhile();
+
+        ITP.FromFadeinOnward();
+
+        ITP.FadeinToScenariomenu();
+
+        ITP.FromFadeinOnward2();
+
+        ITP.FadeinToScenariomenu2();
+
+        ITP.FromFadeinOnward3();
+
+        ITP.TitleGlow();
+
+        // Intro sequence logic
+        if (ITP.m_sectionSwitch) {
+            ITP.m_duration = 3.0;
+            ITP.m_sectionSwitch = false;
+            ITP.m_scrollOffset.m_Y = ITP.m_preMenuYOffset;
+        }
+        if (ITP.m_elapsed >= ITP.m_duration || ITP.m_keyPressed) {
+            g_IntroState = MENUAPPEAR;
+            ITP.m_sectionSwitch = true;
+        }
+
+        EndOfWhile();
+    }
+
+    while (KeepWhiling() && g_IntroState != END) {
+        assert(g_IntroState >= FADEIN);
+        ITP.StartOfWhile();
+       
         // Scroll the last bit to reveal the menu appears
-        else if (g_IntroState == MENUAPPEAR)
+        if (g_IntroState == MENUAPPEAR)
         {
-            scrollOffset.m_Y = EaseOut(preMenuYOffset, topMenuYOffset, sectionProgress);
+            ITP.m_scrollOffset.m_Y = EaseOut(ITP.m_preMenuYOffset, topMenuYOffset, ITP.m_sectionProgress);
         }
         // Scroll down to the planet screen
         else if (g_IntroState == MAINTOSCENARIO || g_IntroState == MAINTOCAMPAIGN)
         {
-            scrollOffset.m_Y = EaseOut(topMenuYOffset, planetViewYOffset, sectionProgress);
+            ITP.m_scrollOffset.m_Y = EaseOut(topMenuYOffset, planetViewYOffset, ITP.m_sectionProgress);
         }
         // Scroll back up to the main screen from campaign
         else if (g_IntroState == PLANETTOMAIN)
         {
-            scrollOffset.m_Y = EaseOut(planetViewYOffset, topMenuYOffset, sectionProgress);
+            ITP.m_scrollOffset.m_Y = EaseOut(planetViewYOffset, topMenuYOffset, ITP.m_sectionProgress);
         }
+        
+        ////////// Scene drawing
 
-        ///////////////////////////////////////////////////////
-        // DRL Logo drawing
-
-        if (g_IntroState >= LOGOFADEIN && g_IntroState <= LOGOFADEOUT)
-        {
-            // Draw the early build notice
-            g_FrameMan.ClearBackBuffer32();
-            pDRLogo->SetPos(Vector(g_FrameMan.GetResX() / 2, (g_FrameMan.GetResY() / 2) - 35));
-            pDRLogo->Draw(g_FrameMan.GetBackBuffer32());
+        ITP.FromFadeinOnward();
+        if (g_IntroState <= SCENARIOMENU) {
+            ITP.FadeinToScenariomenu();
         }
-
-		///////////////////////////////////////////////////////
-		// FMOD Logo drawing
-
-		if (g_IntroState >= FMODLOGOFADEIN && g_IntroState <= FMODLOGOFADEOUT) {
-			g_FrameMan.ClearBackBuffer32();
-			pFMODLogo->SetPos(Vector(g_FrameMan.GetResX() / 2, (g_FrameMan.GetResY() / 2) - 35));
-			pFMODLogo->Draw(g_FrameMan.GetBackBuffer32());
-		}
-
-        ///////////////////////////////////////////////////////
-        // Notice drawing
-
-        if (g_IntroState >= NOTICEFADEIN && g_IntroState <= NOTICEFADEOUT)
-        {
-            // Draw the early build notice
-            g_FrameMan.ClearBackBuffer32();
-            yTextPos = g_FrameMan.GetResY() / 3;
-            pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("N O T E :"), GUIFont::Centre);
-            yTextPos += pFont->GetFontHeight() * 2;
-            pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("This game plays great with up to FOUR people on a BIG-SCREEN TV!"), GUIFont::Centre);
-            yTextPos += pFont->GetFontHeight() * 2;
-            pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("So invite some friends/enemies over, plug in those USB controllers, and have a blast -"), GUIFont::Centre);
-            yTextPos += pFont->GetFontHeight() * 4;
-            pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, string("Press ALT+ENTER to toggle FULLSCREEN mode"), GUIFont::Centre);
-
-            // Draw the copyright notice
-            yTextPos = g_FrameMan.GetResY() - pFont->GetFontHeight();
-            char copyRight[512];
-            sprintf_s(copyRight, sizeof(copyRight), "Cortex Command is TM and %c 2017 Data Realms, LLC", -35);
-            pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, copyRight, GUIFont::Centre);
+        ITP.FromFadeinOnward2();
+        if (g_IntroState <= SCENARIOMENU) {
+            ITP.FadeinToScenariomenu2();
         }
+        ITP.FromFadeinOnward3();
 
-        //////////////////////////////////////////////////////////
-        // Scene drawing
-
-        if (g_IntroState >= FADEIN)
-        {
-            g_FrameMan.ClearBackBuffer32();
-
-			Box backdropBox;
-            pBackdrop->Draw(g_FrameMan.GetBackBuffer32(), backdropBox, scrollOffset * backdropScrollRatio);
-
-            Vector starDrawPos;
-            for (int star = 0; star < starCount; ++star)
-            {
-                size = aStars[star].m_Size;
-                int intensity = 185 * aStars[star].m_Intensity + (size == StarSmall ? 35 : 70) * PosRand();
-                set_screen_blender(intensity, intensity, intensity, intensity);
-                starDrawPos.SetXY(aStars[star].m_Pos.m_X, aStars[star].m_Pos.m_Y - scrollOffset.m_Y * aStars[star].m_ScrollRatio);
-                draw_trans_sprite(g_FrameMan.GetBackBuffer32(), aStars[star].m_pBitmap, starDrawPos.GetFloorIntX(), starDrawPos.GetFloorIntY());
+        if (g_IntroState == MENUACTIVE) {
+            if (g_pMainMenuGUI->AllowPioneerPromo() && ITP.m_orbitRotation < -c_PI * 1.25 && ITP.m_orbitRotation > -c_PI * 1.95) {
+                // After capsule flew some time, start showing angry pioneer
+                if (ITP.m_orbitRotation < -c_PI * 1.32 && ITP.m_orbitRotation > -c_PI * 1.65) {
+                    Vector pioneerScreamPos = ITP.m_planetPos - Vector(320 - 130, 320 + 44);
+                    // Draw line to indicate that the screaming guy is the one in the drop pod
+                    drawing_mode(DRAW_MODE_TRANS, 0, 0, 0);
+                    g_pScenarioGUI->SetPlanetInfo(Vector(0, 0), planetRadius);
+                    g_pScenarioGUI->DrawScreenLineToSitePoint(g_FrameMan.GetBackBuffer32(), pioneerScreamPos, ITP.m_pPioneerCapsule->GetPos(), makecol(255, 255, 255), -1, -1, 40, 0.20);
+                    drawing_mode(DRAW_MODE_SOLID, 0, 0, 0);
+                    // Draw pioneer
+                    pPioneerScreaming->SetPos(pioneerScreamPos + ITP.m_shakeOffset);
+                    pPioneerScreaming->Draw(g_FrameMan.GetBackBuffer32());
+                    // Enable the promo banner and tell the menu where it can be clicked
+                    g_pMainMenuGUI->EnablePioneerPromoButton();
+                    Box promoBox(pioneerScreamPos.m_X - 125, pioneerScreamPos.m_Y - 70, pioneerScreamPos.m_X + 125, pioneerScreamPos.m_Y + 70);
+                    g_pMainMenuGUI->SetPioneerPromoBox(promoBox);
+                }
+                if (ITP.m_orbitRotation < -c_PI * 1.65 && ITP.m_orbitRotation > -c_PI * 1.95) {
+                    Vector promoPos = ITP.m_planetPos - Vector(320 - 128, 320 + 29);
+                    // Draw pioneer promo
+                    pPioneerPromo->SetPos(promoPos);
+                    pPioneerPromo->Draw(g_FrameMan.GetBackBuffer32());
+                    // Enable the promo banner and tell the menu where it can be clicked
+                    g_pMainMenuGUI->EnablePioneerPromoButton();
+                    Box promoBox(promoPos.m_X - 128, promoPos.m_Y - 80, promoPos.m_X + 128, promoPos.m_Y + 80);
+                    g_pMainMenuGUI->SetPioneerPromoBox(promoBox);
+                }
             }
-
-            planetPos.SetXY(g_FrameMan.GetResX() / 2, 567 - scrollOffset.GetFloorIntY());
-            pMoon->SetPos(Vector(planetPos.m_X + 200, 364 - scrollOffset.GetFloorIntY() * 0.60));
-            pPlanet->SetPos(planetPos);
-
-            pMoon->Draw(g_FrameMan.GetBackBuffer32(), Vector(), g_DrawAlpha);
-            pPlanet->Draw(g_FrameMan.GetBackBuffer32(), Vector(), g_DrawAlpha);
-
-			// Manually shake our shakeOffset to randomize some effects
-			if (g_TimerMan.GetAbsoulteTime() > lastShake + 50000)
-			{
-				shakeOffset.m_X = RangeRand(-3, 3);
-				shakeOffset.m_Y = RangeRand(-3, 3);
-				lastShake = g_TimerMan.GetAbsoulteTime();
-			}
-
-			// Tell the menu that PP promo is off
-			g_pMainMenuGUI->DisablePioneerPromoButton();
-
-
-			// Draw pioneer promo capsule
-			if (g_IntroState < MAINTOCAMPAIGN && orbitRotation < -c_PI * 1.27 && orbitRotation > -c_PI * 1.85)
-			{
-				// Start drawing pioneer capsule
-				// Slowly decrease radius to show that the capsule is falling
-				float radiusperc = 1 - ((fabs(orbitRotation) - (1.27 * c_PI)) / (0.35 * c_PI) / 4);
-				// Slowly decrease size to make the capsule disappear after a while
-				float sizeperc = 1 - ((fabs(orbitRotation) - (1.27 * c_PI)) / (0.35 * c_PI) / 1.5);
-
-				// Rotate, place and draw capsule
-				capsuleOffset.SetXY(orbitRadius * radiusperc, 0);
-				capsuleOffset.RadRotate(orbitRotation);
-				pPioneerCapsule->SetScale(sizeperc);
-				pPioneerCapsule->SetPos(planetPos + capsuleOffset);
-				pPioneerCapsule->SetRotAngle(orbitRotation);
-				pPioneerCapsule->Draw(g_FrameMan.GetBackBuffer32());
-			}
-
-			// Enable promo clickables only if we're in main menu and the station is at the required location (under the menu)
-			if (g_IntroState == MENUACTIVE && g_pMainMenuGUI->AllowPioneerPromo() &&  orbitRotation < -c_PI * 1.25 && orbitRotation > -c_PI * 1.95)
-			{
-				// After capsule flew some time, start showing angry pioneer
-				if (orbitRotation < -c_PI * 1.32 && orbitRotation > -c_PI * 1.65)
-				{
-					Vector pioneerScreamPos = planetPos - Vector(320 - 130, 320 + 44);
-
-					// Draw line to indicate that the screaming guy is the one in the drop pod
-					drawing_mode(DRAW_MODE_TRANS, 0, 0, 0);
-					g_pScenarioGUI->SetPlanetInfo(Vector(0,0), planetRadius);
-					g_pScenarioGUI->DrawScreenLineToSitePoint(g_FrameMan.GetBackBuffer32(), pioneerScreamPos, pPioneerCapsule->GetPos(), makecol(255, 255, 255), -1, -1, 40, 0.20);
-					drawing_mode(DRAW_MODE_SOLID, 0, 0, 0);
-
-					// Draw pioneer
-					pPioneerScreaming->SetPos(pioneerScreamPos + shakeOffset);
-					pPioneerScreaming->Draw(g_FrameMan.GetBackBuffer32());
-
-					// Enable the promo banner and tell the menu where it can be clicked
-					g_pMainMenuGUI->EnablePioneerPromoButton();
-
-					Box promoBox(pioneerScreamPos.m_X - 125, pioneerScreamPos.m_Y - 70, pioneerScreamPos.m_X + 125, pioneerScreamPos.m_Y + 70);
-					g_pMainMenuGUI->SetPioneerPromoBox(promoBox);
-				} 
-
-				if (orbitRotation < -c_PI * 1.65 && orbitRotation > -c_PI * 1.95)
-				{
-					Vector promoPos = planetPos - Vector(320 - 128, 320 + 29);
-
-					// Draw pioneer promo
-					pPioneerPromo->SetPos(promoPos);
-					pPioneerPromo->Draw(g_FrameMan.GetBackBuffer32());
-
-					// Enable the promo banner and tell the menu where it can be clicked
-					g_pMainMenuGUI->EnablePioneerPromoButton();
-
-					Box promoBox(promoPos.m_X - 128, promoPos.m_Y - 80, promoPos.m_X + 128, promoPos.m_Y + 80);
-					g_pMainMenuGUI->SetPioneerPromoBox(promoBox);
-				}
-			}
-				
-			// Place, rotate and draw station
-			stationOffset.SetXY(orbitRadius, 0);
-			stationOffset.RadRotate(orbitRotation);
-			pStation->SetPos(planetPos + stationOffset);
-			pStation->SetRotAngle(-c_HalfPI + orbitRotation);
-			pStation->Draw(g_FrameMan.GetBackBuffer32());
-
-			// Start explosion effects to show that there's something wrong with the station
-			// but only if we're not in campaign
-			if (g_IntroState < MAINTOCAMPAIGN && orbitRotation < -c_PI * 1.25 && orbitRotation > -c_TwoPI)
-			{
-				// Add explosions delay and count them
-				if (g_TimerMan.GetAbsoulteTime() > lastPuff + 1000000)
-				{
-					lastPuff = g_TimerMan.GetAbsoulteTime();
-					puffActive = true;
-					puffCount++;
-				}
-
-				// If explosion was authorized
-				if (puffActive)
-				{
-					// First explosion is big while other are smaller
-					if (puffCount == 1)
-					{
-						pFirePuffLarge->SetPos(planetPos + stationOffset);
-						if (g_TimerMan.GetAbsoulteTime() > lastPuffFrame + 50000)
-						{
-							lastPuffFrame = g_TimerMan.GetAbsoulteTime();
-							puffFrame++;
-
-							if (puffFrame >= pFirePuffLarge->GetFrameCount())
-							{
-								// Manually reset frame counters and disable other explosions until it's time
-								puffFrame = 0;
-								puffActive = 0;
-							}
-
-							pFirePuffLarge->SetFrame(puffFrame);
-						}
-						pFirePuffLarge->Draw(g_FrameMan.GetBackBuffer32());
-					} else {
-						pFirePuffMedium->SetPos(planetPos + stationOffset + shakeOffset);
-						if (g_TimerMan.GetAbsoulteTime() > lastPuffFrame + 50000)
-						{
-							lastPuffFrame = g_TimerMan.GetAbsoulteTime();
-							puffFrame++;
-
-							if (puffFrame >= pFirePuffLarge->GetFrameCount())
-							{
-								// Manually reset frame counters and disable other explosions until it's time
-								puffFrame = 0;
-								puffActive = 0;
-							}
-
-							pFirePuffMedium->SetFrame(puffFrame);
-						}
-						pFirePuffMedium->Draw(g_FrameMan.GetBackBuffer32());
-					}
-				}
-			} else {
-				//Reset explosions counter
-				puffCount = 0;
-			}
-
-			orbitRotation -= 0.0020; //0.0015
-
-            // Keep the rotation angle from getting too large
-            if (orbitRotation < -c_TwoPI)
-                orbitRotation += c_TwoPI;
-            g_StationOffsetX = stationOffset.m_X;
-            g_StationOffsetY = stationOffset.m_Y;
         }
 
         /////////////////////////////
@@ -777,24 +1522,20 @@ bool PlayIntroTitle() {
 
         if ((g_IntroState >= TITLEAPPEAR && g_IntroState < SCENARIOFADEIN) || g_IntroState == MAINTOCAMPAIGN)
         {
-            if (g_IntroState == TITLEAPPEAR)
-                pTitle->SetPos(Vector(resX / 2, (resY / 2) - 20));
-            else if (g_IntroState == PLANETSCROLL && sectionProgress > 0.5)
-                pTitle->SetPos(Vector(resX / 2, EaseIn((resY / 2) - 20, 120, (sectionProgress - 0.5) / 0.5)));//LERP(0.5, 1.0, (resY / 2) - 20, 120, sectionProgress)));
-            else if (g_IntroState == MENUAPPEAR)
-                pTitle->SetPos(Vector(resX / 2, EaseOut(120, 64, sectionProgress)));
+            if (g_IntroState == MENUAPPEAR)
+                ITP.m_pTitle->SetPos(Vector(resX / 2, EaseOut(120, 64, ITP.m_sectionProgress)));
             else if (g_IntroState == MAINTOSCENARIO || g_IntroState == MAINTOCAMPAIGN)
-                pTitle->SetPos(Vector(resX / 2, EaseOut(64, -150, sectionProgress)));
-            else if (g_IntroState >= MENUAPPEAR)
-                pTitle->SetPos(Vector(resX / 2, 64));
+                ITP.m_pTitle->SetPos(Vector(resX / 2, EaseOut(64, -150, ITP.m_sectionProgress)));
+            else if (g_IntroState > MENUAPPEAR)
+                ITP.m_pTitle->SetPos(Vector(resX / 2, 64));
 
-            pTitleGlow->SetPos(pTitle->GetPos());
+            ITP.m_pTitleGlow->SetPos(ITP.m_pTitle->GetPos());
 
-            pTitle->Draw(g_FrameMan.GetBackBuffer32(), Vector(), g_DrawAlpha);
+            ITP.m_pTitle->Draw(g_FrameMan.GetBackBuffer32(), Vector(), g_DrawAlpha);
             // Screen blend the title glow on top, with some flickering in its intensity
             int blendAmount = 220 + 35 * NormalRand();
             set_screen_blender(blendAmount, blendAmount, blendAmount, blendAmount);
-            pTitleGlow->Draw(g_FrameMan.GetBackBuffer32(), Vector(), g_DrawTrans);
+            ITP.m_pTitleGlow->Draw(g_FrameMan.GetBackBuffer32(), Vector(), g_DrawTrans);
         }
 
         /////////////////////////////
@@ -805,12 +1546,12 @@ bool PlayIntroTitle() {
         {
             if (g_IntroState == MENUAPPEAR)
             {
-				// TODO: some fancy transparency effect here
+                // TODO: some fancy transparency effect here
 /*
                 g_pMainMenuGUI->Update();
                 clear_to_color(pFadeScreen, 0xFFFF00FF);
                 g_pMainMenuGUI->Draw(pFadeScreen);
-                fadePos = 255 * sectionProgress;
+                fadePos = 255 * ITP.m_sectionProgress;
                 set_trans_blender(fadePos, fadePos, fadePos, fadePos);
                 draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
 */
@@ -825,7 +1566,7 @@ bool PlayIntroTitle() {
         // Scenario setup menu update and drawing
         if (g_IntroState == SCENARIOMENU)
         {
-            g_pScenarioGUI->SetPlanetInfo(planetPos, planetRadius);
+            g_pScenarioGUI->SetPlanetInfo(ITP.m_planetPos, planetRadius);
             g_pScenarioGUI->Update();
             g_pScenarioGUI->Draw(g_FrameMan.GetBackBuffer32());
         }
@@ -833,549 +1574,43 @@ bool PlayIntroTitle() {
         // Metagame menu update and drawing
         if (g_IntroState == CAMPAIGNPLAY)
         {
-            g_MetaMan.GetGUI()->SetPlanetInfo(planetPos, planetRadius);
+            g_MetaMan.GetGUI()->SetPlanetInfo(ITP.m_planetPos, planetRadius);
             g_MetaMan.Update();
             g_MetaMan.Draw(g_FrameMan.GetBackBuffer32());
-        }
-
-        ////////////////////////////////////
-        // Slides drawing
-
-        if (g_IntroState >= SHOWSLIDE1 && g_IntroState <= SHOWSLIDE8)
-        {
-            int slide = g_IntroState - SHOWSLIDE1;
-            Vector slideCenteredPos((resX / 2) - (apIntroSlides[slide]->w / 2), (resY / 2) - (apIntroSlides[slide]->h / 2));
-
-            // Screen wide slide
-            if (apIntroSlides[slide]->w <= resX)
-                slidePos.m_X = (resX / 2) - (apIntroSlides[slide]->w / 2);
-            // The slides wider than the screen, pan sideways
-            else
-            {
-                if (elapsed < slideFadeInDuration)
-                    slidePos.m_X = 0;
-                else if (elapsed < duration - slideFadeOutDuration)
-                    slidePos.m_X = EaseInOut(0, resX - apIntroSlides[slide]->w, (elapsed - slideFadeInDuration) / (duration - slideFadeInDuration - slideFadeOutDuration));
-                else
-                    slidePos.m_X = resX - apIntroSlides[slide]->w;
-            }
-
-            // TEMP?
-            slidePos.m_Y = slideCenteredPos.m_Y;
-            // TEMP?
-            if (elapsed < slideFadeInDuration)
-            {
-                fadePos = EaseOut(0, 255, elapsed / slideFadeInDuration);
-//                slidePos.m_Y = EaseOut(slideCenteredPos.m_Y - slideFadeDistance, slideCenteredPos.m_Y, elapsed / slideFadeInDuration);
-            }
-            else if (elapsed < duration - slideFadeOutDuration)
-            {
-                fadePos = 255;
-                slidePos.m_Y = slideCenteredPos.m_Y;
-            }
-            else
-            {
-                fadePos = EaseIn(255, 0, (elapsed - duration + slideFadeOutDuration) / slideFadeOutDuration);
-//                slidePos.m_Y = EaseIn(slideCenteredPos.m_Y, slideCenteredPos.m_Y + slideFadeDistance, (elapsed - duration + slideFadeOutDuration) / slideFadeOutDuration);
-            }
-
-            if (fadePos > 0)
-            {
-                set_trans_blender(fadePos, fadePos, fadePos, fadePos);
-                draw_trans_sprite(g_FrameMan.GetBackBuffer32(), apIntroSlides[slide], slidePos.m_X, slidePos.m_Y);
-            }
         }
 
         //////////////////////////////////////////////////////////
         // Intro sequence logic
 
-        if (g_IntroState == START)
+        if (g_IntroState == MENUAPPEAR)
         {
-            g_IntroState = LOGOFADEIN;
-            sectionSwitch = true;
-        }
-        else if (g_IntroState == LOGOFADEIN)
-        {
-            if (sectionSwitch)
+            if (ITP.m_sectionSwitch)
             {
-                // Play juicy logo signature jingle/sound
-				g_GUISound.SplashSound()->Play();
-                // Black fade
-                clear_to_color(pFadeScreen, 0);
-                duration = 0.25;
-                sectionSwitch = false;
-            }
-
-            fadePos = 255 - (255 * sectionProgress);
-            set_trans_blender(fadePos, fadePos, fadePos, fadePos);
-            draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
-
-            if (elapsed >= duration)
-            {
-                g_IntroState = LOGODISPLAY;
-                sectionSwitch = true;
-            }
-            else if (keyPressed)
-            {
-                g_IntroState = LOGOFADEOUT;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == LOGODISPLAY)
-        {
-            if (sectionSwitch)
-            {
-                duration = 2.0;
-                sectionSwitch = false;
-            }
-            if (elapsed > duration || keyPressed)
-            {
-                g_IntroState = LOGOFADEOUT;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == LOGOFADEOUT)
-        {
-            if (sectionSwitch)
-            {
-                // Black fade
-                clear_to_color(pFadeScreen, 0);
-                duration = 0.25;
-                sectionSwitch = false;
-            }
-
-            fadePos = 255 * sectionProgress;
-            set_trans_blender(fadePos, fadePos, fadePos, fadePos);
-            draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
-
-            if (elapsed >= duration || keyPressed)
-            {
-                g_IntroState = FMODLOGOFADEIN;
-                sectionSwitch = true;
-            }
-        }
-		else if (g_IntroState == FMODLOGOFADEIN) {
-			if (sectionSwitch) {
-				// Black fade
-				clear_to_color(pFadeScreen, 0);
-				duration = 0.25;
-				sectionSwitch = false;
-			}
-
-			fadePos = 255 - (255 * sectionProgress);
-			set_trans_blender(fadePos, fadePos, fadePos, fadePos);
-			draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
-
-			if (elapsed >= duration) {
-				g_IntroState = FMODLOGODISPLAY;
-				sectionSwitch = true;
-			} else if (keyPressed) {
-				g_IntroState = FMODLOGOFADEOUT;
-				sectionSwitch = true;
-			}
-		} else if (g_IntroState == FMODLOGODISPLAY) {
-			if (sectionSwitch) {
-				duration = 2.0;
-				sectionSwitch = false;
-			}
-			if (elapsed > duration || keyPressed) {
-				g_IntroState = FMODLOGOFADEOUT;
-				sectionSwitch = true;
-			}
-		} else if (g_IntroState == FMODLOGOFADEOUT) {
-			if (sectionSwitch) {
-				// Black fade
-				clear_to_color(pFadeScreen, 0);
-				duration = 0.25;
-				sectionSwitch = false;
-			}
-			fadePos = 255 * sectionProgress;
-			set_trans_blender(fadePos, fadePos, fadePos, fadePos);
-			draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
-
-			if (elapsed >= duration || keyPressed) {
-				g_IntroState = NOTICEFADEIN;
-				sectionSwitch = true;
-			}
-		}
-        else if (g_IntroState == NOTICEFADEIN)
-        {
-            if (sectionSwitch)
-            {
-                // Black fade
-                clear_to_color(pFadeScreen, 0);
-                duration = 0.5;
-                sectionSwitch = false;
-            }
-
-            fadePos = 255 - (255 * sectionProgress);
-            set_trans_blender(fadePos, fadePos, fadePos, fadePos);
-            draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
-
-            if (elapsed >= duration)
-            {
-                g_IntroState = NOTICEDISPLAY;
-                sectionSwitch = true;
-            }
-            else if (keyPressed)
-            {
-                g_IntroState = NOTICEFADEOUT;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == NOTICEDISPLAY)
-        {
-            if (sectionSwitch)
-            {
-                duration = 7.0;
-                sectionSwitch = false;
-            }
-            if (elapsed > duration || keyPressed)
-            {
-                g_IntroState = NOTICEFADEOUT;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == NOTICEFADEOUT)
-        {
-            if (sectionSwitch)
-            {
-                // Black fade
-                clear_to_color(pFadeScreen, 0);
-                duration = 0.5;
-                sectionSwitch = false;
-            }
-
-            fadePos = 255 * sectionProgress;
-            set_trans_blender(fadePos, fadePos, fadePos, fadePos);
-            draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
-
-            if (elapsed >= duration || keyPressed)
-            {
-                g_IntroState = FADEIN;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == FADEIN)
-        {
-            if (sectionSwitch)
-            {
-                // Start scroll at the bottom
-                scrollOffset.m_Y = startYOffset;
-                // Black fade
-                clear_to_color(pFadeScreen, 0);
-
-                duration = 1.0;
-                sectionSwitch = false;
-
-                // Play intro music
-                g_AudioMan.PlayMusic("Base.rte/Music/Hubnester/ccintro.ogg", 0);
-                g_AudioMan.SetMusicPosition(0.05);
-                // Override music volume setting for the intro if it's set to anything
-                if (g_AudioMan.GetMusicVolume() > 0.1)
-                    g_AudioMan.SetTempMusicVolume(1.0);
-//                songTimer.Reset();
-                songTimer.SetElapsedRealTimeS(0.05);
-            }
-
-            fadePos = 255 - (255 * sectionProgress);
-            set_trans_blender(fadePos, fadePos, fadePos, fadePos);
-            draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
-
-            if (elapsed >= duration)
-            {
-                g_IntroState = SPACEPAUSE1;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == SPACEPAUSE1)
-        {
-            if (sectionSwitch)
-            {
-                sectionSongEnd = 3.7;
-                duration = sectionSongEnd - songTimer.GetElapsedRealTimeS();
-                sectionSwitch = false;
-            }
-
-            if (elapsed >= duration)
-            {
-                g_IntroState = SHOWSLIDE1;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == SHOWSLIDE1)
-        {
-            if (sectionSwitch)
-            {
-                sectionSongEnd = 11.4;
-                slideFadeInDuration = 2.0;
-                slideFadeOutDuration = 0.5;
-                duration = sectionSongEnd - songTimer.GetElapsedRealTimeS();
-                sectionSwitch = false;
-            }
-
-            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
-            if (elapsed > 1.25)
-                pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "At the end of humanity's darkest century...", GUIFont::Centre);
-
-            if (elapsed >= duration)
-            {
-                g_IntroState = SHOWSLIDE2;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == SHOWSLIDE2)
-        {
-            if (sectionSwitch)
-            {
-                sectionSongEnd = 17.3;
-                slideFadeInDuration = 0.5;
-                slideFadeOutDuration = 2.5;
-                duration = sectionSongEnd - songTimer.GetElapsedRealTimeS();
-                sectionSwitch = false;
-            }
-
-            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
-            if (elapsed < duration - 1.75)
-                pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "...a curious symbiosis between man and machine emerged.", GUIFont::Centre);
-
-            if (elapsed >= duration)
-            {
-                g_IntroState = SHOWSLIDE3;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == SHOWSLIDE3)
-        {
-            if (sectionSwitch)
-            {
-                sectionSongEnd = 25.1;
-                slideFadeInDuration = 0.5;
-                slideFadeOutDuration = 0.5;
-                duration = sectionSongEnd - songTimer.GetElapsedRealTimeS();
-                sectionSwitch = false;
-            }
-
-            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
-            if (/*elapsed > 0.75 && */sectionProgress < 0.49)
-                pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "This eventually enabled humans to leave their natural bodies...", GUIFont::Centre);
-            else if (sectionProgress > 0.51)
-                pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "...and to free their minds from obsolete constraints.", GUIFont::Centre);
-
-            if (elapsed >= duration)
-            {
-                g_IntroState = SHOWSLIDE4;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == SHOWSLIDE4)
-        {
-            if (sectionSwitch)
-            {
-                sectionSongEnd = 31.3;
-                slideFadeInDuration = 0.5;
-                slideFadeOutDuration = 0.5;
-                duration = sectionSongEnd - songTimer.GetElapsedRealTimeS();
-                sectionSwitch = false;
-            }
-
-            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
-            pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "With their brains sustained by artificial means, space travel also became feasible.", GUIFont::Centre);
-
-            if (elapsed >= duration)
-            {
-                g_IntroState = SHOWSLIDE5;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == SHOWSLIDE5)
-        {
-            if (sectionSwitch)
-            {
-                sectionSongEnd = 38.0;
-                slideFadeInDuration = 0.5;
-                slideFadeOutDuration = 0.5;
-                duration = sectionSongEnd - songTimer.GetElapsedRealTimeS();
-                sectionSwitch = false;
-            }
-
-            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
-            pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "Other civilizations were encountered...", GUIFont::Centre);
-
-            if (elapsed >= duration)
-            {
-                g_IntroState = SHOWSLIDE6;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == SHOWSLIDE6)
-        {
-            if (sectionSwitch)
-            {
-                sectionSongEnd = 44.1;
-                slideFadeInDuration = 0.5;
-                slideFadeOutDuration = 0.5;
-                duration = sectionSongEnd - songTimer.GetElapsedRealTimeS();
-                sectionSwitch = false;
-            }
-
-            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
-            pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "...and peaceful intragalactic trade soon established.", GUIFont::Centre);
-
-            if (elapsed >= duration)
-            {
-                g_IntroState = SHOWSLIDE7;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == SHOWSLIDE7)
-        {
-            if (sectionSwitch)
-            {
-                sectionSongEnd = 51.5;
-                slideFadeInDuration = 0.5;
-                slideFadeOutDuration = 0.5;
-                duration = sectionSongEnd - songTimer.GetElapsedRealTimeS();
-                sectionSwitch = false;
-            }
-
-            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
-            pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "Now, the growing civilizations create a huge demand for resources...", GUIFont::Centre);
-
-            if (elapsed >= duration)
-            {
-                g_IntroState = SHOWSLIDE8;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == SHOWSLIDE8)
-        {
-            if (sectionSwitch)
-            {
-                sectionSongEnd = 64.5;
-                slideFadeInDuration = 0.5;
-                slideFadeOutDuration = 0.5;
-                duration = sectionSongEnd - songTimer.GetElapsedRealTimeS();
-                sectionSwitch = false;
-            }
-
-            yTextPos = (g_FrameMan.GetResY() / 2) + (apIntroSlides[g_IntroState - SHOWSLIDE1]->h / 2) + 12;
-            if (sectionProgress < 0.30)
-                pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "...which can only be satisfied by the ever-expanding frontier.", GUIFont::Centre);
-            else if (sectionProgress > 0.33 && sectionProgress < 0.64)
-                pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "Competition is brutal and anything goes in this galactic gold rush.", GUIFont::Centre);
-            else if (sectionProgress > 0.67)
-                pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "You will now join it on a venture to an untapped planet...", GUIFont::Centre);
-
-            if (elapsed >= duration)
-            {
-                g_IntroState = PRETITLE;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == PRETITLE)
-        {
-            if (sectionSwitch)
-            {
-                sectionSongEnd = 66.6;
-                duration = sectionSongEnd - songTimer.GetElapsedRealTimeS();
-                sectionSwitch = false;
-            }
-
-            yTextPos = (g_FrameMan.GetResY() / 2);
-            if (elapsed > 0.05)
-                pFont->DrawAligned(&backBuffer, g_FrameMan.GetResX() / 2, yTextPos, "Prepare to assume...", GUIFont::Centre);
-
-            if (elapsed >= duration)
-            {
-                g_IntroState = TITLEAPPEAR;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == TITLEAPPEAR)
-        {
-            if (sectionSwitch)
-            {
-                // White fade
-                clear_to_color(pFadeScreen, 0xFFFFFFFF);
-                sectionSongEnd = 68.2;
-                duration = sectionSongEnd - songTimer.GetElapsedRealTimeS();
-                sectionSwitch = false;
-            }
-
-            fadePos = LERP(0, 0.5, 255, 0, sectionProgress);
-            if (fadePos >= 0)
-            {
-                set_trans_blender(fadePos, fadePos, fadePos, fadePos);
-                draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
-            }
-
-            if (elapsed >= duration)
-            {
-                g_IntroState = PLANETSCROLL;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == PLANETSCROLL)
-        {
-            if (sectionSwitch)
-            {
-                sectionSongEnd = 92.4;
-                duration = sectionSongEnd - songTimer.GetElapsedRealTimeS();
-                sectionSwitch = false;
-            }
-
-            if (elapsed >= duration)
-            {
-                g_IntroState = PREMENU;
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == PREMENU)
-        {
-            if (sectionSwitch)
-            {
-                duration = 3.0;
-                sectionSwitch = false;
-                scrollOffset.m_Y = preMenuYOffset;
-            }
-
-            if (elapsed >= duration || keyPressed)
-            {
-                g_IntroState = MENUAPPEAR;
-
-                sectionSwitch = true;
-            }
-        }
-        else if (g_IntroState == MENUAPPEAR)
-        {
-            if (sectionSwitch)
-            {
-                duration = 1.0;
-                sectionSwitch = false;
-                scrollOffset.m_Y = preMenuYOffset;
+                ITP.m_duration = 1.0;
+                ITP.m_sectionSwitch = false;
+                ITP.m_scrollOffset.m_Y = ITP.m_preMenuYOffset;
 
                 // Play the main menu ambient
                 g_AudioMan.PlayMusic("Base.rte/Music/Hubnester/ccmenu.ogg", -1);
             }
 
-            if (elapsed >= duration || g_NetworkServer.IsServerModeEnabled())
+            if (ITP.m_elapsed >= ITP.m_duration || g_NetworkServer.IsServerModeEnabled())
             {
                 g_IntroState = MENUACTIVE;
-                sectionSwitch = true;
+                ITP.m_sectionSwitch = true;
             }
         }
         else if (g_IntroState == MENUACTIVE)
         {
-            if (sectionSwitch)
+            if (ITP.m_sectionSwitch)
             {
-                scrollOffset.m_Y = topMenuYOffset;
+                ITP.m_scrollOffset.m_Y = topMenuYOffset;
                 // Fire up the menu
                 g_pMainMenuGUI->SetEnabled(true);
                 // Indicate that we're now in the main menu
                 g_InActivity = false;
 
-                sectionSwitch = false;
+                ITP.m_sectionSwitch = false;
             }
 
             // Detect quitting of the program from the menu button
@@ -1385,14 +1620,14 @@ bool PlayIntroTitle() {
             if (g_pMainMenuGUI->ScenarioStarted())
             {
                 g_IntroState = MAINTOSCENARIO;
-                sectionSwitch = true;
+                ITP.m_sectionSwitch = true;
             }
 
             // Detect if a campaign mode has been commanded to start
             if (g_pMainMenuGUI->CampaignStarted())
             {
                 g_IntroState = MAINTOCAMPAIGN;
-                sectionSwitch = true;
+                ITP.m_sectionSwitch = true;
             }
 
             // Detect if the current game has been commanded to resume
@@ -1406,22 +1641,22 @@ bool PlayIntroTitle() {
                 g_ResetActivity = true;
 
                 g_IntroState = FADESCROLLOUT;
-                sectionSwitch = true;
+                ITP.m_sectionSwitch = true;
             }
 
-			if (g_NetworkServer.IsServerModeEnabled())
-			{
-				EnterMultiplayerLobby();
-				g_IntroState = FADESCROLLOUT;
-				sectionSwitch = true;
-			}
+            if (g_NetworkServer.IsServerModeEnabled())
+            {
+                EnterMultiplayerLobby();
+                g_IntroState = FADESCROLLOUT;
+                ITP.m_sectionSwitch = true;
+            }
         }
         else if (g_IntroState == MAINTOSCENARIO)
         {
-            if (sectionSwitch)
+            if (ITP.m_sectionSwitch)
             {
-                duration = 2.0;
-                sectionSwitch = false;
+                ITP.m_duration = 2.0;
+                ITP.m_sectionSwitch = false;
 
                 // Reset the Scenario menu
                 g_pScenarioGUI->SetEnabled(true);
@@ -1431,41 +1666,41 @@ bool PlayIntroTitle() {
                 g_AudioMan.PlayMusic("Base.rte/Music/dBSoundworks/thisworld5.ogg", -1);
             }
 
-            if (elapsed >= duration || g_NetworkServer.IsServerModeEnabled())// || keyPressed)
+            if (ITP.m_elapsed >= ITP.m_duration || g_NetworkServer.IsServerModeEnabled())// || ITP.m_keyPressed)
             {
                 g_IntroState = SCENARIOMENU;
-                sectionSwitch = true;
+                ITP.m_sectionSwitch = true;
             }
         }
         else if (g_IntroState == SCENARIOFADEIN)
         {
-            if (sectionSwitch)
+            if (ITP.m_sectionSwitch)
             {
                 // Scroll to planet pos
-                scrollOffset.m_Y = planetViewYOffset;
+                ITP.m_scrollOffset.m_Y = planetViewYOffset;
                 // Black fade
                 clear_to_color(pFadeScreen, 0);
 
-                duration = 1.0;
-                sectionSwitch = false;
+                ITP.m_duration = 1.0;
+                ITP.m_sectionSwitch = false;
             }
 
-            fadePos = 255 - (255 * sectionProgress);
+            fadePos = 255 - (255 * ITP.m_sectionProgress);
             set_trans_blender(fadePos, fadePos, fadePos, fadePos);
             draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
 
-            if (elapsed >= duration)
+            if (ITP.m_elapsed >= ITP.m_duration)
             {
                 g_IntroState = SCENARIOMENU;
-                sectionSwitch = true;
+                ITP.m_sectionSwitch = true;
             }
         }
         else if (g_IntroState == SCENARIOMENU)
         {
-            if (sectionSwitch)
+            if (ITP.m_sectionSwitch)
             {
-                scrollOffset.m_Y = planetViewYOffset;
-                sectionSwitch = false;
+                ITP.m_scrollOffset.m_Y = planetViewYOffset;
+                ITP.m_sectionSwitch = false;
             }
 
             // Detect quitting of the program from the menu button
@@ -1475,7 +1710,7 @@ bool PlayIntroTitle() {
             if (g_pScenarioGUI->BackToMain())
             {
                 g_IntroState = PLANETTOMAIN;
-                sectionSwitch = true;
+                ITP.m_sectionSwitch = true;
             }
 
             // Detect if the current game has been commanded to resume
@@ -1489,64 +1724,64 @@ bool PlayIntroTitle() {
                 g_ResetActivity = true;
 
                 g_IntroState = FADEOUT;
-                sectionSwitch = true;
+                ITP.m_sectionSwitch = true;
             }
 
-			// In server mode once we exited to main or scenario menu we need to start Lobby activity 
-			if (g_NetworkServer.IsServerModeEnabled())
-			{
-				EnterMultiplayerLobby();
-				g_IntroState = FADEOUT;
-				sectionSwitch = true;
-			}
+            // In server mode once we exited to main or scenario menu we need to start Lobby activity 
+            if (g_NetworkServer.IsServerModeEnabled())
+            {
+                EnterMultiplayerLobby();
+                g_IntroState = FADEOUT;
+                ITP.m_sectionSwitch = true;
+            }
         }
         else if (g_IntroState == MAINTOCAMPAIGN)
         {
-            if (sectionSwitch)
+            if (ITP.m_sectionSwitch)
             {
-                duration = 2.0;
-                sectionSwitch = false;
+                ITP.m_duration = 2.0;
+                ITP.m_sectionSwitch = false;
 
                 // Play the campaign music with Meta sound start
-				g_GUISound.SplashSound()->Play();
+                g_GUISound.SplashSound()->Play();
                 g_AudioMan.PlayMusic("Base.rte/Music/dBSoundworks/thisworld5.ogg", -1);
             }
 
-            if (elapsed >= duration)// || keyPressed)
+            if (ITP.m_elapsed >= ITP.m_duration)// || ITP.m_keyPressed)
             {
                 g_IntroState = CAMPAIGNPLAY;
-                sectionSwitch = true;
+                ITP.m_sectionSwitch = true;
             }
         }
         else if (g_IntroState == CAMPAIGNFADEIN)
         {
-            if (sectionSwitch)
+            if (ITP.m_sectionSwitch)
             {
                 // Scroll to campaign pos
-                scrollOffset.m_Y = planetViewYOffset;
+                ITP.m_scrollOffset.m_Y = planetViewYOffset;
                 // Black fade
                 clear_to_color(pFadeScreen, 0);
 
-                duration = 1.0;
-                sectionSwitch = false;
+                ITP.m_duration = 1.0;
+                ITP.m_sectionSwitch = false;
             }
 
-            fadePos = 255 - (255 * sectionProgress);
+            fadePos = 255 - (255 * ITP.m_sectionProgress);
             set_trans_blender(fadePos, fadePos, fadePos, fadePos);
             draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
 
-            if (elapsed >= duration)
+            if (ITP.m_elapsed >= ITP.m_duration)
             {
                 g_IntroState = CAMPAIGNPLAY;
-                sectionSwitch = true;
+                ITP.m_sectionSwitch = true;
             }
         }
         else if (g_IntroState == CAMPAIGNPLAY)
         {
-            if (sectionSwitch)
+            if (ITP.m_sectionSwitch)
             {
-                scrollOffset.m_Y = planetViewYOffset;
-                sectionSwitch = false;
+                ITP.m_scrollOffset.m_Y = planetViewYOffset;
+                ITP.m_sectionSwitch = false;
             }
 
             // Detect quitting of the program from the menu button
@@ -1556,7 +1791,7 @@ bool PlayIntroTitle() {
             if (g_MetaMan.GetGUI()->BackToMain())
             {
                 g_IntroState = PLANETTOMAIN;
-                sectionSwitch = true;
+                ITP.m_sectionSwitch = true;
             }
 
             // Detect if a game has been commanded to restart
@@ -1566,7 +1801,7 @@ bool PlayIntroTitle() {
                 g_ResetActivity = true;
 
                 g_IntroState = FADEOUT;
-                sectionSwitch = true;
+                ITP.m_sectionSwitch = true;
             }
             // Detect if the current game has been commanded to resume
             if (g_MetaMan.GetGUI()->ActivityResumed())
@@ -1574,92 +1809,70 @@ bool PlayIntroTitle() {
         }
         else if (g_IntroState == PLANETTOMAIN)
         {
-            if (sectionSwitch)
+            if (ITP.m_sectionSwitch)
             {
-                duration = 2.0;
-                sectionSwitch = false;
+                ITP.m_duration = 2.0;
+                ITP.m_sectionSwitch = false;
             }
 
-            if (elapsed >= duration)// || keyPressed)
+            if (ITP.m_elapsed >= ITP.m_duration)// || ITP.m_keyPressed)
             {
                 g_IntroState = MENUACTIVE;
-                sectionSwitch = true;
+                ITP.m_sectionSwitch = true;
             }
         }
         else if (g_IntroState == FADESCROLLOUT)
         {
-            if (sectionSwitch)
+            if (ITP.m_sectionSwitch)
             {
                 // Black fade
                 clear_to_color(pFadeScreen, 0x00000000);
-                duration = 1.5;
-                sectionSwitch = false;
+                ITP.m_duration = 1.5;
+                ITP.m_sectionSwitch = false;
             }
 
-            scrollOffset.m_Y = EaseIn(topMenuYOffset, 250, sectionProgress);
+            ITP.m_scrollOffset.m_Y = EaseIn(topMenuYOffset, 250, ITP.m_sectionProgress);
 
-            fadePos = EaseIn(0, 255, sectionProgress);
+            fadePos = EaseIn(0, 255, ITP.m_sectionProgress);
             set_trans_blender(fadePos, fadePos, fadePos, fadePos);
             draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
 
             // Fade out the music as well
-            g_AudioMan.SetTempMusicVolume(EaseIn(g_AudioMan.GetMusicVolume(), 0, sectionProgress));
+            g_AudioMan.SetTempMusicVolume(EaseIn(g_AudioMan.GetMusicVolume(), 0, ITP.m_sectionProgress));
 
-            if (elapsed >= duration)
+            if (ITP.m_elapsed >= ITP.m_duration)
             {
                 g_IntroState = END;
-                sectionSwitch = true;
+                ITP.m_sectionSwitch = true;
                 g_FrameMan.ClearBackBuffer32();
             }
         }
         else if (g_IntroState == FADEOUT)
         {
-            if (sectionSwitch)
+            if (ITP.m_sectionSwitch)
             {
                 // White fade
                 clear_to_color(pFadeScreen, 0x00000000);
-                duration = 1.5;
-                sectionSwitch = false;
+                ITP.m_duration = 1.5;
+                ITP.m_sectionSwitch = false;
             }
 
-//            scrollOffset.m_Y = EaseIn(topMenuYOffset, 250, sectionProgress);
-
-            fadePos = EaseIn(0, 255, sectionProgress);
+            fadePos = EaseIn(0, 255, ITP.m_sectionProgress);
             set_trans_blender(fadePos, fadePos, fadePos, fadePos);
             draw_trans_sprite(g_FrameMan.GetBackBuffer32(), pFadeScreen, 0, 0);
 
             // Fade out the music as well
-//            g_AudioMan.SetTempMusicVolume(g_AudioMan.GetMusicVolume() * 1.0 - sectionProgress);
-            g_AudioMan.SetTempMusicVolume(EaseIn(g_AudioMan.GetMusicVolume(), 0, sectionProgress));
+            g_AudioMan.SetTempMusicVolume(EaseIn(g_AudioMan.GetMusicVolume(), 0, ITP.m_sectionProgress));
 
-            if (elapsed >= duration)
+            if (ITP.m_elapsed >= ITP.m_duration)
             {
                 g_IntroState = END;
-                sectionSwitch = true;
+                ITP.m_sectionSwitch = true;
                 g_FrameMan.ClearBackBuffer32();
             }
         }
 
-        ////////////////////////////////
-        // Additional user input and skipping handling
-        
-        if (g_IntroState >= FADEIN && g_IntroState <= SHOWSLIDE8 && keyPressed)
-        {
-            g_IntroState = MENUAPPEAR;
-            sectionSwitch = true;
-
-            scrollOffset.m_Y = preMenuYOffset;
-            orbitRotation = c_HalfPI - c_EighthPI;
-
-			orbitRotation = -c_PI * 1.20;
-        }
-
-        // Draw the console in the menu
-        g_ConsoleMan.Draw(g_FrameMan.GetBackBuffer32());
-
-        // Wait for vertical sync before flipping frames
-        vsync();
-        g_FrameMan.FlipFrameBuffers();
+        EndOfWhile();
     }
 
     // Clean up heap data
@@ -1669,17 +1882,17 @@ bool PlayIntroTitle() {
         destroy_bitmap(apIntroSlides[slide]);
         apIntroSlides[slide] = 0;
     }
-    delete [] apIntroSlides; apIntroSlides = 0;
-    delete pBackdrop; pBackdrop = 0;
-    delete pTitle; pTitle = 0;
-    delete pPlanet; pPlanet = 0;
-    delete pMoon; pMoon = 0;
-    delete pStation; pStation = 0;
-	delete pPioneerCapsule; pPioneerCapsule = 0;
-	delete pPioneerScreaming; pPioneerScreaming = 0;
-	delete pFirePuffLarge; pFirePuffLarge = 0;
-	delete pFirePuffMedium; pFirePuffMedium = 0;
-    delete [] aStars; aStars = 0;
+    delete[] apIntroSlides; apIntroSlides = 0;
+    delete ITP.m_pBackdrop; ITP.m_pBackdrop = 0;
+    delete ITP.m_pTitle; ITP.m_pTitle = 0;
+    delete ITP.m_pPlanet; ITP.m_pPlanet = 0;
+    delete ITP.m_pMoon; ITP.m_pMoon = 0;
+    delete ITP.m_pStation; ITP.m_pStation = 0;
+    delete ITP.m_pPioneerCapsule; ITP.m_pPioneerCapsule = 0;
+    delete pPioneerScreaming; pPioneerScreaming = 0;
+    delete ITP.m_pFirePuffLarge; ITP.m_pFirePuffLarge = 0;
+    delete ITP.m_pFirePuffMedium; ITP.m_pFirePuffMedium = 0;
+    delete[] ITP.m_aStars; ITP.m_aStars = 0;
 
     return true;
 }
@@ -1770,9 +1983,9 @@ bool RunGameLoop() {
 				PlayIntroTitle();
 			}
 			// Resetting the simulation
-			if (g_ResetActivity) {
-				// Reset and quit if user quit during reset loading
-				if (!ResetActivity()) { break; }
+            // Reset and quit if user quit during reset loading
+			if (g_ResetActivity && !ResetActivity()) {
+				break;
 			}
 			// Resuming the simulation
 			if (g_ResumeActivity) { ResumeActivity(); }
