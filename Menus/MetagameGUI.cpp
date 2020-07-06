@@ -1427,7 +1427,7 @@ void MetagameGUI::Update()
     // Do all input handling!
 
     int mouseX, mouseY;
-    m_pGUIInput->GetMousePosition(&mouseX, &mouseY);
+    g_UInputMan.GetMousePosition(m_pController->GetPlayer(), &mouseX, &mouseY);
     Vector mousePos(mouseX, mouseY);
 
     UpdateInput();
@@ -2150,7 +2150,7 @@ void MetagameGUI::UpdateInput()
 
     // Get mouse position
     int mouseX, mouseY;
-    m_pGUIInput->GetMousePosition(&mouseX, &mouseY);
+    g_UInputMan.GetMousePosition(m_pController->GetPlayer(), &mouseX, &mouseY);
     Vector mousePos(mouseX, mouseY);
     
     // If not currently dragging a box, see if we should start

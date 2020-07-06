@@ -174,6 +174,11 @@ public:
     int GetModifier(void);
 
 
+	int GetPlayer() { return m_Player; };
+
+	bool GamepadToMouse() { return m_KeyJoyMouseCursor; };
+
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Private member variable and method declarations
 

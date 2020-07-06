@@ -405,7 +405,7 @@ void GUIControlManager::Draw(GUIScreen *pScreen)
 void GUIControlManager::DrawMouse(void)
 {
     int MouseX, MouseY;
-    m_Input->GetMousePosition(&MouseX, &MouseY);
+    g_UInputMan.GetMousePosition(m_Input->GetPlayer(),&MouseX, &MouseY);
 
     switch(m_CursorType) {
         // Pointer

@@ -10,6 +10,7 @@
 //                  jackal@shplorb.com
 //                  www.shplorb.com/~jackal
 
+#include "UInputMan.h"
 
 namespace RTE
 {
@@ -212,26 +213,26 @@ private:
 
     // Input
     GUIInput                *m_Input;
-    bool                    m_MouseEnabled;
-    int                     m_OldMouseX, m_OldMouseY;
+	bool                    m_MouseEnabled;
+	int                     m_OldMouseX, m_OldMouseY;
 
-    // Double click
-    int                     m_DoubleClickTime;
-    int                     m_DoubleClickSize;
-    int                     m_DoubleClickButtons;
-    float                   m_LastMouseDown[3];
-    GUIRect                    m_DoubleClickRect;
+	// Double click
+	int                     m_DoubleClickTime;
+	int                     m_DoubleClickSize;
+	int                     m_DoubleClickButtons;
+	float                   m_LastMouseDown[3];
+	GUIRect                    m_DoubleClickRect;
 
-    // Hover tracking
-    bool                    m_HoverTrack;
-    GUIPanel                *m_HoverPanel;
-    float                   m_HoverTime;
+	// Hover tracking
+	bool                    m_HoverTrack;
+	GUIPanel                *m_HoverPanel;
+	float                   m_HoverTime;
 
-    bool                    m_UseValidation;
-    int                     m_UniqueIDCount;
+	bool                    m_UseValidation;
+	int                     m_UniqueIDCount;
 
-    // Timer
-    Timer                   *m_pTimer;
+	// Timer
+	Timer                   *m_pTimer;
 };
 
 

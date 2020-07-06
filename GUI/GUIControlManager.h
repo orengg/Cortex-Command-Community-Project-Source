@@ -167,7 +167,7 @@ public:
 //                  the offset screen location.
 // Arguments:       The position.
 
-    void SetPosOnScreen(int screenPosX, int screenPosY) { m_Input->SetMouseOffset(-screenPosX, -screenPosY); }
+	void SetPosOnScreen(int screenPosX, int screenPosY) { g_UInputMan.SetMouseOffset(m_Input->GetPlayer(), -screenPosX, -screenPosY); }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

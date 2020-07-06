@@ -26,21 +26,21 @@ using namespace RTE;
 
 GUIManager::GUIManager(GUIInput *input)
 {
-    m_Input = input;
-    m_MouseEnabled = true;
-    m_UseValidation = false;
+	m_Input = input;
+	m_MouseEnabled = true;
+	m_UseValidation = false;
 
-    Clear();
+	Clear();
 
-    // Maximum time allowed between two clicks for a double click
-    // In milliseconds
+	// Maximum time allowed between two clicks for a double click
+	// In milliseconds
 //    m_DoubleClickTime = GetDoubleClickTime();                // Use windows' system value
-    m_DoubleClickTime = 500;
-//    m_DoubleClickSize = GetSystemMetrics(SM_CXDOUBLECLK)/2;    // Use windows' system value
-    m_DoubleClickSize = 2;
-    m_DoubleClickButtons = GUIPanel::MOUSE_NONE;
+	m_DoubleClickTime = 500;
+	//    m_DoubleClickSize = GetSystemMetrics(SM_CXDOUBLECLK)/2;    // Use windows' system value
+	m_DoubleClickSize = 2;
+	m_DoubleClickButtons = GUIPanel::MOUSE_NONE;
 
-    m_pTimer = new Timer();
+	m_pTimer = new Timer();
 }
 
 
@@ -114,15 +114,15 @@ void GUIManager::AddPanel(GUIPanel *panel)
 
 void GUIManager::Update(void)
 {
-    m_Input->Update();
-
     /*
      * Mouse Events
      */
     int i;
     int MouseX = 0, MouseY = 0;
     int DeltaX, DeltaY;    
-    int MouseButtons[3], MouseStates[3];
+	int MouseButtons[3];
+	bool MouseStates[3];
+	int MouseWheelChange = 0;
     int Released = GUIPanel::MOUSE_NONE;
     int Pushed = GUIPanel::MOUSE_NONE;
     int Buttons = GUIPanel::MOUSE_NONE;
@@ -133,7 +133,7 @@ void GUIManager::Update(void)
     float CurTime = m_pTimer->GetElapsedRealTimeMS();
 
     // Build the modifier state
-    Modifier = m_Input->GetModifier();
+	Modifier = g_UInputMan.GetModifier();
     if (Modifier & GUIInput::ModShift)
         Mod |= GUIPanel::MODI_SHIFT;
     if (Modifier & GUIInput::ModCtrl)
@@ -146,9 +146,9 @@ void GUIManager::Update(void)
     // Get the mouse data
     if (m_MouseEnabled)
     {
-        m_Input->GetMousePosition(&MouseX, &MouseY);
-        m_Input->GetMouseButtons(MouseButtons, MouseStates);
-        Modifier = m_Input->GetModifier();
+		g_UInputMan.GetMousePosition(m_Input->GetPlayer(), &MouseX, &MouseY);
+		g_UInputMan.GetMouseButtons(m_Input->GetPlayer(), MouseButtons, MouseStates, m_Input->GamepadToMouse());
+		MouseWheelChange = g_UInputMan.MouseWheelMovedByPlayer(m_Input->GetPlayer());
 
         // Calculate mouse movement
         DeltaX = MouseX - m_OldMouseX;
@@ -270,15 +270,18 @@ void GUIManager::Update(void)
                 m_MouseOverPanel->OnMouseLeave(MouseX, MouseY, Buttons, Mod);
         }
 
+		if (MouseWheelChange) {
+			if (CurPanel) {
+				CurPanel->OnMouseWheelChange(MouseX, MouseY, Mod, MouseWheelChange);
+			}
+		}
+
         m_MouseOverPanel = CurPanel;
     }
 
     /*
      * Keyboard Events
      */
-    uint8_t KeyboardBuffer[256];
-    m_Input->GetKeyboard(KeyboardBuffer);
-
     // If we don't have a panel with focus, just ignore keyboard events
     if (!m_FocusPanel)
         return;
@@ -286,26 +289,28 @@ void GUIManager::Update(void)
     if (!m_FocusPanel->IsEnabled())
         return;
 
+	int AsciiKeyboardBuffer[256];
+	g_UInputMan.GetKeyboard(AsciiKeyboardBuffer);
 
-    for(i=1; i<256; i++) {
-        switch(KeyboardBuffer[i]) {
-            // KeyDown & KeyPress
-            case GUIInput::Pushed:
-                m_FocusPanel->OnKeyDown(i, Mod);
-                m_FocusPanel->OnKeyPress(i, Mod);
-                break;
+	for (int ascii = 1; ascii < 256; ascii++) {
+		switch (AsciiKeyboardBuffer[ascii]) {
+			// KeyDown & KeyPress
+			case GUIInput::Pushed:
+				m_FocusPanel->OnKeyDown(ascii, Mod);
+				m_FocusPanel->OnKeyPress(ascii, Mod);
+				break;
 
-            // KeyUp
-            case GUIInput::Released:
-                m_FocusPanel->OnKeyUp(i, Mod);
-                break;
+			// KeyUp
+			case GUIInput::Released:
+				m_FocusPanel->OnKeyUp(ascii, Mod);
+				break;
 
-            // KeyPress
-            case GUIInput::Repeat:
-                m_FocusPanel->OnKeyPress(i, Mod);
-                break;
-        }
-    }
+			// KeyPress
+			case GUIInput::Repeat:
+				m_FocusPanel->OnKeyPress(ascii, Mod);
+				break;
+		}
+	}
 }
 
 

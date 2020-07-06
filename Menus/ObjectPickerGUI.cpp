@@ -260,7 +260,7 @@ void ObjectPickerGUI::SetEnabled(bool enable)
 
         // Move the mouse cursor to the middle of the player's screen
         int mouseOffX, mouseOffY;
-        m_pGUIInput->GetMouseOffset(mouseOffX, mouseOffY);
+		g_UInputMan.GetMouseOffset(m_pController->GetPlayer(), mouseOffX, mouseOffY);
         Vector mousePos(-mouseOffX + (g_FrameMan.GetPlayerFrameBufferWidth(m_pController->GetPlayer()) / 2), -mouseOffY + (g_FrameMan.GetPlayerFrameBufferHeight(m_pController->GetPlayer()) / 2));
         g_UInputMan.SetMousePos(mousePos, m_pController->GetPlayer());
         // Default focus to the groups list if the objects are empty
@@ -541,7 +541,7 @@ void ObjectPickerGUI::Update()
     // Mouse cursor logic
 
     int mouseX, mouseY;
-    m_pGUIInput->GetMousePosition(&mouseX, &mouseY);
+	g_UInputMan.GetMousePosition(m_pController->GetPlayer(), &mouseX, &mouseY);
     m_CursorPos.SetXY(mouseX, mouseY);
 
     /////////////////////////////////////////////

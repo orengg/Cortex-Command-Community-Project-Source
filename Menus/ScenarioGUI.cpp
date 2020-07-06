@@ -425,7 +425,7 @@ void ScenarioGUI::Update()
     // Do all input handling!
 
     int mouseX, mouseY;
-    m_pGUIInput->GetMousePosition(&mouseX, &mouseY);
+    g_UInputMan.GetMousePosition(m_pController->GetPlayer(), &mouseX, &mouseY);
     Vector mousePos(mouseX, mouseY);
 
     UpdateInput();
@@ -483,7 +483,7 @@ void ScenarioGUI::Update()
 
         // Get mouse position so we can see which scene it hovers over
         int mouseX, mouseY;
-        m_pGUIInput->GetMousePosition(&mouseX, &mouseY);
+        g_UInputMan.GetMousePosition(m_pController->GetPlayer(), &mouseX, &mouseY);
         Vector mousePos(mouseX, mouseY);
         Vector screenLocation;
 
@@ -742,7 +742,7 @@ void ScenarioGUI::Draw(BITMAP *drawBitmap) const
 	if (device >= UInputMan::DEVICE_GAMEPAD_1)
 	{
 		int mouseX, mouseY;
-		m_pGUIInput->GetMousePosition(&mouseX, &mouseY);
+		g_UInputMan.GetMousePosition(m_pController->GetPlayer(), &mouseX, &mouseY);
 
 		const Icon * pIcon = g_UInputMan.GetDeviceIcon(device);
 		if (pIcon)
@@ -798,7 +798,7 @@ void ScenarioGUI::UpdateInput()
 
     // Get mouse position
     int mouseX, mouseY;
-    m_pGUIInput->GetMousePosition(&mouseX, &mouseY);
+    g_UInputMan.GetMousePosition(m_pController->GetPlayer(), &mouseX, &mouseY);
     Vector mousePos(mouseX, mouseY);
     
     // If not currently dragging a box, see if we should start
@@ -1226,7 +1226,7 @@ void ScenarioGUI::UpdatePlayersBox(bool newActivity)
     {
         // Get mouse position and figure out if any cell is being hovered over
         int mouseX, mouseY;
-        m_pGUIInput->GetMousePosition(&mouseX, &mouseY);
+        g_UInputMan.GetMousePosition(m_pController->GetPlayer(), &mouseX, &mouseY);
         Vector mousePos(mouseX, mouseY);
         bool menuButtonHeld = g_UInputMan.MenuButtonHeld(UInputMan::MENU_EITHER);
 		bool menuButtonReleased = g_UInputMan.MenuButtonReleased(UInputMan::MENU_EITHER);

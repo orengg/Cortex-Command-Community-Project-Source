@@ -544,7 +544,7 @@ namespace RTE {
 		{
 			// Get mouse position and figure out if any cell is being hovered over
 			int mouseX, mouseY;
-			m_pGUIInput->GetMousePosition(&mouseX, &mouseY);
+			g_UInputMan.GetMousePosition(m_pGUIInput->GetPlayer(), &mouseX, &mouseY);
 			Vector mousePos(mouseX, mouseY);
 			bool menuButtonHeld = g_UInputMan.MenuButtonHeld(UInputMan::MENU_EITHER);
 			bool menuButtonReleased = g_UInputMan.MenuButtonReleased(UInputMan::MENU_EITHER);
@@ -1401,7 +1401,7 @@ namespace RTE {
 			}
 
 			int mouseX, mouseY;
-			m_pGUIInput->GetMousePosition(&mouseX, &mouseY);
+			g_UInputMan.GetMousePosition(m_pGUIInput->GetPlayer(), &mouseX, &mouseY);
 
 			int offsetX = finalDestBitmap->w / 2 - m_pRootBox->GetWidth() / 2;
 			int offsetY = finalDestBitmap->h / 2 - m_pRootBox->GetHeight() / 2;

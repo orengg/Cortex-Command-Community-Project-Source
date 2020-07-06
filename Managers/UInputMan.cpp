@@ -36,8 +36,10 @@ namespace RTE
 const string UInputMan::m_ClassName = "UInputMan";
 const string UInputMan::InputScheme::m_sClassName = "InputScheme";
 const string UInputMan::InputScheme::InputMapping::m_sClassName = "InputMapping";
-char *UInputMan::s_aLastKeys = new char[KEY_MAX];
-char *UInputMan::s_aChangedKeys = new char[KEY_MAX];
+char *UInputMan::s_aLastScanKeys = new char[KEY_MAX];
+char *UInputMan::s_aChangedScanKeys = new char[KEY_MAX];
+std::array<bool, 256> UInputMan::s_aLastAsciiKeys = { 0 };
+std::array<bool, 256> UInputMan::s_aChangedAsciiKeys = { 0 };
 GUIInput* UInputMan::s_InputClass = NULL; 
 bool UInputMan::m_aMouseButtonState[MAX_MOUSE_BUTTONS];
 bool UInputMan::m_aMousePrevButtonState[MAX_MOUSE_BUTTONS];
@@ -596,13 +598,15 @@ void UInputMan::Clear()
     m_DebugArmed = false;
 
     // Init the previous keys so they don't make it seem like things have changed
-    memcpy(s_aLastKeys, const_cast<const char *>(key), KEY_MAX);
+    memcpy(s_aLastScanKeys, const_cast<const char *>(key), KEY_MAX);
+	s_aLastAsciiKeys = { 0 };
 
     // Neutralize the changed keys so that no Releases will be detected initially
     for (int i = 0; i < KEY_MAX; ++i)
     {
-        s_aChangedKeys[i] = false;
+        s_aChangedScanKeys[i] = false;
     }
+	s_aChangedAsciiKeys = { 0 };
 
     m_DisableKeyboard = false;
 
@@ -707,6 +711,11 @@ void UInputMan::Clear()
 	m_LastDeviceWhichControlledGUICursor = 0;
 	m_OverrideInput = false;
 	m_IsInMultiplayerMode = false;
+
+	m_pTimer->Reset();
+	m_KeyShifts = 0;
+	m_MouseOffsetX = { 0 };
+	m_MouseOffsetY = { 0 };
 }
 
 
@@ -762,6 +771,9 @@ int UInputMan::Create()
     m_apDeviceIcons[DEVICE_GAMEPAD_3] = dynamic_cast<const Icon *>(g_PresetMan.GetEntityPreset("Icon", "Device Gamepad 3"));
     m_apDeviceIcons[DEVICE_GAMEPAD_4] = dynamic_cast<const Icon *>(g_PresetMan.GetEntityPreset("Icon", "Device Gamepad 4"));
 */
+
+	MakeSpecialKeysVector();
+
     return 0;
 }
 
@@ -1155,6 +1167,7 @@ void UInputMan::SetNetworkMouseInput(int player, Vector input)
 {
 	m_OverrideInput = true;
 	m_NetworkAccumulatedRawMouseMovement[player] = input;
+	SetNetworkMouseMovement(player, input.GetX(),input.GetY());
 }
 
 void UInputMan::SetNetworkInputElementHeldState(int player, int element, bool state)
@@ -1409,11 +1422,11 @@ bool UInputMan::KeyPressed(const char keyToTest)
 	
 	if (s_InputClass)
 	{		
-		pressed = (s_InputClass->GetScanCodeState(keyToTest) == GUIInput::Pushed);
+		pressed = (s_InputClass->GetScanCodeState(keyToTest) == Pushed);
 	}
 	else
 	{
-		pressed = s_aLastKeys[keyToTest] && s_aChangedKeys[keyToTest];
+		pressed = s_aLastScanKeys[keyToTest] && s_aChangedScanKeys[keyToTest];
 	}
 	
 //    s_aChangedKeys[keyToTest] = false;
@@ -1433,7 +1446,7 @@ bool UInputMan::KeyReleased(const char keyToTest)
     if (m_DisableKeyboard && (keyToTest >= KEY_A && keyToTest < KEY_ESC))
         return false;
 
-    bool released = !s_aLastKeys[keyToTest] && s_aChangedKeys[keyToTest];
+    bool released = !s_aLastScanKeys[keyToTest] && s_aChangedScanKeys[keyToTest];
 //    s_aChangedKeys[keyToTest] = false;
     return released;
 }
@@ -1450,7 +1463,7 @@ bool UInputMan::KeyHeld(const char keyToTest)
     if (m_DisableKeyboard && (keyToTest >= KEY_A && keyToTest < KEY_ESC))
         return false;
 
-    return s_aLastKeys[keyToTest];
+    return s_aLastScanKeys[keyToTest];
 }
 
 
@@ -2298,7 +2311,7 @@ bool UInputMan::AnyPress()
 
     // Check keyboard for presses
     for (int testKey = 0; testKey < KEY_MAX; ++testKey)
-        pressed = s_aLastKeys[testKey] && s_aChangedKeys[testKey] ? true : pressed;
+        pressed = s_aLastScanKeys[testKey] && s_aChangedScanKeys[testKey] ? true : pressed;
 
     // Check mouse buttons for presses
     if (!pressed)
@@ -2380,8 +2393,13 @@ int UInputMan::Update()
     poll_joystick();
 
     // Detect and store key changes since last Update()
-    for (int i = 0; i < KEY_MAX; ++i)
-        s_aChangedKeys[i] = key[i] != s_aLastKeys[i];
+	for (int i = 0; i < KEY_MAX; ++i) {
+		s_aChangedScanKeys[i] = key[i] != s_aLastScanKeys[i];
+	}
+	memcpy(s_aLastScanKeys, const_cast<const char*>(key), KEY_MAX);
+	GetAsciiKeys();
+	m_KeyShifts = key_shifts;
+	UpdateKeyboardBuffer();
 
     // Store mouse movement
     int mickeyX, mickeyY;
@@ -2713,7 +2731,7 @@ int UInputMan::Update()
     if (g_InActivity)
     {
         // Ctrl-R resets
-        if ((key_shifts & KB_CTRL_FLAG) && KeyPressed(KEY_R))
+        if (FlagCtrlState() && KeyPressed(KEY_R))
         {
             g_ResetActivity = true;
         }
@@ -2740,7 +2758,7 @@ int UInputMan::Update()
             g_ConsoleMan.PrintString("SYSTEM: Activity was reset!");
     }
 
-	if (key_shifts & KB_ALT_FLAG && KeyPressed(KEY_ENTER)) {
+	if (FlagAltState() && KeyPressed(KEY_ENTER)) {
 		g_FrameMan.SwitchResolutionMultiplier((g_FrameMan.ResolutionMultiplier() >= 2) ? 1 : 2);
 	}
 
@@ -2768,7 +2786,7 @@ int UInputMan::Update()
     }
 
     // Screendump - Ctrl+S
-    if ((((key_shifts & KB_CTRL_FLAG)/* && (key_shifts & KB_SHIFT_FLAG)*/ && KeyHeld(KEY_S)) || KeyHeld(KEY_PRTSCR)))// && g_TimerMan.DrawnSimUpdate())
+    if (((FlagCtrlState()/* && (key_shifts & KB_SHIFT_FLAG)*/ && KeyHeld(KEY_S)) || KeyHeld(KEY_PRTSCR)))// && g_TimerMan.DrawnSimUpdate())
     {
         g_FrameMan.SaveScreenToBMP("ScreenDump");
 // TEMP!!
@@ -2776,21 +2794,21 @@ int UInputMan::Update()
     }
 
 	// Dump entire map, Ctrl+W
-    if ((key_shifts & KB_CTRL_FLAG) && KeyHeld(KEY_W))
+    if (FlagCtrlState() && KeyHeld(KEY_W))
     {
         g_FrameMan.SaveWorldToBMP("WorldDump");
     }
 
     // Material draw toggle, Ctrl + M
-    if ((key_shifts & KB_CTRL_FLAG) && KeyPressed(KEY_M))
+    if (FlagCtrlState() && KeyPressed(KEY_M))
         g_SceneMan.SetLayerDrawMode((g_SceneMan.GetLayerDrawMode() + 1) % 3);
 
     // Perf stats display toggle
-    if ((key_shifts & KB_CTRL_FLAG) && KeyPressed(KEY_P))
+    if (FlagCtrlState() && KeyPressed(KEY_P))
 		g_PerformanceMan.ShowPerformanceStats(!g_PerformanceMan.IsShowingPerformanceStats());
 
     // Force one sim update per graphics frame
-    if ((key_shifts & KB_CTRL_FLAG) && KeyPressed(KEY_O))
+    if (FlagCtrlState() && KeyPressed(KEY_O))
         g_TimerMan.SetOneSimUpdatePerFrame(!g_TimerMan.IsOneSimUpdatePerFrame());
 
 	// Dump all shortcuts to console window
@@ -2847,9 +2865,8 @@ int UInputMan::Update()
     if (KeyHeld(KEY_UP))
         g_TempYOff--;
 */
-    // Save the current state of the keyboard so that we can compare it
-    // next frame and see which key states have been changed in the mean time.
-    memcpy(s_aLastKeys, const_cast<const char *>(key), KEY_MAX);
+
+	
 
     // Save the mouse button states so taht we can compare it next frame and see which buttons have changed.
     for (int mbutton = 0; mbutton < MAX_MOUSE_BUTTONS; ++mbutton)
@@ -2917,6 +2934,256 @@ bool UInputMan::AccumulatedElementReleased(int element)
 }
 
 
+int UInputMan::GetModifier() {
+	int Modifier = 0b0000;
+
+	if (FlagShiftState()) {
+		Modifier |= 0b0001;
+	}
+	if (FlagAltState()) {
+		Modifier |= 0b0010;
+	}
+	if (FlagCtrlState()) {
+		Modifier |= 0b0100;
+	}
+	if (m_KeyShifts & KB_COMMAND_FLAG) {
+		Modifier |= 0b1000;
+	}
+	return Modifier;
+}
+
+
+void UInputMan::GetMousePosition(int whichPlayer, int* X, int* Y){
+	float mouseDenominator = g_FrameMan.ResolutionMultiplier();
+	int mouseX = static_cast<int>(static_cast<float>(mouse_x) / mouseDenominator);
+	int mouseY = static_cast<int>(static_cast<float>(mouse_y) / mouseDenominator);
+
+	if (whichPlayer < 0 || whichPlayer >= MAX_PLAYERS) {
+		whichPlayer = 0;
+	}
+	if (m_OverrideInput) {
+		if (X) {
+			*X = (m_NetworkMouseX[whichPlayer] + m_MouseOffsetX[whichPlayer]);
+		}
+		if (Y) {
+			*Y = (m_NetworkMouseY[whichPlayer] + m_MouseOffsetY[whichPlayer]);
+		}
+	} else {
+		if (X) {
+			*X = (mouseX + m_MouseOffsetX[whichPlayer]);
+		}
+		if (Y) {
+			*Y = (mouseY + m_MouseOffsetY[whichPlayer]);
+		}
+	}
+}
+
+
+void UInputMan::SetNetworkMouseMovement(int whichPlayer, int x, int y)
+{
+	if (whichPlayer < 0 || whichPlayer >= MAX_PLAYERS) {
+		whichPlayer = 0;
+	}
+
+	m_OverrideInput = true;
+	m_NetworkMouseX[whichPlayer] += x;
+	m_NetworkMouseY[whichPlayer] += y;
+}
+
+
+void UInputMan::GetMouseButtons(int whichPlayer, int* Buttons, bool* States, bool GamepadToMouse = false)
+{
+	if (whichPlayer < 0 || whichPlayer >= MAX_PLAYERS) {
+		whichPlayer = 0;
+	}
+
+	int mouseButtonsEvents[MAX_MOUSE_BUTTONS];
+	bool mouseButtonsStates[MAX_MOUSE_BUTTONS] = {0};
+
+	if (!m_OverrideInput) {	
+		memcpy(mouseButtonsStates, m_aMouseButtonState, sizeof(bool) * MAX_MOUSE_BUTTONS);
+		int i = 0;
+		if (GamepadToMouse) {
+			if (MenuButtonHeld(MENU_EITHER)) {
+				mouseButtonsStates[0] = 1;
+				mouseButtonsEvents[0] = Repeat;
+			}
+
+			if (g_UInputMan.MenuButtonPressed(MENU_EITHER)) { // ButtonPressed means that ButtonHeld was also true, so state = 1.
+				mouseButtonsEvents[0] = Pushed;
+			} else if (g_UInputMan.MenuButtonReleased(MENU_EITHER)) {
+				mouseButtonsStates[0] = 0;
+				mouseButtonsEvents[0] = Released;
+			} else {
+				mouseButtonsStates[0] = 0;
+				mouseButtonsEvents[0] = None;
+			}
+
+			i = 1;
+		}
+		for (; i < MAX_MOUSE_BUTTONS; i++) {
+			if (m_aMouseButtonState[i]) {
+				mouseButtonsEvents[i] = m_aMouseChangedButtonState[i] ? Pushed : Repeat;
+			} else {
+				mouseButtonsEvents[i] = m_aMouseChangedButtonState[i] ? Released : None;
+			}
+		}
+	} else {
+		GetMouseButtonsNetwork(whichPlayer, mouseButtonsEvents, mouseButtonsStates);
+	}
+
+	if (Buttons) {
+		memcpy(Buttons, mouseButtonsEvents, sizeof(int) * MAX_MOUSE_BUTTONS);
+	}
+	if (States) {
+		memcpy(States, mouseButtonsStates, sizeof(bool) * MAX_MOUSE_BUTTONS);
+	}
+}
+
+
+void UInputMan::GetMouseButtonsNetwork(int whichPlayer, int* in_networkMouseButtonsEvents, bool* in_networkMouseButtonsStates)
+{
+	if (!in_networkMouseButtonsEvents || !in_networkMouseButtonsStates) {
+		return;
+	}
+
+	if (whichPlayer < 0 || whichPlayer >= MAX_PLAYERS) {
+		whichPlayer = 0;
+	}
+
+	int networkMouseBtnEvents[MAX_MOUSE_BUTTONS];
+	bool networkMouseBtnStates[MAX_MOUSE_BUTTONS];
+
+	for (int btn = 0; btn < MAX_MOUSE_BUTTONS; btn++) {
+		if (m_aNetworkMouseButtonPressedState[whichPlayer][btn]) {
+			networkMouseBtnEvents[btn] = Pushed;
+			networkMouseBtnStates[btn] = true;
+		} else if (m_aNetworkMouseButtonHeldState[whichPlayer][btn]) { // m_aNetworkMouseButtonPressedState == false is implied.
+			networkMouseBtnEvents[btn] = Repeat;
+			networkMouseBtnStates[btn] = true;
+		} else if (m_aNetworkMouseButtonReleasedState[whichPlayer][btn]) {
+			networkMouseBtnEvents[btn] = Released;
+			networkMouseBtnStates[btn] = false;
+		} else {
+			networkMouseBtnEvents[btn] = None;
+			networkMouseBtnStates[btn] = false;
+		}
+	}
+
+	memcpy(in_networkMouseButtonsEvents, networkMouseBtnEvents, sizeof(int) * MAX_MOUSE_BUTTONS);
+	memcpy(in_networkMouseButtonsStates, networkMouseBtnStates, sizeof(bool) * MAX_MOUSE_BUTTONS);
+}
+
+
+void UInputMan::GetAsciiKeys() {
+	std::array<bool, KEYBOARD_BUFFER_SIZE> tempAsciiKeys = { 0 };
+	while (keypressed()) {
+		int rawval = readkey();
+		int scancode = (rawval >> 8);
+		int ascii = (rawval & 0xff);
+		if (ascii == 0) {
+			ascii = ScanToAscii(scancode);
+		}
+		tempAsciiKeys[ascii] = true;
+	}
+
+	std::transform(tempAsciiKeys.begin(), tempAsciiKeys.end(), s_aLastAsciiKeys.begin(), s_aChangedAsciiKeys.begin(), std::not_equal_to<bool>());
+	s_aLastAsciiKeys = tempAsciiKeys;
+}
+
+
+void UInputMan::UpdateKeyboardBuffer() {
+	float elapsedS = m_pTimer->GetElapsedRealTimeS();
+	m_pTimer->Reset();
+
+	std::array<int, KEYBOARD_BUFFER_SIZE> asciiEvent = { 0 };
+	for (int ascii = 1; ascii < KEYBOARD_BUFFER_SIZE; ascii++) {
+		float& timeSinceLast = m_AsciiKeyboardTimes[ascii];
+		bool& repeatSwitch = m_RepeatSwitchAscii[ascii];
+		if (s_aLastAsciiKeys[ascii] && s_aChangedAsciiKeys[ascii]) {
+			asciiEvent[ascii] = Pushed;
+			timeSinceLast = 0;
+			repeatSwitch = false;
+		} else if (s_aLastAsciiKeys[ascii] && !s_aChangedAsciiKeys[ascii]) {
+			timeSinceLast += elapsedS;
+			if ((!repeatSwitch && timeSinceLast > m_KeyDelay) || (repeatSwitch && timeSinceLast > m_KeyRepeat)) {
+				asciiEvent[ascii] = Repeat;
+				timeSinceLast = 0;
+				repeatSwitch = true;
+			}
+		} else if (!s_aLastAsciiKeys[ascii] && s_aChangedAsciiKeys[ascii]) {
+			asciiEvent[ascii] = Released;
+			timeSinceLast = 0;
+			repeatSwitch = false;
+		}
+		// Implicit else: asciiEvent stays None;
+	}
+
+	m_KeyboardAsciiBuffer = asciiEvent;
+}
+
+
+void UInputMan::GetKeyboard(int* Buffer)
+{
+	if (!Buffer) {
+		return;
+	}
+
+	std::copy(m_KeyboardAsciiBuffer.begin(), m_KeyboardAsciiBuffer.end(), Buffer);
+}
+
+
+int UInputMan::ScanToAscii(int scancode)
+{
+	int ascii = scancode_to_ascii(scancode); // This function isn't perfect, does not convert some things like cursor keys. Need special treatment for that.
+
+	// Special keys
+	if (ascii == 0) {
+		for each (pair< int, int> codepair in m_SpecialKeys)
+		{
+			if (codepair.first == scancode) {
+				ascii = codepair.second;
+				break;
+			}
+		}
+	}
+
+	return ascii;
+}
+
+
+void UInputMan::MakeSpecialKeysVector()
+{
+	m_SpecialKeys.clear();
+	vector< int> scancodes = { KEY_SPACE ,KEY_BACKSPACE ,KEY_TAB ,KEY_ENTER ,KEY_ESC ,KEY_LEFT ,KEY_RIGHT ,KEY_UP ,KEY_DOWN ,KEY_INSERT ,KEY_DEL ,KEY_HOME ,KEY_END ,KEY_PGUP ,KEY_PGDN };
+	vector<int> ascii = { ' ' ,Key_Backspace, Key_Tab ,Key_Enter ,Key_Escape ,Key_LeftArrow ,Key_RightArrow ,Key_UpArrow ,Key_DownArrow ,Key_Insert ,Key_Delete ,Key_Home ,Key_End ,Key_PageUp ,Key_PageDown };
+	assert(scancodes.size() == ascii.size());
+	for (int i = 0; i < scancodes.size(); i++) {
+		m_SpecialKeys.push_back(make_pair(scancodes.at(i), ascii.at(i)));
+	}
+}
+
+
+void UInputMan::SetMouseOffset(int whichPlayer, int mouseOffsetX, int mouseOffsetY)
+{
+	if (whichPlayer < 0 || whichPlayer >= MAX_PLAYERS) {
+		whichPlayer = 0;
+	}
+
+	m_MouseOffsetX[whichPlayer] = mouseOffsetX;
+	m_MouseOffsetY[whichPlayer] = mouseOffsetY;
+}
+
+
+void UInputMan::GetMouseOffset(int whichPlayer, int& mouseOffsetX, int& mouseOffsetY)
+{
+	if (whichPlayer < 0 || whichPlayer >= MAX_PLAYERS) {
+		whichPlayer = 0;
+	}
+
+	mouseOffsetX = m_MouseOffsetX[whichPlayer];
+	mouseOffsetY = m_MouseOffsetY[whichPlayer];
+}
 
 
 } // namespace RTE

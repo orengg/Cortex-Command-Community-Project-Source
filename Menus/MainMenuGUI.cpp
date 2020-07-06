@@ -676,7 +676,7 @@ void MainMenuGUI::Update()
 			{
 				// Get mouse position
 				int mouseX, mouseY;
-				m_pGUIInput->GetMousePosition(&mouseX, &mouseY);
+				g_UInputMan.GetMousePosition(m_pController->GetPlayer(), &mouseX, &mouseY);
 				Vector mouse(mouseX, mouseY);
 
 				if (m_PioneerPromoBox.IsWithinBox(mouse))
@@ -1709,7 +1709,7 @@ void MainMenuGUI::Draw(BITMAP *drawBitmap) const
 	if (device >= UInputMan::DEVICE_GAMEPAD_1)
 	{
 		int mouseX, mouseY;
-		m_pGUIInput->GetMousePosition(&mouseX, &mouseY);
+		g_UInputMan.GetMousePosition(m_pController->GetPlayer(), &mouseX, &mouseY);
 
 		const Icon * pIcon = g_UInputMan.GetDeviceIcon(device);
 		if (pIcon)
@@ -2167,7 +2167,7 @@ void MainMenuGUI::UpdateConfigScreen()
     }
 
 	// [CHRISK] Use GUI input class for better key detection
-	g_UInputMan.SetInputClass(m_pGUIInput);
+	/*g_UInputMan.SetInputClass(m_pGUIInput);*/
 
     // Keyboard screens
     if (m_ConfiguringDevice == UInputMan::DEVICE_KEYB_ONLY)
@@ -3023,7 +3023,7 @@ void MainMenuGUI::UpdateConfigScreen()
         }
     }
 
-	g_UInputMan.SetInputClass(NULL);
+	//g_UInputMan.SetInputClass(NULL);
 	
     if (m_ScreenChange)
         g_GUISound.ExitMenuSound()->Play();

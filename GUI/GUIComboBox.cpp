@@ -338,7 +338,7 @@ void GUIComboBox::ReceiveSignal(GUIPanel *Source, int Code, int Data)
         // Click
         int mouseX = 0;
         int mouseY = 0;
-        m_Manager->GetInputController()->GetMousePosition(&mouseX, &mouseY);
+        g_UInputMan.GetMousePosition(m_Manager->GetInputController()->GetPlayer(),&mouseX, &mouseY);
         // Unless we check for the mouse not being over the otehr components, this causes irritating accidental closing of the list when clicking on the textbox and button
         if (Code == GUIListPanel::Click && !m_TextPanel->PointInside(mouseX, mouseY) && !m_Button->PointInside(mouseX, mouseY))
         {

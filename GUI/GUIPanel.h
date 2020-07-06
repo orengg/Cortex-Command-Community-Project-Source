@@ -235,6 +235,16 @@ public:
     virtual void OnMouseHover(int X, int Y, int Buttons, int Modifier);
 
 
+	/// <summary>
+	/// Called when the mouse scroll wheel is moved.
+	/// </summary>
+	/// <param name="X">Mouse X position</param>
+	/// <param name="Y">Mouse Y position</param>
+	/// <param name="Modifier">Activated modifier buttons</param>
+	/// <param name="mouseWheelChange">the amount of wheel movement. positive is scroll up, negative is scroll down.</param>
+	virtual void OnMouseWheelChange(int X, int Y, int Modifier, int mouseWheelChange);
+
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Virtual Method:  OnKeyDown
 //////////////////////////////////////////////////////////////////////////////////////////

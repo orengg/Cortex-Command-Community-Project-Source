@@ -19,6 +19,7 @@
 #define g_UInputMan UInputMan::Instance()
 #include "Serializable.h"
 #include "Timer.h"
+#include <utility>
 
 #include "FrameMan.h"
 //#include "SceneMan.h"
@@ -121,6 +122,36 @@ enum MouseButtons
     MOUSE_RIGHT,
     MOUSE_MIDDLE,
     MAX_MOUSE_BUTTONS
+};
+
+enum Events {
+	None,
+	Released,
+	Pushed,
+	Repeat
+};
+
+enum Constants
+{
+	KEYBOARD_BUFFER_SIZE = 256
+};
+
+enum SpecialKeys {
+	Key_None = 0,
+	Key_Backspace = 0x00000008,
+	Key_Tab = 0x00000009,
+	Key_Enter = 0x0000000D,
+	Key_Escape = 0x0000001B,
+	Key_LeftArrow = 0x00000086,
+	Key_RightArrow = 0x00000087,
+	Key_UpArrow = 0x00000088,
+	Key_DownArrow = 0x00000089,
+	Key_Insert = 0x00000095,
+	Key_Delete = 0x00000096,
+	Key_Home = 0x00000097,
+	Key_End = 0x00000098,
+	Key_PageUp = 0x00000099,
+	Key_PageDown = 0x0000009A
 };
 
 enum JoyButtons
@@ -1587,6 +1618,49 @@ public:
 
 	bool AccumulatedElementReleased(int element);
 
+	/// <summary>
+	/// Returns which keyboard modifier keys are held down.
+	/// </summary>
+	/// <returns></returns>
+	int GetModifier();
+
+	/// <summary>
+	/// Gets the mouse position.
+	/// </summary>
+	/// <param name="Player"></param>
+	/// <param name="X"></param>
+	/// <param name="Y"></param>
+	void GetMousePosition(int Player, int* X, int* Y);
+
+	/// <summary>
+	/// Sets the network mouse movement.
+	/// </summary>
+	/// <param name="whichPlayer"></param>
+	/// <param name="x"></param>
+	/// <param name="y"></param>
+	void SetNetworkMouseMovement(int whichPlayer, int x, int y);
+
+	/// <summary>
+	/// Gets the mouse buttons events and states.
+	/// </summary>
+	/// <param name="whichPlayer"></param>
+	/// <param name="Buttons"></param>
+	/// <param name="States"></param>
+	void GetMouseButtons(int whichPlayer, int* Buttons, bool* States, bool GamepadToMouse);
+
+	/// <summary>
+	/// Gets the keyboard buffer.
+	/// </summary>
+	/// <param name="Buffer"></param>
+	void GetKeyboard(int* Buffer);
+
+	/// <summary>
+	/// Converts an allegro scancode to an ascii code.
+	/// </summary>
+	/// <param name="ScanCode"></param>
+	/// <returns></returns>
+	int ScanToAscii(int ScanCode);
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Method:          FlagAltState
@@ -1595,7 +1669,7 @@ public:
 // Arguments:       None.
 // Return value:    Returns the state of the Alt key.
 
-	bool FlagAltState() const { return (key_shifts & KB_ALT_FLAG) > 0 ? true : false; }
+	bool FlagAltState() const { return (m_KeyShifts & KB_ALT_FLAG) > 0 ? true : false; }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1605,7 +1679,7 @@ public:
 // Arguments:       None.
 // Return value:    Returns the state of the Ctrl key.
 
-	bool FlagCtrlState() const { return (key_shifts & KB_CTRL_FLAG) > 0 ? true : false; }
+	bool FlagCtrlState() const { return (m_KeyShifts & KB_CTRL_FLAG) > 0 ? true : false; }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1615,7 +1689,7 @@ public:
 // Arguments:       None.
 // Return value:    Returns the state of the Shift key.
 
-	bool FlagShiftState() const { return (key_shifts & KB_SHIFT_FLAG) > 0 ? true : false; }
+	bool FlagShiftState() const { return (m_KeyShifts & KB_SHIFT_FLAG) > 0 ? true : false; }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1626,6 +1700,29 @@ public:
 // Return value:    None.
 
 	void SetMultiplayerMode(bool isMultiplayer) { m_IsInMultiplayerMode = isMultiplayer; }
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Method:          SetMouseOffset
+//////////////////////////////////////////////////////////////////////////////////////////
+// Description:     Sets the offset for the mouse input to be adjusted by. This shuold
+//                  be used when the GUI is being drawn somewhere else on the screen than
+//                  the upper left corner. These values shuold be from the GUI to the upper
+//                  left corner.
+// Arguments:       The new offset.
+
+	void SetMouseOffset(int whichPlayer, int mouseOffsetX, int mouseOffsetY);
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Method:          GetMouseOffset
+//////////////////////////////////////////////////////////////////////////////////////////
+// Description:     Sets the offset for the mouse input to be adjusted by. This shuold
+//                  These values shuold be from the GUI to the upper of the screen.
+//                  left corner.
+// Arguments:       The new offset.
+
+	void GetMouseOffset(int whichPlayer, int& mouseOffsetX, int& mouseOffsetY);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1654,13 +1751,44 @@ private:
 
     void Clear();
 
+	/// <summary>
+	/// Helper function for GetMouseButtons. gets the network mouse buttons states and events.
+	/// </summary>
+	/// <param name="whichplayer"></param>
+	/// <param name="in_mouseButtonsEvents"></param>
+	/// <param name="in_networkMouseButtonsStates"></param>
+	void GetMouseButtonsNetwork(int whichplayer, int* in_mouseButtonsEvents, bool* in_networkMouseButtonsStates);
+
+	/// <summary>
+	/// Initialize the special keys vector which contains pairs of scancodes and ascii codes for special keys.
+	/// </summary>
+	void MakeSpecialKeysVector();
+
+	/// <summary>
+	/// Updates the keyboard buffer, which contains key states taking delay times into consideration.
+	/// </summary>
+	/// <param name="sendState"></param>
+	void UpdateKeyboardBuffer();
+
+	void GetAsciiKeys();
 
     // Key states of the previous update
-    static char *s_aLastKeys;
+    static char *s_aLastScanKeys;
+	static std::array<bool, KEYBOARD_BUFFER_SIZE> s_aLastAsciiKeys;
     // Key states that have changed
-    static char *s_aChangedKeys;
+    static char *s_aChangedScanKeys;
+	static std::array<bool, KEYBOARD_BUFFER_SIZE> s_aChangedAsciiKeys;
 	// Current input class if available
 	static GUIInput* s_InputClass; 
+
+	vector<pair< int, int>> m_SpecialKeys; //!< Special keys for scancode to ascii conversion that aren't available through allegro's scancode_to_ascii.
+	std::array<float, KEYBOARD_BUFFER_SIZE> m_AsciiKeyboardTimes = { 0 }; //!< Time (seconds) since Push and Repeat events, respectively, for each key. Used for comparison to delays.
+	std::array<bool, KEYBOARD_BUFFER_SIZE> m_RepeatSwitchAscii = { false }; //!< Whether a key is repeating or not.
+	float m_KeyDelay = 0.3F; //!< Delay before changing a key's state from Pushed to Repeat.
+	float m_KeyRepeat = 1.0F / 20.F; //!< Delay between keypresses while a key is repeating.
+	std::array<int, KEYBOARD_BUFFER_SIZE> m_KeyboardAsciiBuffer = { 0 }; //!< Key events as they should be sent to GUI objects. Takes key delays into account.
+	int m_KeyShifts = 0; //!< Modifier key states cache taken from allegro's key_shifts. 15 bits, each one is a modifier key flag, defined in keyboard.h.
+	Timer *m_pTimer = new Timer(); //!< Timer for measuring keypress intervals.
 	
     // Temporarily disable all keyboard input reading
     bool m_DisableKeyboard;
@@ -1697,6 +1825,9 @@ private:
     static bool m_aMousePrevButtonState[MAX_MOUSE_BUTTONS];
     static bool m_aMouseChangedButtonState[MAX_MOUSE_BUTTONS];
 
+	std::array<int, MAX_PLAYERS> m_MouseOffsetX = { 0 };
+	std::array<int, MAX_PLAYERS> m_MouseOffsetY = { 0 };
+
     // Joystick states as they were the previous update
     static JOYSTICK_INFO s_aaPrevJoyState[MAX_PLAYERS];
     // Joystick states that have changed
@@ -1722,6 +1853,9 @@ private:
 	Vector m_aNetworkAnalogMoveData[MAX_PLAYERS];
 
 	int m_aNetworkMouseWheelState[MAX_PLAYERS];
+
+	int m_NetworkMouseX[4] = { 0 };
+	int m_NetworkMouseY[4] = { 0 };
 
 	bool m_TrapMousePosPerPlayer[MAX_PLAYERS];
 
