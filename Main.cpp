@@ -454,7 +454,6 @@ bool PlayIntroTitle() {
             aStars[star].m_Intensity = RangeRand(0.9, 1.0);
         }
         aStars[star].m_Pos.SetXY(resX * PosRand(), pBackdrop->GetBitmap()->h * PosRand());//resY * PosRand());
-        aStars[star].m_Pos.Floor();
         // To match the nebula scroll
         aStars[star].m_ScrollRatio = backdropScrollRatio;
     }
@@ -617,11 +616,11 @@ bool PlayIntroTitle() {
                 int intensity = 185 * aStars[star].m_Intensity + (size == StarSmall ? 35 : 70) * PosRand();
                 set_screen_blender(intensity, intensity, intensity, intensity);
                 starDrawPos.SetXY(aStars[star].m_Pos.m_X, aStars[star].m_Pos.m_Y - scrollOffset.m_Y * aStars[star].m_ScrollRatio);
-                draw_trans_sprite(g_FrameMan.GetBackBuffer32(), aStars[star].m_pBitmap, starDrawPos.GetFloorIntX(), starDrawPos.GetFloorIntY());
+                draw_trans_sprite(g_FrameMan.GetBackBuffer32(), aStars[star].m_pBitmap, starDrawPos.GetRoundIntX(), starDrawPos.GetRoundIntY());
             }
 
-            planetPos.SetXY(g_FrameMan.GetResX() / 2, 567 - scrollOffset.GetFloorIntY());
-            pMoon->SetPos(Vector(planetPos.m_X + 200, 364 - scrollOffset.GetFloorIntY() * 0.60));
+            planetPos.SetXY(g_FrameMan.GetResX() / 2, 567 - scrollOffset.GetRoundIntY());
+            pMoon->SetPos(Vector(planetPos.m_X + 200, 364 - scrollOffset.GetRoundIntY() * 0.60));
             pPlanet->SetPos(planetPos);
 
             pMoon->Draw(g_FrameMan.GetBackBuffer32(), Vector(), g_DrawAlpha);

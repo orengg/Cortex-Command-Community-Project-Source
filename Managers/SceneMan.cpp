@@ -881,8 +881,10 @@ bool SceneMan::SceneIsLocked() const
 
 void SceneMan::RegisterMOIDDrawing(const Vector &center, float radius)
 {
-    if (radius != 0)
-        RegisterMOIDDrawing(center.m_X - radius, center.m_Y - radius, center.m_X + radius, center.m_Y + radius);
+	if (abs(radius) > 0.001F) {
+		Vector floored = center.GetFloored();
+		RegisterMOIDDrawing(floored.m_X - radius, floored.m_Y - radius, floored.m_X + radius, floored.m_Y + radius);
+	}
 }
 
 
@@ -3518,8 +3520,8 @@ void SceneMan::Update(int screen)
         float scrollProgress = m_ScrollSpeed[screen] * m_ScrollTimer[screen].GetElapsedRealTimeMS() * 0.05;
         if (scrollProgress > 1.0)
             scrollProgress = 1.0;
-// TODO: Check if rounding is appropriate?
-        SetOffset(m_Offset[screen] + (scrollVec * scrollProgress).GetRounded(), screen);
+
+        SetOffset(m_Offset[screen] + (scrollVec * scrollProgress), screen);
     }
 
     /////////////////////////////////

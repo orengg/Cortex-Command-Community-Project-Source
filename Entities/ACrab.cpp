@@ -2626,7 +2626,7 @@ void ACrab::Update()
                     m_Paths[side][layer][WALK].Terminate();
 
             if (m_pLFGLeg)
-                m_pLFGFootGroup->PushAsLimb(m_Pos.GetFloored() + RotateOffset(m_pLFGLeg->GetParentOffset()),
+                m_pLFGFootGroup->PushAsLimb(m_Pos + RotateOffset(m_pLFGLeg->GetParentOffset()),
                                             m_Vel,
                                             m_Rotation,
                                             m_Paths[LEFTSIDE][FGROUND][STAND],
@@ -2634,7 +2634,7 @@ void ACrab::Update()
                                             deltaTime);
 
             if (m_pLBGLeg)
-                m_pLBGFootGroup->PushAsLimb(m_Pos.GetFloored() + RotateOffset(m_pLBGLeg->GetParentOffset()),
+                m_pLBGFootGroup->PushAsLimb(m_Pos + RotateOffset(m_pLBGLeg->GetParentOffset()),
                                             m_Vel,
                                             m_Rotation,
                                             m_Paths[LEFTSIDE][BGROUND][STAND],
@@ -2642,7 +2642,7 @@ void ACrab::Update()
                                             deltaTime);
 
             if (m_pRFGLeg)
-                m_pRFGFootGroup->PushAsLimb(m_Pos.GetFloored() + RotateOffset(m_pRFGLeg->GetParentOffset()),
+                m_pRFGFootGroup->PushAsLimb(m_Pos + RotateOffset(m_pRFGLeg->GetParentOffset()),
                                             m_Vel,
                                             m_Rotation,
                                             m_Paths[RIGHTSIDE][FGROUND][STAND],
@@ -2650,7 +2650,7 @@ void ACrab::Update()
                                             deltaTime);
 
             if (m_pRBGLeg)
-                m_pRBGFootGroup->PushAsLimb(m_Pos.GetFloored() + RotateOffset(m_pRBGLeg->GetParentOffset()),
+                m_pRBGFootGroup->PushAsLimb(m_Pos + RotateOffset(m_pRBGLeg->GetParentOffset()),
                                             m_Vel,
                                             m_Rotation,
                                             m_Paths[RIGHTSIDE][BGROUND][STAND],
@@ -2759,7 +2759,7 @@ void ACrab::Update()
 
     // Rotate the aiming spot vector and add it to the view point
     aimSight *= aimMatrix;
-    m_ViewPoint = m_Pos.GetFloored() + aimSight;
+    m_ViewPoint = m_Pos + aimSight;
 
     // Add velocity also so the viewpoint moves ahead at high speeds
     if (m_Vel.GetMagnitude() > 10.0)

@@ -521,7 +521,7 @@ void AreaEditorGUI::Update()
         {
             g_FrameMan.SetScreenText("Keep dragging the new box out - release and it is ADDED to the current Area", g_ActivityMan.GetActivity()->ScreenOfPlayer(m_pController->GetPlayer()));
 
-            // While primary is kept held down, keep dragging out the otehr corner of the Box being defined
+            // While primary is kept held down, keep dragging out the other corner of the Box being defined
             if (m_pController->IsState(PRIMARY_ACTION))
             {
                 Vector dimensions = g_SceneMan.ShortestDistance(m_EditedBox.GetCorner(), m_CursorPos).GetFloored();

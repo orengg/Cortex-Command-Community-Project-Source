@@ -1928,7 +1928,7 @@ void MOSRotating::Draw(BITMAP *pTargetBitmap,
 		keyColor = g_MOIDMaskColor;
 	}
 
-    Vector spritePos(m_Pos.GetFloored() - targetPos);
+    Vector spritePos(m_Pos - targetPos);
 
     if (m_Recoiled)
         spritePos += m_RecoilOffset;
@@ -2076,7 +2076,7 @@ void MOSRotating::Draw(BITMAP *pTargetBitmap,
 
                 // Register potential MOID drawing
                 if (mode == g_DrawMOID)
-                    g_SceneMan.RegisterMOIDDrawing(aDrawPos[i].GetFloored(), m_MaxRadius + 2);
+                    g_SceneMan.RegisterMOIDDrawing(aDrawPos[i], m_MaxRadius + 2);
             }
         }
     }
@@ -2124,7 +2124,7 @@ void MOSRotating::Draw(BITMAP *pTargetBitmap,
 
                 // Register potential MOID drawing
                 if (mode == g_DrawMOID)
-                    g_SceneMan.RegisterMOIDDrawing(aDrawPos[i].GetFloored(), m_MaxRadius + 2);
+                    g_SceneMan.RegisterMOIDDrawing(aDrawPos[i], m_MaxRadius + 2);
             }
         }
     }

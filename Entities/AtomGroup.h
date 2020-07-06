@@ -342,7 +342,7 @@ EntityAllocation(AtomGroup)
 
     Vector GetLimbPos(bool hFlipped = false) const
     {
-        return m_LimbPos.GetFloored() + m_JointOffset.GetXFlipped(hFlipped);
+        return m_LimbPos + m_JointOffset.GetXFlipped(hFlipped);
     }
 
 
@@ -547,7 +547,7 @@ EntityAllocation(AtomGroup)
 // Description:     Makes the group of Atom:s travel together without rotations and react
 //                  with the scene by pushing against it.
 // Arguments:       A reference to a Vector with the starting position of the AtomGroup
-//                  origin. The value of this Vector will be altered accoring to where
+//                  origin. The value of this Vector will be altered according to where
 //                  the AtomGroup ends up after done travelling.
 //                  A Vector with the total desired velocity of the AtomGroup. Will not be
 //                  altered.

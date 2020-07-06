@@ -2749,22 +2749,22 @@ int UInputMan::Update()
     {
         // Manipulate timescaling
         if (KeyHeld(KEY_2))
-            g_TimerMan.SetTimeScale(g_TimerMan.GetTimeScale() + 0.01);
-        if (KeyHeld(KEY_1) && g_TimerMan.GetTimeScale() - 0.01 > 0.001)
-            g_TimerMan.SetTimeScale(g_TimerMan.GetTimeScale() - 0.01);
+            g_TimerMan.SetTimeScale(g_TimerMan.GetTimeScale() + 0.01F);
+        if (KeyHeld(KEY_1) && g_TimerMan.GetTimeScale() - 0.01F > 0.001F)
+            g_TimerMan.SetTimeScale(g_TimerMan.GetTimeScale() - 0.01F);
 
         // Increase real to sim cap
         if (KeyHeld(KEY_4))
-            g_TimerMan.SetRealToSimCap(g_TimerMan.GetRealToSimCap() + 0.001);
+            g_TimerMan.SetRealToSimCap(g_TimerMan.GetRealToSimCap() + 0.001F);
         // Decrease frame delay
         if (KeyHeld(KEY_3) && g_TimerMan.GetRealToSimCap() > 0)
-            g_TimerMan.SetRealToSimCap(g_TimerMan.GetRealToSimCap() - 0.001);
+            g_TimerMan.SetRealToSimCap(g_TimerMan.GetRealToSimCap() - 0.001F);
         // Manipulate deltatime
         if (KeyHeld(KEY_6))
-            g_TimerMan.SetDeltaTimeSecs(g_TimerMan.GetDeltaTimeSecs() + 0.001);
+            g_TimerMan.SetDeltaTimeSecs(g_TimerMan.GetDeltaTimeSecs() + 0.001F);
         // Decrease frame delay
         if (KeyHeld(KEY_5) && g_TimerMan.GetDeltaTimeSecs() > 0)
-            g_TimerMan.SetDeltaTimeSecs(g_TimerMan.GetDeltaTimeSecs() - 0.001);
+            g_TimerMan.SetDeltaTimeSecs(g_TimerMan.GetDeltaTimeSecs() - 0.001F);
     }
 
     // Screendump - Ctrl+S

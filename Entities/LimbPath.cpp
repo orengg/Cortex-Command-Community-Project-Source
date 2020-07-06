@@ -243,10 +243,10 @@ void LimbPath::Destroy(bool notInherited)
 Vector LimbPath::GetProgressPos()
 {
     if (IsStaticPoint())
-        return m_JointPos.GetFloored() + m_Start * m_Rotation;
+        return m_JointPos + m_Start * m_Rotation;
 
     // Start at the start
-    Vector returnVec(m_JointPos.GetFloored() + m_Start * m_Rotation);
+    Vector returnVec(m_JointPos + m_Start * m_Rotation);
 
     // Add all the segments before the current one
 	deque<Vector>::const_iterator itr;
@@ -269,9 +269,9 @@ Vector LimbPath::GetProgressPos()
 Vector LimbPath::GetCurrentSegTarget()
 {
     if (IsStaticPoint())
-        return m_JointPos.GetFloored() + m_Start * m_Rotation;
+        return m_JointPos + m_Start * m_Rotation;
 
-    Vector returnVec(m_JointPos.GetFloored() + m_Start * m_Rotation);
+    Vector returnVec(m_JointPos + m_Start * m_Rotation);
 	deque<Vector>::const_iterator itr;
 
     for (itr = m_Segments.begin(); itr != m_CurrentSegment; ++itr)
@@ -544,7 +544,7 @@ bool LimbPath::RestartFree(Vector &limbPos, MOID MOIDToIgnore, int ignoreTeam)
     if (IsStaticPoint())
 	{
 		Vector notUsed;
-        Vector targetPos = m_JointPos.GetFloored() + m_Start * m_Rotation;
+        Vector targetPos = m_JointPos + m_Start * m_Rotation;
         Vector beginPos = targetPos;
 // TODO: don't hardcode the beginpos
         beginPos.m_Y -= 24;
@@ -643,7 +643,7 @@ void LimbPath::Draw(BITMAP *pTargetBitmap,
                     unsigned char color) const
 {
     acquire_bitmap(pTargetBitmap);
-    Vector prevPoint = m_JointPos.GetFloored() + (m_Start * m_Rotation) - targetPos;
+    Vector prevPoint = m_JointPos + (m_Start * m_Rotation) - targetPos;
     Vector nextPoint = prevPoint;
     for (deque<Vector>::const_iterator itr = m_Segments.begin(); itr != m_Segments.end(); ++itr)
     {

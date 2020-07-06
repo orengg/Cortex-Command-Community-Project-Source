@@ -832,7 +832,7 @@ void ACraft::Update()
     // Update viewpoint
 
     // Set viewpoint based on how we are aiming etc.
-    m_ViewPoint = m_Pos.GetFloored();
+    m_ViewPoint = m_Pos;
     // Add velocity also so the viewpoint moves ahead at high speeds
     if (m_Vel.GetMagnitude() > 10)
         m_ViewPoint += m_Vel * 6;

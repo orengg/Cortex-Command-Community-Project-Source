@@ -3999,7 +3999,7 @@ void AHuman::Update()
             m_Paths[BGROUND][CRAWL].Terminate();
 
             if (m_pFGLeg)
-                m_pFGFootGroup->PushAsLimb(m_Pos.GetFloored() + m_pFGLeg->GetParentOffset().GetXFlipped(m_HFlipped),
+                m_pFGFootGroup->PushAsLimb(m_Pos + m_pFGLeg->GetParentOffset().GetXFlipped(m_HFlipped),
                                            m_Vel,
                                            Matrix(),
                                            m_Paths[FGROUND][CROUCH],
@@ -4007,7 +4007,7 @@ void AHuman::Update()
                                            deltaTime);
 
             if (m_pBGLeg)
-                m_pBGFootGroup->PushAsLimb(m_Pos.GetFloored() + m_pBGLeg->GetParentOffset().GetXFlipped(m_HFlipped),
+                m_pBGFootGroup->PushAsLimb(m_Pos + m_pBGLeg->GetParentOffset().GetXFlipped(m_HFlipped),
                                            m_Vel,
                                            Matrix(),
                                            m_Paths[BGROUND][CROUCH],
@@ -4023,7 +4023,7 @@ void AHuman::Update()
             m_Paths[BGROUND][CRAWL].Terminate();
 
             if (m_pFGLeg)
-                m_pFGFootGroup->PushAsLimb(m_Pos.GetFloored() + m_pFGLeg->GetParentOffset().GetXFlipped(m_HFlipped),
+                m_pFGFootGroup->PushAsLimb(m_Pos + m_pFGLeg->GetParentOffset().GetXFlipped(m_HFlipped),
                                       m_Vel,
                                       Matrix(),
                                       m_Paths[FGROUND][STAND],
@@ -4033,7 +4033,7 @@ void AHuman::Update()
                                       false);
 
             if (m_pBGLeg)
-                m_pBGFootGroup->PushAsLimb(m_Pos.GetFloored() + m_pBGLeg->GetParentOffset().GetXFlipped(m_HFlipped),
+                m_pBGFootGroup->PushAsLimb(m_Pos + m_pBGLeg->GetParentOffset().GetXFlipped(m_HFlipped),
                                       m_Vel,
                                       Matrix(),
                                       m_Paths[BGROUND][STAND],
@@ -4143,7 +4143,7 @@ void AHuman::Update()
 
     // Rotate the aiming spot vector and add it to the view point
     aimSight *= aimMatrix;
-    m_ViewPoint = m_Pos.GetFloored() + aimSight;
+    m_ViewPoint = m_Pos + aimSight;
 
     // Add velocity also so the viewpoint moves ahead at high speeds
     if (m_Vel.GetMagnitude() > 10.0)

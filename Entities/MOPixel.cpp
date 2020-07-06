@@ -261,7 +261,7 @@ void MOPixel::SetToHitMOs(bool hitMOs)
 
 bool MOPixel::CollideAtPoint(HitData &hd)
 {
-    RTEAssert(hd.HitPoint.GetFloored() == m_Pos.GetFloored(), "Collision mismatch in MOPixel::CollideAtPoint!");
+    RTEAssert(hd.HitPoint == m_Pos, "Collision mismatch in MOPixel::CollideAtPoint!");
     RTEAssert(hd.Body[HITOR], "Valid MO not passed into MOPixel::CollideAtPoint!");
 
     hd.TotalMass[HITEE] = m_Mass;

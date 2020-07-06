@@ -825,7 +825,7 @@ void ACRocket::Update()
         m_Paths[LEFT][RAISED].SetHFlip(!m_HFlipped);
 
         if (m_pRLeg)
-            m_pRFootGroup->PushAsLimb(m_Pos.GetFloored() + m_pRLeg->GetParentOffset().GetXFlipped(m_HFlipped) * m_Rotation,
+            m_pRFootGroup->PushAsLimb(m_Pos + m_pRLeg->GetParentOffset().GetXFlipped(m_HFlipped) * m_Rotation,
                                       m_Vel,
                                       m_Rotation,
                                       m_Paths[RIGHT][RAISED],
@@ -833,7 +833,7 @@ void ACRocket::Update()
                                       0,
                                       true);
         if (m_pLLeg)
-            m_pLFootGroup->PushAsLimb(m_Pos.GetFloored() + m_pLLeg->GetParentOffset().GetXFlipped(m_HFlipped) * m_Rotation,
+            m_pLFootGroup->PushAsLimb(m_Pos + m_pLLeg->GetParentOffset().GetXFlipped(m_HFlipped) * m_Rotation,
                                       m_Vel,
                                       m_Rotation,
                                       m_Paths[LEFT][RAISED],
@@ -850,7 +850,7 @@ void ACRocket::Update()
         m_Paths[LEFT][LOWERED].SetHFlip(!m_HFlipped);
 
         if (m_pRLeg)
-            m_pRFootGroup->PushAsLimb(m_Pos.GetFloored() + m_pRLeg->GetParentOffset().GetXFlipped(m_HFlipped) * m_Rotation,
+            m_pRFootGroup->PushAsLimb(m_Pos + m_pRLeg->GetParentOffset().GetXFlipped(m_HFlipped) * m_Rotation,
                                       m_Vel,
                                       m_Rotation,
                                       m_Paths[RIGHT][LOWERED],
@@ -858,7 +858,7 @@ void ACRocket::Update()
                                       0,
                                       true);
         if (m_pLLeg)
-            m_pLFootGroup->PushAsLimb(m_Pos.GetFloored() + m_pLLeg->GetParentOffset().GetXFlipped(m_HFlipped) * m_Rotation,
+            m_pLFootGroup->PushAsLimb(m_Pos + m_pLLeg->GetParentOffset().GetXFlipped(m_HFlipped) * m_Rotation,
                                       m_Vel,
                                       m_Rotation,
                                       m_Paths[LEFT][LOWERED],

@@ -299,7 +299,7 @@ void Leg::Update()
             m_AnkleOffset.SetXY(m_MaxExtension * 0.60, 0);
             m_AnkleOffset.RadRotate((m_HFlipped ? c_PI : 0) + m_Rotation.GetRadAngle());
             BendLeg();
-            m_pFoot->SetJointPos(m_JointPos.GetFloored() + m_AnkleOffset);
+            m_pFoot->SetJointPos(m_JointPos + m_AnkleOffset);
             m_pFoot->SetRotAngle(m_Rotation.GetRadAngle() + c_PI / 2);
             m_pFoot->Update();
         }

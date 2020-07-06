@@ -38,8 +38,8 @@ namespace RTE {
 		m_ElementsUpdated = true;
 
 		// Inverse angle to make CCW positive direction.
-		float const CosAngle = static_cast<float>(std::cos(-angle));
-		float const SinAngle = static_cast<float>(std::sin(-angle));
+		float const CosAngle = std::cos(-angle);
+		float const SinAngle = std::sin(-angle);
 		m_Elements[0][0] = CosAngle;
 		m_Elements[0][1] = -SinAngle;
 		m_Elements[1][0] = SinAngle;
@@ -133,8 +133,11 @@ namespace RTE {
 
 		Vector retVec = rhs;
 		// Apply flipping as set.
-		retVec.m_X = m_Flipped[X] ? -retVec.m_X : retVec.m_X;
-		retVec.m_Y = m_Flipped[Y] ? -retVec.m_Y : retVec.m_Y;
+		for (int i = 0; i < 2; i++) {
+			if (m_Flipped[i]) {
+				retVec[i] = -retVec[i];
+			}
+		}
 		// Do the matrix multiplication.
 		retVec.SetXY(m_Elements[0][0] * retVec.m_X + m_Elements[0][1] * retVec.m_Y, m_Elements[1][0] * retVec.m_X + m_Elements[1][1] * retVec.m_Y);
 
@@ -148,8 +151,11 @@ namespace RTE {
 
 		Vector retVec = rhs;
 		// Apply flipping as set.
-		retVec.m_X = m_Flipped[X] ? -retVec.m_X : retVec.m_X;
-		retVec.m_Y = m_Flipped[Y] ? -retVec.m_Y : retVec.m_Y;
+		for (int i = 0; i < 2; i++) {
+			if (m_Flipped[i]) {
+				retVec[i] = -retVec[i];
+			}
+		}
 		// Do the matrix multiplication.
 		retVec.SetXY(m_Elements[0][0] * retVec.m_X + m_Elements[1][0] * retVec.m_Y, m_Elements[0][1] * retVec.m_X + m_Elements[1][1] * retVec.m_Y);
 
@@ -173,9 +179,8 @@ namespace RTE {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	void Matrix::UpdateElements() {
-		// Inverse angle to make CCW positive direction.
-		float const CosAngle = static_cast<float>(std::cos(-m_Rotation));
-		float const SinAngle = static_cast<float>(std::sin(-m_Rotation));
+		float const CosAngle = std::cos(-m_Rotation);
+		float const SinAngle = std::sin(-m_Rotation);
 		m_Elements[0][0] = CosAngle;
 		m_Elements[0][1] = -SinAngle;
 		m_Elements[1][0] = SinAngle;

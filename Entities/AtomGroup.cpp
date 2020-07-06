@@ -1626,7 +1626,11 @@ Vector AtomGroup::PushTravel(Vector &position,
     Vector trajectory = velocity * travelTime * g_FrameMan.GetPPM();
 
     int legCount = 0, stepCount = 0, hitCount = 0, atomsHitMOsCount = 0;
-    int /*startPos[2], */intPos[2], hitPos[2], delta[2], delta2[2], increment[2];
+    int /*startPos[2], */ increment[2];
+	int delta[2] = { 0 }; //!< On-screen travel delta.
+	int delta2[2] = { 0 }; //!< Delta times two.
+	int intPos[2] = { 0 }; //!< Integer representation of the position vector.
+	int hitPos[2] = { 0 }; //!< Integer representation of the collision position.
     int error, prevError, dom, sub, domSteps, subSteps;
     float prevVelMag, prevTrajMag, prevTimeLeft, mass = m_pOwnerMO->GetMass(), massDist, timeLeft = travelTime, retardation;
 // TODO: Fix HitMOs issue!!")
@@ -1652,10 +1656,6 @@ Vector AtomGroup::PushTravel(Vector &position,
     MOID tempMOID = g_NoMOID;
     HitData hitData;
 
-    // Init the raw positions.
-    /*startPos[X] = */intPos[X] = floorf(position.m_X);
-    /*startPos[Y] = */intPos[Y] = floorf(position.m_Y);
-
     didWrap = false;
     newDir = true;
 
@@ -1675,8 +1675,8 @@ Vector AtomGroup::PushTravel(Vector &position,
 //            rotatedOffset.AbsRadRotate(-rotation);
             rotatedOffset.Floor();
             // See if the atom is starting out on top of another MO
-            if (g_NoMOID != (tempMOID = g_SceneMan.GetMOIDPixel(intPos[X] + rotatedOffset.m_X,
-                                                                intPos[Y] + rotatedOffset.m_Y)))
+            if (g_NoMOID != (tempMOID = g_SceneMan.GetMOIDPixel(position.GetRoundIntX() + rotatedOffset.GetRoundIntX(),
+				position.GetRoundIntY() + rotatedOffset.GetRoundIntY())))
             {
 /* Can't implement because we cant get the generating MO reliably.
 Solved issue by instead making any generator to update their generated MO's once themselves
@@ -1707,8 +1707,8 @@ before adding them to the MovableMan.
     // Loop for all the different straight legs (between bounces etc) that
     // have to be traveled during the travelTime.
     do {
-        intPos[X] = floorf(position.m_X);
-        intPos[Y] = floorf(position.m_Y);
+        intPos[X] = position.GetRoundIntX();
+        intPos[Y] = position.GetRoundIntY();
 
         prevVelMag = velocity.GetMagnitude();
         prevTrajMag = trajectory.GetMagnitude();
@@ -1716,8 +1716,9 @@ before adding them to the MovableMan.
         // the remaining travel time and the pixels-per-meter constant.
         trajectory = velocity * timeLeft * g_FrameMan.GetPPM();
 
-        delta[X] = floorf(position.m_X + trajectory.m_X) - intPos[X];
-        delta[Y] = floorf(position.m_Y + trajectory.m_Y) - intPos[Y];
+		Vector tempVector = position + trajectory;
+        delta[X] = tempVector.GetRoundIntX() - intPos[X];
+        delta[Y] = tempVector.GetRoundIntY() - intPos[Y];
 
         hit[X] = false;
         hit[Y] = false;
@@ -1758,8 +1759,8 @@ before adding them to the MovableMan.
             increment[Y] = 1;
 
         // Scale by 2, for better accuracy of the error at the first pixel
-        delta2[X] = delta[X] << 1;
-        delta2[Y] = delta[Y] << 1;
+		delta2[X] = delta[X] * 2;
+		delta2[Y] = delta[Y] * 2;
 
         // If X is dominant, Y is submissive, and vice versa.
         if (delta[X] > delta[Y])
@@ -1822,8 +1823,8 @@ before adding them to the MovableMan.
                 bool ignoreHit = false;
                 if (hitMOs)
                 {
-                    tempMOID = g_SceneMan.GetMOIDPixel(intPos[X] + rotatedOffset.m_X,
-                                                       intPos[Y] + rotatedOffset.m_Y);
+                    tempMOID = g_SceneMan.GetMOIDPixel(intPos[X] + rotatedOffset.GetRoundIntX(),
+                                                       intPos[Y] + rotatedOffset.GetRoundIntY());
 
                     // Check the ignore map for Atom:s that should ignore hits against certain MO:s
                     if (tempMOID != g_NoMOID && (igItr = MOIgnoreMap.find(tempMOID)) != MOIgnoreMap.end())
@@ -1853,8 +1854,8 @@ before adding them to the MovableMan.
                     atomsHitMOsCount++;
                 }
                 // If no MO has ever been hit yet during this step, then keep checking for terrain hits.
-                else if (atomsHitMOsCount == 0 && g_SceneMan.GetTerrMatter(intPos[X] + rotatedOffset.m_X,
-                                                                           intPos[Y] + rotatedOffset.m_Y))
+                else if (atomsHitMOsCount == 0 && g_SceneMan.GetTerrMatter(intPos[X] + rotatedOffset.GetRoundIntX(),
+                                                                           intPos[Y] + rotatedOffset.GetRoundIntY()))
                     hitTerrAtoms.push_back(pair<Atom *, Vector>(*aItr, rotatedOffset));
 /*
 #ifdef DEBUG_BUILD
@@ -1922,8 +1923,8 @@ before adding them to the MovableMan.
                     for (aoItr = (*mapItr).second.begin(); aoItr != (*mapItr).second.end(); ++aoItr)
                     {
                         // Bake in current Atom's offset into the int positions.
-                        intPos[X] += (*aoItr).second.m_X;
-                        intPos[Y] += (*aoItr).second.m_Y;
+                        intPos[X] += (*aoItr).second.GetRoundIntX();
+                        intPos[Y] += (*aoItr).second.GetRoundIntY();
                         hitPos[X] += (*aoItr).second.m_X;
                         hitPos[Y] += (*aoItr).second.m_Y;
 
@@ -1969,12 +1970,12 @@ before adding them to the MovableMan.
                         hitData.BitmapNormal.Normalize();
 
                         // Extract the current Atom's offset from the int positions.
-                        intPos[X] -= (*aoItr).second.m_X;
-                        intPos[Y] -= (*aoItr).second.m_Y;
+                        intPos[X] -= (*aoItr).second.GetRoundIntX();
+                        intPos[Y] -= (*aoItr).second.GetRoundIntY();
                         hitPos[X] -= (*aoItr).second.m_X;
                         hitPos[Y] -= (*aoItr).second.m_Y;
 
-                        MOID hitMOID = g_SceneMan.GetMOIDPixel(hitData.HitPoint.m_X, hitData.HitPoint.m_Y);
+                        MOID hitMOID = g_SceneMan.GetMOIDPixel(hitData.HitPoint.GetRoundIntX(), hitData.HitPoint.GetRoundIntY());
 
                         if (hitMOID != g_NoMOID)
                         {
@@ -2004,8 +2005,8 @@ before adding them to the MovableMan.
 
                 for (aoItr = hitTerrAtoms.begin(); aoItr != hitTerrAtoms.end(); )
                 {
-                    if (g_SceneMan.WillPenetrate(intPos[X] + (*aoItr).second.m_X,
-                                                 intPos[Y] + (*aoItr).second.m_Y,
+                    if (g_SceneMan.WillPenetrate(intPos[X] + (*aoItr).second.GetRoundIntX(),
+                                                 intPos[Y] + (*aoItr).second.GetRoundIntY(),
                                                  forceVel,
                                                  massDist))
                     {
@@ -2046,8 +2047,8 @@ before adding them to the MovableMan.
                 for (aoItr = hitTerrAtoms.begin(); aoItr != hitTerrAtoms.end(); ++aoItr)
                 {
                     // Bake in current Atom's offset into the int positions.
-                    intPos[X] += (*aoItr).second.m_X;
-                    intPos[Y] += (*aoItr).second.m_Y;
+                    intPos[X] += (*aoItr).second.GetRoundIntX();
+                    intPos[Y] += (*aoItr).second.GetRoundIntY();
                     hitPos[X] += (*aoItr).second.m_X;
                     hitPos[Y] += (*aoItr).second.m_Y;
 
@@ -2114,8 +2115,8 @@ before adding them to the MovableMan.
                                                                       (*aoItr).second));
 
                     // Extract the current Atom's offset from the int positions.
-                    intPos[X] -= (*aoItr).second.m_X;
-                    intPos[Y] -= (*aoItr).second.m_Y;
+                    intPos[X] -= (*aoItr).second.GetRoundIntX();
+                    intPos[Y] -= (*aoItr).second.GetRoundIntY();
                     hitPos[X] -= (*aoItr).second.m_X;
                     hitPos[Y] -= (*aoItr).second.m_Y;
                 }
@@ -2140,8 +2141,8 @@ before adding them to the MovableMan.
                 // Apply the collision response effects.
                 for (aoItr = penetratingAtoms.begin(); aoItr != penetratingAtoms.end(); ++aoItr)
                 {
-                    if (g_SceneMan.TryPenetrate(intPos[X] + (*aoItr).second.m_X,
-                                                intPos[Y] + (*aoItr).second.m_Y,
+                    if (g_SceneMan.TryPenetrate(intPos[X] + (*aoItr).second.GetRoundIntX(),
+                                                intPos[Y] + (*aoItr).second.GetRoundIntY(),
                                                 forceVel * massDist,
                                                 forceVel,
                                                 retardation,
@@ -2343,7 +2344,7 @@ bool AtomGroup::InTerrain()
 // TODO: UNCOMMENT
     for (list<Atom *>::iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end() && !penetrates; ++aItr)
     {
-        aPos = (m_pOwnerMO->GetPos() + ((*aItr)->GetOffset().GetXFlipped(m_pOwnerMO->m_HFlipped) * m_pOwnerMO->GetRotMatrix())).GetFloored();
+        aPos = (m_pOwnerMO->GetPos() + ((*aItr)->GetOffset().GetXFlipped(m_pOwnerMO->m_HFlipped) * m_pOwnerMO->GetRotMatrix()));
         if (g_SceneMan.GetTerrMatter(aPos.m_X, aPos.m_Y) != g_MaterialAir)
             penetrates = true;
 /*
@@ -2376,7 +2377,7 @@ float AtomGroup::RatioInTerrain()
 
     for (list<Atom *>::iterator aItr = m_Atoms.begin(); aItr != m_Atoms.end(); ++aItr)
     {
-        aPos = (m_pOwnerMO->GetPos() + ((*aItr)->GetOffset().GetXFlipped(m_pOwnerMO->m_HFlipped) * m_pOwnerMO->GetRotMatrix())).GetFloored();
+        aPos = (m_pOwnerMO->GetPos() + ((*aItr)->GetOffset().GetXFlipped(m_pOwnerMO->m_HFlipped) * m_pOwnerMO->GetRotMatrix()));
         if (g_SceneMan.GetTerrMatter(aPos.m_X, aPos.m_Y) != g_MaterialAir)
             inTerrain++;
     }
@@ -2460,7 +2461,7 @@ bool AtomGroup::ResolveTerrainIntersection(Vector &position, Matrix &rotation, u
         if (rayHit)
         {
             // Determine the longest clearing distance so far
-            atomExitVector = clearPos - atomPos.GetFloored();
+            atomExitVector = clearPos - atomPos;
             if (atomExitVector.GetMagnitude() > longestDistance)
             {
                 // We found the atom with the longest to travel along the exit direction to clear,
@@ -2601,7 +2602,7 @@ bool AtomGroup::ResolveMOSIntersection(Vector &position, Matrix &rotation)
         if (g_SceneMan.CastFindMORay(atomPos, exitDirection, g_NoMOID, clearPos, 0, true, 0))
         {
             // Determine the longest clearing distance so far
-            atomExitVector = clearPos - atomPos.GetFloored();
+            atomExitVector = clearPos - atomPos;
             if (atomExitVector.GetMagnitude() > longestDistance)
             {
                 // We found the atom with the longest to travel along the exit direction to clear,
@@ -2685,10 +2686,10 @@ void AtomGroup::Draw(BITMAP *pTargetBitmap,
     {
         if (!useLimbPos)
             aPos = (m_pOwnerMO->GetPos() + ((*aItr)->GetOffset().GetXFlipped(m_pOwnerMO->m_HFlipped)
-                                            /** m_pOwnerMO->GetRotMatrix()*/)).GetFloored();
+                                            /** m_pOwnerMO->GetRotMatrix()*/));
         else
             aPos = (m_LimbPos + ((*aItr)->GetOffset().GetXFlipped(m_pOwnerMO->m_HFlipped)
-                                 /* * m_pOwnerMO->GetRotMatrix()*/)).GetFloored();
+                                 /* * m_pOwnerMO->GetRotMatrix()*/));
 
         // Draw normal first
         if (!(*aItr)->GetNormal().IsZero())
